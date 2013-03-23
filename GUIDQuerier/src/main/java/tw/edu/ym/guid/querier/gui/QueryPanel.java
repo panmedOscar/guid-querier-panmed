@@ -151,6 +151,7 @@ public class QueryPanel {
           oldPassword = getPassword("Enter old password:");
           if (oldPassword == null)
             oldPassword = "";
+          oldPassword = oldPassword.trim();
           retry++;
         } while (!(em.authenticate("admin", oldPassword)) && retry < 3);
 
@@ -159,6 +160,7 @@ public class QueryPanel {
           newPassword = getPassword("Enter new password (least 4 charaters):");
           if (newPassword == null)
             newPassword = "";
+          newPassword = newPassword.trim();
         } while (newPassword.length() < 4);
 
         String verifyPassword = null;
@@ -166,7 +168,8 @@ public class QueryPanel {
           verifyPassword = getPassword("Enter new password again:");
           if (verifyPassword == null)
             verifyPassword = "";
-        } while (verifyPassword.equals(newPassword));
+          verifyPassword = verifyPassword.trim();
+        } while (!(verifyPassword.equals(newPassword)));
 
         em.setAdminPassword(newPassword);
       }
