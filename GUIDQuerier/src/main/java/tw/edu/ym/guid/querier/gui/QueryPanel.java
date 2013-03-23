@@ -62,18 +62,14 @@ public class QueryPanel {
   private String getPassword(String msg) {
     JPanel panel = new JPanel();
     JLabel label = new JLabel(msg);
-    JPasswordField pass = new JPasswordField(32);
+    JPasswordField pass = new JPasswordField(16);
     panel.add(label);
     panel.add(pass);
     String[] options = new String[] { "OK", "Cancel" };
-    int option =
-        JOptionPane.showOptionDialog(null, panel, "Authentication",
-            JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,
-            options[1]);
-    if (option == 0)
-      return new String(pass.getPassword());
-    else
-      return null;
+    JOptionPane.showOptionDialog(null, panel, "Authentication",
+        JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,
+        options[1]);
+    return new String(pass.getPassword());
   }
 
   private DefaultTableModel initDataModel() {
@@ -85,9 +81,13 @@ public class QueryPanel {
   }
 
   private void querying() {
-    String query = textField.getText();
-    if (!(query.trim().isEmpty())) {
-      List<String[]> result = em.query2ListOfStrAry(query.trim().split("\\s+"));
+    String query = textField.getText().trim();
+    if (query.isEmpty()) {
+      dataModel = initDataModel();
+      table.setModel(dataModel);
+    } else {
+      String[] keywords = query.trim().split("\\s+");
+      List<String[]> result = em.query2ListOfStrAry(keywords);
       dataModel = new DefaultTableModel();
       dataModel.setColumnIdentifiers(em.getHeader());
       for (String[] record : result)

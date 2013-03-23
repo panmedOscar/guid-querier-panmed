@@ -51,6 +51,7 @@ public final class Piis {
 
       PiiExample piiEx = new PiiExample();
       for (String value : values) {
+        value = value.trim();
         if (value.getBytes().length < 3) {
           piiEx.or().andLocalIdEqualTo(value);
           piiEx.or().andGuidEqualTo(value);
