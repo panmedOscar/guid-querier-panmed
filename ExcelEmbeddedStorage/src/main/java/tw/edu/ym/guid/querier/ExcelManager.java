@@ -36,8 +36,33 @@ public final class ExcelManager {
     initDatabase();
   }
 
-  public EmbeddedStorage getEmbeddedStorage() {
-    return es;
+  public String[] getHeader() throws SQLException {
+    List<String> header = es.getColumns("pii");
+    return header.toArray(new String[header.size()]);
+  }
+
+  public List<Pii> getAll() {
+    return Piis.all();
+  }
+
+  public List<String[]> getAll2ListOfStrAry() {
+    List<String[]> listOfStrAry = new ArrayList<String[]>();
+
+    for (Pii pii : Piis.all())
+      listOfStrAry.add(new String[] { pii.getLocalId(), pii.getGuid(),
+          pii.getMrn(), pii.get身份證字號(), pii.get姓氏(), pii.get名字(), pii.get出生月(),
+          pii.get出生日(), pii.get出生年(), pii.get聯絡電話(), pii.get性別(),
+          pii.get收案醫師(), pii.get醫院名稱() });
+
+    return listOfStrAry;
+  }
+
+  public List<Object[]> selectAll() throws SQLException {
+    return es.selectAll();
+  }
+
+  public List<Object[]> selectAll(int limit) throws SQLException {
+    return es.selectAll(limit);
   }
 
   public List<Pii> query(String... values) {

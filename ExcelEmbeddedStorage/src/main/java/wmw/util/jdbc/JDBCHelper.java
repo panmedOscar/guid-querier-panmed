@@ -135,4 +135,44 @@ public final class JDBCHelper {
     stmt.close();
   }
 
+  public static List<Object[]> selectAll(Connection c, String table)
+      throws SQLException {
+    String selectAll = "SELECT * FROM " + table;
+    Statement stmt = c.createStatement();
+    ResultSet rs = stmt.executeQuery(selectAll);
+
+    List<Object[]> records = new ArrayList<Object[]>();
+    while (rs.next()) {
+      int cols = rs.getMetaData().getColumnCount();
+      Object[] arr = new Object[cols];
+      for (int i = 0; i < cols; i++) {
+        arr[i] = rs.getObject(i + 1);
+      }
+      records.add(arr);
+    }
+
+    stmt.close();
+    return records;
+  }
+
+  public static List<Object[]> selectAll(Connection c, String table, int limit)
+      throws SQLException {
+    String selectAll = "SELECT * FROM " + table + " LIMIT " + limit;
+    Statement stmt = c.createStatement();
+    ResultSet rs = stmt.executeQuery(selectAll);
+
+    List<Object[]> records = new ArrayList<Object[]>();
+    while (rs.next()) {
+      int cols = rs.getMetaData().getColumnCount();
+      Object[] arr = new Object[cols];
+      for (int i = 0; i < cols; i++) {
+        arr[i] = rs.getObject(i + 1);
+      }
+      records.add(arr);
+    }
+
+    stmt.close();
+    return records;
+  }
+
 }

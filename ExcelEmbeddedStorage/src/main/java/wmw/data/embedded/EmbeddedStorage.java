@@ -59,6 +59,14 @@ public final class EmbeddedStorage {
     JDBCHelper.index(c, table, column);
   }
 
+  public List<Object[]> selectAll() throws SQLException {
+    return JDBCHelper.selectAll(c, "pii");
+  }
+
+  public List<Object[]> selectAll(int limit) throws SQLException {
+    return JDBCHelper.selectAll(c, "pii", limit);
+  }
+
   public static void main(String[] args) throws SQLException,
       ClassNotFoundException {
     EmbeddedStorage es = new EmbeddedStorage("exceldb");
