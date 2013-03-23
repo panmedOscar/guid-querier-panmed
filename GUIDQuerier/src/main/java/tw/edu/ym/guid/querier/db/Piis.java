@@ -2,6 +2,7 @@ package tw.edu.ym.guid.querier.db;
 
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class Piis {
       PiiExample piiEx = new PiiExample();
       for (String value : values) {
         value = value.trim();
-        if (value.getBytes().length < 3) {
+        if (value.getBytes(Charset.forName("UTF-8")).length < 3) {
           piiEx.or().andLocalIdEqualTo(value);
           piiEx.or().andGuidEqualTo(value);
           piiEx.or().andMrnEqualTo(value);
