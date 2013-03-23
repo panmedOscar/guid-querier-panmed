@@ -53,6 +53,7 @@ public class QueryPanel {
       password = getPassword("Enter Password:");
       if (password == null)
         password = "";
+      password = password.trim();
       retry++;
     } while (!(em.authenticate("admin", password)));
     initialize();

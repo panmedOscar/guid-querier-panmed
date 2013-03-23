@@ -206,7 +206,6 @@ public final class ExcelManager {
     }
     if (!(es.hasTable("authentication"))) {
       es.createTable("authentication", Varchar("role"), Varchar("password"));
-      es.unique("authentication", "password");
       Map<String, String> defaultPassword = new HashMap<String, String>();
       defaultPassword.put("role", "admin");
       defaultPassword.put("password", "0000");
