@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import static java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -50,26 +52,31 @@ public class QueryPanel {
     do {
       if (retry >= 3)
         System.exit(0);
-      password = getPassword("Enter Password:");
-      if (password == null)
-        password = "";
-      password = password.trim();
+      password = getPassword("Enter Password:", true).getValue();
       retry++;
     } while (!(em.authenticate("admin", password)));
     initialize();
   }
 
-  private String getPassword(String msg) {
+  private Entry<Integer, String> getPassword(String msg) {
+    return getPassword(msg, false);
+  }
+
+  private Entry<Integer, String> getPassword(String msg, boolean enableExit) {
     JPanel panel = new JPanel();
     JLabel label = new JLabel(msg);
     JPasswordField pass = new JPasswordField(16);
     panel.add(label);
     panel.add(pass);
     String[] options = new String[] { "OK", "Cancel" };
-    JOptionPane.showOptionDialog(null, panel, "Authentication",
-        JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,
-        options[1]);
-    return new String(pass.getPassword());
+    int option =
+        JOptionPane.showOptionDialog(null, panel, "Authentication",
+            JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,
+            options[0]);
+    if (enableExit && (option == -1 || option == 1))
+      System.exit(0);
+    return new SimpleEntry<Integer, String>(option, new String(
+        pass.getPassword()).trim());
   }
 
   private DefaultTableModel initDataModel() {
@@ -146,34 +153,41 @@ public class QueryPanel {
     JMenuItem password = new JMenuItem("Set password");
     password.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        int retry = 0;
+        int option = -1;
         String oldPassword = null;
         do {
-          oldPassword = getPassword("Enter old password:");
-          if (oldPassword == null)
-            oldPassword = "";
-          oldPassword = oldPassword.trim();
-          retry++;
-        } while (!(em.authenticate("admin", oldPassword)) && retry < 3);
+          Entry<Integer, String> pwd = getPassword("Enter old password:");
+          option = pwd.getKey();
+          oldPassword = pwd.getValue();
+        } while (!(em.authenticate("admin", oldPassword)) && option == 0);
+
+        if (option != 0)
+          return;
 
         String newPassword = null;
         do {
-          newPassword = getPassword("Enter new password (least 4 charaters):");
-          if (newPassword == null)
-            newPassword = "";
-          newPassword = newPassword.trim();
-        } while (newPassword.length() < 4);
+          Entry<Integer, String> pwd =
+              getPassword("Enter new password (least 4 charaters):");
+          option = pwd.getKey();
+          newPassword = pwd.getValue();
+        } while (newPassword.length() < 4 && option == 0);
+
+        if (option != 0)
+          return;
 
         String verifyPassword = null;
         do {
-          verifyPassword = getPassword("Enter new password again:");
-          if (verifyPassword == null)
-            verifyPassword = "";
-          verifyPassword = verifyPassword.trim();
-        } while (!(verifyPassword.equals(newPassword)));
+          Entry<Integer, String> pwd = getPassword("Enter new password again:");
+          option = pwd.getKey();
+          verifyPassword = pwd.getValue();
+        } while (!(verifyPassword.equals(newPassword)) && option == 0);
+
+        if (option != 0)
+          return;
 
         em.setAdminPassword(newPassword);
       }
+
     });
     auth.add(password);
     menuBar.add(auth);
