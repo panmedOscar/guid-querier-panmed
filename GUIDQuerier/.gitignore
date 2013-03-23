@@ -1,0 +1,5 @@
+/bin
+/target
+*.h2.db
+*.trace.db
+*.log
