@@ -23,11 +23,13 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.edu.ym.guid.querier.db.Authentications;
 import tw.edu.ym.guid.querier.db.Histories;
 import tw.edu.ym.guid.querier.db.Piis;
 import wmw.data.embedded.EmbeddedStorage;
 import wmw.data.excel.Excel2Map;
 import wmw.data.zip.EncryptedZip;
+import exceldb.model.Authentication;
 import exceldb.model.Pii;
 
 public final class ExcelManager {
@@ -113,6 +115,15 @@ public final class ExcelManager {
     recordProcessedFiles(excels.keySet());
   }
 
+  public boolean authenticate(String role, String password) {
+    Authentication auth = Authentications.findByRoleAndPassword(role, password);
+    return auth != null;
+  }
+
+  public void setAdminPassword(String password) {
+    Authentications.setAdminPassword(password);
+  }
+
   private void recordProcessedFiles(Collection<String> fileNames) {
     for (String fileName : fileNames)
       Histories.create(fileName);
@@ -166,6 +177,7 @@ public final class ExcelManager {
     return encryptedZips;
   }
 
+  @SuppressWarnings("unchecked")
   private void initDatabase() throws SQLException {
     if (!(es.hasTable("pii"))) {
       es.createTable("pii", Varchar("Local_ID"), Varchar("GUID"),
@@ -191,6 +203,14 @@ public final class ExcelManager {
       es.createTable("history", Varchar("file_name"));
       es.unique("history", "file_name");
       es.index("history", "file_name");
+    }
+    if (!(es.hasTable("authentication"))) {
+      es.createTable("authentication", Varchar("role"), Varchar("password"));
+      es.unique("authentication", "password");
+      Map<String, String> defaultPassword = new HashMap<String, String>();
+      defaultPassword.put("role", "admin");
+      defaultPassword.put("password", "0000");
+      es.insertRecords("authentication", defaultPassword);
     }
   }
 

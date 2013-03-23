@@ -17,5 +17,6 @@
 	<mappers>
 		<mapper resource="exceldb/dao/PiiMapper.xml" />
 		<mapper resource="exceldb/dao/HistoryMapper.xml" />
+		<mapper resource="exceldb/dao/AuthenticationMapper.xml" />
 	</mappers>
 </configuration>

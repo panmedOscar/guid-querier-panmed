@@ -36,10 +36,8 @@
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
 
-		<table tableName="pii" domainObjectName="Pii">
-		</table>
-
-		<table tableName="history" domainObjectName="History">
-		</table>
+		<table tableName="pii" domainObjectName="Pii" />
+		<table tableName="history" domainObjectName="History" />
+		<table tableName="authentication" domainObjectName="Authentication" />
 	</context>
 </generatorConfiguration>

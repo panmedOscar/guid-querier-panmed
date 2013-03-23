@@ -11,9 +11,13 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -41,7 +45,34 @@ public class QueryPanel {
 
   public QueryPanel() throws SQLException, ClassNotFoundException {
     em = new ExcelManager();
+    String password = null;
+    int retry = 0;
+    do {
+      if (retry >= 3)
+        System.exit(0);
+      password = getPassword("Enter Password:");
+      if (password == null)
+        password = "";
+      retry++;
+    } while (!(em.authenticate("admin", password)));
     initialize();
+  }
+
+  private String getPassword(String msg) {
+    JPanel panel = new JPanel();
+    JLabel label = new JLabel(msg);
+    JPasswordField pass = new JPasswordField(32);
+    panel.add(label);
+    panel.add(pass);
+    String[] options = new String[] { "OK", "Cancel" };
+    int option =
+        JOptionPane.showOptionDialog(null, panel, "Authentication",
+            JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options,
+            options[1]);
+    if (option == 0)
+      return new String(pass.getPassword());
+    else
+      return null;
   }
 
   private DefaultTableModel initDataModel() {
@@ -109,6 +140,40 @@ public class QueryPanel {
     });
     menu.add(item);
     menuBar.add(menu);
+
+    JMenu auth = new JMenu("Authentication");
+    JMenuItem password = new JMenuItem("Set password");
+    password.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        int retry = 0;
+        String oldPassword = null;
+        do {
+          oldPassword = getPassword("Enter old password:");
+          if (oldPassword == null)
+            oldPassword = "";
+          retry++;
+        } while (!(em.authenticate("admin", oldPassword)) && retry < 3);
+
+        String newPassword = null;
+        do {
+          newPassword = getPassword("Enter new password (least 4 charaters):");
+          if (newPassword == null)
+            newPassword = "";
+        } while (newPassword.length() < 4);
+
+        String verifyPassword = null;
+        do {
+          verifyPassword = getPassword("Enter new password again:");
+          if (verifyPassword == null)
+            verifyPassword = "";
+        } while (verifyPassword.equals(newPassword));
+
+        em.setAdminPassword(newPassword);
+      }
+    });
+    auth.add(password);
+    menuBar.add(auth);
+
     frame.setJMenuBar(menuBar);
   }
 
@@ -119,6 +184,7 @@ public class QueryPanel {
           QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);
         } catch (Exception e) {
+          e.printStackTrace();
           logger.error(e.getMessage());
         }
       }
