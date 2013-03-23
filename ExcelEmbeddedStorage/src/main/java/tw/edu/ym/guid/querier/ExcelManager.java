@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ import net.lingala.zip4j.exception.ZipException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.db.Histories;
 import tw.edu.ym.guid.querier.db.Piis;
@@ -28,6 +31,7 @@ import wmw.data.zip.EncryptedZip;
 import exceldb.model.Pii;
 
 public final class ExcelManager {
+  static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
   private static final String ZIP_PASSWORD = "H9z6gaYajuSA";
   private final EmbeddedStorage es;
 
@@ -36,8 +40,13 @@ public final class ExcelManager {
     initDatabase();
   }
 
-  public String[] getHeader() throws SQLException {
-    List<String> header = es.getColumns("pii");
+  public String[] getHeader() {
+    List<String> header = Collections.emptyList();
+    try {
+      header = es.getColumns("pii");
+    } catch (SQLException e) {
+      logger.error(e.getMessage());
+    }
     return header.toArray(new String[header.size()]);
   }
 
@@ -57,12 +66,22 @@ public final class ExcelManager {
     return listOfStrAry;
   }
 
-  public List<Object[]> selectAll() throws SQLException {
-    return es.selectAll();
+  public List<Object[]> selectAll() {
+    try {
+      return es.selectAll();
+    } catch (SQLException e) {
+      logger.error(e.getMessage());
+    }
+    return Collections.emptyList();
   }
 
-  public List<Object[]> selectAll(int limit) throws SQLException {
-    return es.selectAll(limit);
+  public List<Object[]> selectAll(int limit) {
+    try {
+      return es.selectAll(limit);
+    } catch (SQLException e) {
+      logger.error(e.getMessage());
+    }
+    return Collections.emptyList();
   }
 
   public List<Pii> query(String... values) {
@@ -81,12 +100,16 @@ public final class ExcelManager {
     return listOfStrAry;
   }
 
-  public void importExcelsInFolder(String folder) throws ZipException,
-      InvalidFormatException, IOException, SQLException {
+  public void importExcelsInFolder(String folder) {
     List<File> files = retrieveAllFiles(folder);
     List<EncryptedZip> encryptedZips = getEncryptedZips(files);
-    Map<String, InputStream> excels = getUnprocessedExcels(encryptedZips);
-    insertExcelRecords(excels.values());
+    Map<String, InputStream> excels = Collections.emptyMap();
+    try {
+      excels = getUnprocessedExcels(encryptedZips);
+      insertExcelRecords(excels.values());
+    } catch (ZipException e) {
+      logger.error(e.getMessage());
+    }
     recordProcessedFiles(excels.keySet());
   }
 
@@ -95,13 +118,21 @@ public final class ExcelManager {
       Histories.create(fileName);
   }
 
-  private void insertExcelRecords(Collection<InputStream> excels)
-      throws InvalidFormatException, IOException, SQLException {
+  private void insertExcelRecords(Collection<InputStream> excels) {
     for (InputStream is : excels) {
-      Workbook wb = WorkbookFactory.create(is);
-      Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
-      for (List<Map<String, String>> list : maps.values())
-        es.safeInsertRecords("pii", list);
+      Workbook wb;
+      try {
+        wb = WorkbookFactory.create(is);
+        Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
+        for (List<Map<String, String>> list : maps.values())
+          es.safeInsertRecords("pii", list);
+      } catch (InvalidFormatException e) {
+        logger.error(e.getMessage());
+      } catch (IOException e) {
+        logger.error(e.getMessage());
+      } catch (SQLException e) {
+        logger.error(e.getMessage());
+      }
     }
   }
 
@@ -130,7 +161,7 @@ public final class ExcelManager {
           encryptedZips.add(new EncryptedZip(file.getAbsolutePath(),
               ZIP_PASSWORD));
         } catch (Exception e) {
-          System.err.println(e.getMessage());
+          logger.warn(e.getMessage());
         }
     return encryptedZips;
   }
@@ -163,10 +194,4 @@ public final class ExcelManager {
     }
   }
 
-  public static void main(String[] args) throws SQLException,
-      ClassNotFoundException, ZipException, InvalidFormatException, IOException {
-    // ExcelManager em = new ExcelManager();
-    // .importExcelsInFolder("/Users/WMW/Documents/workspace/ExcelEmbeddedStorage");
-
-  }
 }

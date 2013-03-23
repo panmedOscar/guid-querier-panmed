@@ -1,7 +1,5 @@
 package wmw.data.embedded;
 
-import static wmw.util.jdbc.Field.Varchar;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -67,15 +65,4 @@ public final class EmbeddedStorage {
     return JDBCHelper.selectAll(c, "pii", limit);
   }
 
-  public static void main(String[] args) throws SQLException,
-      ClassNotFoundException {
-    EmbeddedStorage es = new EmbeddedStorage("exceldb");
-    if (!(es.hasTable("pii")))
-      es.createTable("pii", Varchar("Local_ID"), Varchar("GUID"),
-          Varchar("MRN"), Varchar("身份證字號"), Varchar("姓氏"), Varchar("名字"),
-          Varchar("出生月"), Varchar("出生日"), Varchar("出生年"), Varchar("聯絡電話"),
-          Varchar("性別"), Varchar("收案醫師"), Varchar("醫院名稱"));
-    es.unique("pii", "GUID");
-    System.out.println(es.getTables());
-  }
 }

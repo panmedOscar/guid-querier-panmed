@@ -2,6 +2,8 @@ package tw.edu.ym.guid.querier.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -17,27 +19,25 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import net.lingala.zip4j.exception.ZipException;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.ExcelManager;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 public class QueryPanel {
+  static final Logger logger = LoggerFactory.getLogger(QueryPanel.class);
+
   private JFrame frame;
   private JTextField textField;
   private JScrollPane scrollPane;
   private JTable table;
+  private JMenuBar menuBar;
   private final ExcelManager em;
   private DefaultTableModel dataModel;
-  private JMenuBar menuBar;
 
   public QueryPanel() throws SQLException, ClassNotFoundException {
     em = new ExcelManager();
@@ -48,7 +48,7 @@ public class QueryPanel {
     initialize();
   }
 
-  private void querying() throws SQLException {
+  private void querying() {
     String query = textField.getText();
     if (!(query.trim().isEmpty())) {
       List<String[]> result = em.query2ListOfStrAry(query.trim().split("\\s+"));
@@ -60,7 +60,7 @@ public class QueryPanel {
     }
   }
 
-  private void initialize() throws SQLException, ClassNotFoundException {
+  private void initialize() {
     frame = new JFrame();
     frame.setBounds(100, 100, 640, 480);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,11 +74,7 @@ public class QueryPanel {
     textField.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
-        try {
-          querying();
-        } catch (SQLException e1) {
-          e1.printStackTrace();
-        }
+        querying();
       }
     });
     frame.getContentPane().add(textField, "1, 1, center, top");
@@ -101,17 +97,8 @@ public class QueryPanel {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.showOpenDialog(frame);
-        try {
+        if (chooser.getSelectedFile() != null)
           em.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
-        } catch (InvalidFormatException e) {
-          e.printStackTrace();
-        } catch (ZipException e) {
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
       }
     });
     menu.add(item);
@@ -126,7 +113,7 @@ public class QueryPanel {
           QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);
         } catch (Exception e) {
-          e.printStackTrace();
+          logger.error(e.getMessage());
         }
       }
     });

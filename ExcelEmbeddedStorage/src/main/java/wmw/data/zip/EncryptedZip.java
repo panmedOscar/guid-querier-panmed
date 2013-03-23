@@ -39,12 +39,4 @@ public final class EncryptedZip {
     return null;
   }
 
-  public static void main(String[] args) throws ZipException {
-    EncryptedZip ez =
-        new EncryptedZip(
-            "/Users/WMW/Documents/workspace/ExcelEmbeddedStorage/PII_20130319.zip",
-            "H9z6gaYajuSA");
-    System.out.println(ez.getAllFileNames());
-    System.out.println(ez.getInputStreamByFileName("PII_20130319151710.xls"));
-  }
 }

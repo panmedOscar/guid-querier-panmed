@@ -12,9 +12,6 @@ import static wmw.util.jdbc.DataType.TIME;
 import static wmw.util.jdbc.DataType.TIMESTAMP;
 import static wmw.util.jdbc.DataType.VARCHAR;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public final class Field {
   private final String name;
   private final DataType dataType;
@@ -99,9 +96,4 @@ public final class Field {
       return name + " " + dataType;
   }
 
-  public static void main(String[] args) {
-    System.out.println(Varchar("haha"));
-    System.out.println(new ArrayList<Field>(Arrays
-        .asList(new Field[] { Integer("col1"), Varchar("col2") })));
-  }
 }

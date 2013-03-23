@@ -37,14 +37,6 @@ public class FolderTraverser {
     return files;
   }
 
-  // private static void traverseFolder(File file, List<File> files) {
-  // if (file.isFile())
-  // files.add(file);
-  // else
-  // for (File f : file.listFiles())
-  // traverseFolder(f, files);
-  // }
-
   private static List<File> traverseFolder(File file) {
     List<File> files = new ArrayList<File>();
     List<File> tempFiles = new ArrayList<File>(Arrays.asList(file.listFiles()));
