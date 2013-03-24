@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.sql.SQLException;
-import static java.util.AbstractMap.SimpleEntry;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -23,6 +21,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import com.jgoodies.forms.layout.RowSpec;
 public class QueryPanel {
   static final Logger logger = LoggerFactory.getLogger(QueryPanel.class);
 
+  private long idleTime = System.nanoTime();
   private JFrame frame;
   private JTextField textField;
   private JScrollPane scrollPane;
@@ -46,6 +48,7 @@ public class QueryPanel {
   private DefaultTableModel dataModel;
 
   public QueryPanel() throws SQLException, ClassNotFoundException {
+    autoShutdown();
     em = new ExcelManager();
     String password = null;
     int retry = 0;
@@ -58,11 +61,28 @@ public class QueryPanel {
     initialize();
   }
 
+  private void autoShutdown() {
+    Timer timer = new Timer(2000, new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (System.nanoTime() - idleTime > 300000000000L)
+          System.exit(0);
+      }
+    });
+    timer.setRepeats(true);
+    timer.start();
+  }
+
+  private void resetIdleTime() {
+    idleTime = System.nanoTime();
+  }
+
   private Entry<Integer, String> getPassword(String msg) {
     return getPassword(msg, false);
   }
 
   private Entry<Integer, String> getPassword(String msg, boolean enableExit) {
+    resetIdleTime();
+
     JPanel panel = new JPanel();
     JLabel label = new JLabel(msg);
     JPasswordField pass = new JPasswordField(16);
@@ -88,6 +108,8 @@ public class QueryPanel {
   }
 
   private void querying() {
+    resetIdleTime();
+
     String query = textField.getText().trim();
     if (query.isEmpty()) {
       dataModel = initDataModel();
@@ -114,12 +136,23 @@ public class QueryPanel {
             RowSpec.decode("fill:max(264dlu;default):grow"), }));
 
     textField = new JTextField();
-    textField.addKeyListener(new KeyAdapter() {
+    textField.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void changedUpdate(DocumentEvent arg0) {
+        querying();
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent arg0) {
+        querying();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent arg0) {
         querying();
       }
     });
+
     frame.getContentPane().add(textField, "1, 1, center, top");
     textField.setColumns(1024);
 
@@ -137,6 +170,8 @@ public class QueryPanel {
     JMenuItem item = new JMenuItem("Select a folder...");
     item.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
+        resetIdleTime();
+
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.showOpenDialog(frame);
