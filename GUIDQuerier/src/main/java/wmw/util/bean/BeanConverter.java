@@ -34,7 +34,8 @@ public final class BeanConverter {
     for (int i = 0; i < fields.length; i++)
       try {
         fields[i].setAccessible(true);
-        strings[i] = fields[i].get(obj).toString();
+        strings[i] =
+            fields[i].get(obj) == null ? "" : fields[i].get(obj).toString();
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
       } catch (IllegalAccessException e) {
@@ -49,7 +50,7 @@ public final class BeanConverter {
     for (Field field : fields)
       try {
         field.setAccessible(true);
-        strings.add(field.get(obj).toString());
+        strings.add(field.get(obj) == null ? "" : field.get(obj).toString());
       } catch (IllegalArgumentException e) {
         e.printStackTrace();
       } catch (IllegalAccessException e) {
