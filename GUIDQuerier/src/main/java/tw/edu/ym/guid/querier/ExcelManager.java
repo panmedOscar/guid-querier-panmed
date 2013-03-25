@@ -49,11 +49,8 @@ public final class ExcelManager {
   private void updateExcels() {
     Folder folder = Folders.findFirst();
 
-    if (folder != null) {
+    if (folder != null)
       importExcelsInFolder(folder.getPath());
-      System.out.println(folder.getPath());
-    } else
-      System.out.println("No path");
   }
 
   public String[] getHeader() {
@@ -103,13 +100,10 @@ public final class ExcelManager {
       logger.error(e.getMessage());
     }
     recordProcessedFiles(excels.keySet());
-    if (files.isEmpty()) {
+    if (files.isEmpty())
       Folders.removeFolderPath();
-      System.out.println("Empty");
-    } else {
+    else
       Folders.setFolderPath(folder);
-      System.out.println(folder);
-    }
   }
 
   public boolean authenticate(String role, String password) {
