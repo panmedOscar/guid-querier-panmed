@@ -42,6 +42,7 @@ import exceldb.model.Pii;
 public class QueryPanel {
   static final Logger logger = LoggerFactory.getLogger(QueryPanel.class);
 
+  private static final long shutdownTime = 300000000000L; // 5 minutes
   private long idleTime = System.nanoTime();
   private JFrame frame;
   private JTextField textField;
@@ -68,11 +69,10 @@ public class QueryPanel {
   private void autoShutdown() {
     Timer timer = new Timer(2000, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (System.nanoTime() - idleTime > 300000000000L)
+        if (System.nanoTime() - idleTime > shutdownTime)
           System.exit(0);
       }
     });
-    timer.setRepeats(true);
     timer.start();
   }
 
