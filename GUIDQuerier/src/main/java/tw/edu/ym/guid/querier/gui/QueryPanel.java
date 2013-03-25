@@ -141,7 +141,7 @@ public class QueryPanel {
     }
   }
 
-  private void resetPassword() {
+  private void setPassword() {
     int option = -1;
 
     String oldPassword = null;
@@ -233,7 +233,7 @@ public class QueryPanel {
     JMenuItem password = new JMenuItem("Set password");
     password.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        resetPassword();
+        setPassword();
       }
     });
     auth.add(password);
