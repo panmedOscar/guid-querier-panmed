@@ -29,7 +29,6 @@ import tw.edu.ym.guid.querier.db.Piis;
 import wmw.data.embedded.EmbeddedStorage;
 import wmw.data.excel.Excel2Map;
 import wmw.data.zip.EncryptedZip;
-import static wmw.util.bean.BeanConverter.toStringArray;
 import wmw.util.jdbc.Field;
 import exceldb.model.Authentication;
 import exceldb.model.Pii;
@@ -78,15 +77,6 @@ public final class ExcelManager {
     return Piis.all();
   }
 
-  public List<String[]> getAll2ListOfStrAry() {
-    List<String[]> listOfStrAry = new ArrayList<String[]>();
-
-    for (Pii pii : Piis.all())
-      listOfStrAry.add(toStringArray(pii));
-
-    return listOfStrAry;
-  }
-
   public List<Object[]> selectAll() {
     try {
       return es.selectAll();
@@ -107,15 +97,6 @@ public final class ExcelManager {
 
   public List<Pii> query(String... values) {
     return Piis.globalSearch(values);
-  }
-
-  public List<String[]> query2ListOfStrAry(String... values) {
-    List<String[]> listOfStrAry = new ArrayList<String[]>();
-
-    for (Pii pii : Piis.globalSearch(values))
-      listOfStrAry.add(toStringArray(pii));
-
-    return listOfStrAry;
   }
 
   public void importExcelsInFolder(String folder) {

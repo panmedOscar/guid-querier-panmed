@@ -1,5 +1,7 @@
 package tw.edu.ym.guid.querier.gui;
 
+import static wmw.util.bean.BeanConverter.toObjectArray;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -34,6 +36,8 @@ import tw.edu.ym.guid.querier.ExcelManager;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+
+import exceldb.model.Pii;
 
 public class QueryPanel {
   static final Logger logger = LoggerFactory.getLogger(QueryPanel.class);
@@ -116,11 +120,11 @@ public class QueryPanel {
       table.setModel(dataModel);
     } else {
       String[] keywords = query.trim().split("\\s+");
-      List<String[]> result = em.query2ListOfStrAry(keywords);
+      List<Pii> piis = em.query(keywords);
       dataModel = new DefaultTableModel();
       dataModel.setColumnIdentifiers(em.getHeader());
-      for (String[] record : result)
-        dataModel.addRow(record);
+      for (Pii pii : piis)
+        dataModel.addRow(toObjectArray(pii));
       table.setModel(dataModel);
     }
   }
