@@ -125,6 +125,55 @@ public class QueryPanel {
     }
   }
 
+  private void importExcels() {
+    resetIdleTime();
+
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.showOpenDialog(frame);
+    if (chooser.getSelectedFile() != null) {
+      em.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
+      table.setModel(initDataModel());
+    }
+  }
+
+  private void resetPassword() {
+    int option = -1;
+
+    String oldPassword = null;
+    do {
+      Entry<Integer, String> pwd = getPassword("Enter old password:");
+      option = pwd.getKey();
+      oldPassword = pwd.getValue();
+    } while (!(em.authenticate("admin", oldPassword)) && option == 0);
+
+    if (option != 0)
+      return;
+
+    String newPassword = null;
+    do {
+      Entry<Integer, String> pwd =
+          getPassword("Enter new password (least 4 charaters):");
+      option = pwd.getKey();
+      newPassword = pwd.getValue();
+    } while (newPassword.length() < 4 && option == 0);
+
+    if (option != 0)
+      return;
+
+    String verifyPassword = null;
+    do {
+      Entry<Integer, String> pwd = getPassword("Enter new password again:");
+      option = pwd.getKey();
+      verifyPassword = pwd.getValue();
+    } while (!(verifyPassword.equals(newPassword)) && option == 0);
+
+    if (option != 0)
+      return;
+
+    em.setAdminPassword(newPassword);
+  }
+
   private void initialize() {
     frame = new JFrame();
     frame.setBounds(100, 100, 640, 480);
@@ -170,15 +219,7 @@ public class QueryPanel {
     JMenuItem item = new JMenuItem("Select a folder...");
     item.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        resetIdleTime();
-
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.showOpenDialog(frame);
-        if (chooser.getSelectedFile() != null) {
-          em.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
-          table.setModel(initDataModel());
-        }
+        importExcels();
       }
     });
     menu.add(item);
@@ -188,41 +229,8 @@ public class QueryPanel {
     JMenuItem password = new JMenuItem("Set password");
     password.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        int option = -1;
-        String oldPassword = null;
-        do {
-          Entry<Integer, String> pwd = getPassword("Enter old password:");
-          option = pwd.getKey();
-          oldPassword = pwd.getValue();
-        } while (!(em.authenticate("admin", oldPassword)) && option == 0);
-
-        if (option != 0)
-          return;
-
-        String newPassword = null;
-        do {
-          Entry<Integer, String> pwd =
-              getPassword("Enter new password (least 4 charaters):");
-          option = pwd.getKey();
-          newPassword = pwd.getValue();
-        } while (newPassword.length() < 4 && option == 0);
-
-        if (option != 0)
-          return;
-
-        String verifyPassword = null;
-        do {
-          Entry<Integer, String> pwd = getPassword("Enter new password again:");
-          option = pwd.getKey();
-          verifyPassword = pwd.getValue();
-        } while (!(verifyPassword.equals(newPassword)) && option == 0);
-
-        if (option != 0)
-          return;
-
-        em.setAdminPassword(newPassword);
+        resetPassword();
       }
-
     });
     auth.add(password);
     menuBar.add(auth);

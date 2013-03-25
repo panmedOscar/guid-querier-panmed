@@ -29,9 +29,31 @@ import tw.edu.ym.guid.querier.db.Piis;
 import wmw.data.embedded.EmbeddedStorage;
 import wmw.data.excel.Excel2Map;
 import wmw.data.zip.EncryptedZip;
+import static wmw.util.bean.BeanConverter.toStringArray;
+import wmw.util.jdbc.Field;
 import exceldb.model.Authentication;
 import exceldb.model.Pii;
 
+/**
+ * 
+ * @author Wei-Ming Wu
+ * 
+ * 
+ *         Copyright 2013 Wei-Ming Wu
+ * 
+ *         Licensed under the Apache License, Version 2.0 (the "License"); you
+ *         may not use this file except in compliance with the License. You may
+ *         obtain a copy of the License at
+ * 
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *         implied. See the License for the specific language governing
+ *         permissions and limitations under the License.
+ * 
+ */
 public final class ExcelManager {
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
   private static final String ZIP_PASSWORD = "H9z6gaYajuSA";
@@ -60,10 +82,7 @@ public final class ExcelManager {
     List<String[]> listOfStrAry = new ArrayList<String[]>();
 
     for (Pii pii : Piis.all())
-      listOfStrAry.add(new String[] { pii.getLocalId(), pii.getGuid(),
-          pii.getMrn(), pii.get身份證字號(), pii.get姓氏(), pii.get名字(), pii.get出生月(),
-          pii.get出生日(), pii.get出生年(), pii.get聯絡電話(), pii.get性別(),
-          pii.get收案醫師(), pii.get醫院名稱() });
+      listOfStrAry.add(toStringArray(pii));
 
     return listOfStrAry;
   }
@@ -94,10 +113,7 @@ public final class ExcelManager {
     List<String[]> listOfStrAry = new ArrayList<String[]>();
 
     for (Pii pii : Piis.globalSearch(values))
-      listOfStrAry.add(new String[] { pii.getLocalId(), pii.getGuid(),
-          pii.getMrn(), pii.get身份證字號(), pii.get姓氏(), pii.get名字(), pii.get出生月(),
-          pii.get出生日(), pii.get出生年(), pii.get聯絡電話(), pii.get性別(),
-          pii.get收案醫師(), pii.get醫院名稱() });
+      listOfStrAry.add(toStringArray(pii));
 
     return listOfStrAry;
   }
@@ -180,24 +196,16 @@ public final class ExcelManager {
   @SuppressWarnings("unchecked")
   private void initDatabase() throws SQLException {
     if (!(es.hasTable("pii"))) {
-      es.createTable("pii", Varchar("Local_ID"), Varchar("GUID"),
-          Varchar("MRN"), Varchar("身份證字號"), Varchar("姓氏"), Varchar("名字"),
-          Varchar("出生月"), Varchar("出生日"), Varchar("出生年"), Varchar("聯絡電話"),
-          Varchar("性別"), Varchar("收案醫師"), Varchar("醫院名稱"));
-      es.unique("pii", "GUID");
-      es.index("pii", "Local_ID");
-      es.index("pii", "GUID");
-      es.index("pii", "MRN");
-      es.index("pii", "身份證字號");
-      es.index("pii", "姓氏");
-      es.index("pii", "名字");
-      es.index("pii", "出生月");
-      es.index("pii", "出生日");
-      es.index("pii", "出生年");
-      es.index("pii", "聯絡電話");
-      es.index("pii", "性別");
-      es.index("pii", "收案醫師");
-      es.index("pii", "醫院名稱");
+      Field[] fields = new Field[ExcelField.values().length];
+      for (int i = 0; i < ExcelField.values().length; i++)
+        fields[i] = Varchar(ExcelField.values()[i].toString());
+      es.createTable("pii", fields);
+
+      for (ExcelField ef : ExcelField.values()) {
+        es.index("pii", ef.toString());
+        if (ef.isUnique())
+          es.unique("pii", ef.toString());
+      }
     }
     if (!(es.hasTable("history"))) {
       es.createTable("history", Varchar("file_name"));
