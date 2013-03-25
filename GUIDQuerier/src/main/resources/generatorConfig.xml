@@ -39,5 +39,6 @@
 		<table tableName="pii" domainObjectName="Pii" />
 		<table tableName="history" domainObjectName="History" />
 		<table tableName="authentication" domainObjectName="Authentication" />
+		<table tableName="folder" domainObjectName="Folder" />
 	</context>
 </generatorConfiguration>

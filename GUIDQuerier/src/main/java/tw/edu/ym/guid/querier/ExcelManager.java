@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.db.Authentications;
+import tw.edu.ym.guid.querier.db.Folders;
 import tw.edu.ym.guid.querier.db.Histories;
 import tw.edu.ym.guid.querier.db.Piis;
 import wmw.data.embedded.EmbeddedStorage;
@@ -31,6 +32,7 @@ import wmw.data.excel.Excel2Map;
 import wmw.data.zip.EncryptedZip;
 import wmw.util.jdbc.Field;
 import exceldb.model.Authentication;
+import exceldb.model.Folder;
 import exceldb.model.Pii;
 
 public final class ExcelManager {
@@ -41,6 +43,17 @@ public final class ExcelManager {
   public ExcelManager() throws SQLException, ClassNotFoundException {
     es = new EmbeddedStorage("exceldb");
     initDatabase();
+    updateExcels();
+  }
+
+  private void updateExcels() {
+    Folder folder = Folders.findFirst();
+
+    if (folder != null) {
+      importExcelsInFolder(folder.getPath());
+      System.out.println(folder.getPath());
+    } else
+      System.out.println("No path");
   }
 
   public String[] getHeader() {
@@ -90,6 +103,13 @@ public final class ExcelManager {
       logger.error(e.getMessage());
     }
     recordProcessedFiles(excels.keySet());
+    if (files.isEmpty()) {
+      Folders.removeFolderPath();
+      System.out.println("Empty");
+    } else {
+      Folders.setFolderPath(folder);
+      System.out.println(folder);
+    }
   }
 
   public boolean authenticate(String role, String password) {
@@ -179,6 +199,9 @@ public final class ExcelManager {
       defaultPassword.put("role", "admin");
       defaultPassword.put("password", "0000");
       es.insertRecords("authentication", defaultPassword);
+    }
+    if (!(es.hasTable("folder"))) {
+      es.createTable("folder", Varchar("path"));
     }
   }
 

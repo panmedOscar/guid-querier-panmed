@@ -18,5 +18,6 @@
 		<mapper resource="exceldb/dao/PiiMapper.xml" />
 		<mapper resource="exceldb/dao/HistoryMapper.xml" />
 		<mapper resource="exceldb/dao/AuthenticationMapper.xml" />
+		<mapper resource="exceldb/dao/FolderMapper.xml" />
 	</mappers>
 </configuration>
