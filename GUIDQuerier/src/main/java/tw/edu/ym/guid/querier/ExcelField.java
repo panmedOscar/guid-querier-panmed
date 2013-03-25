@@ -14,10 +14,5 @@ public enum ExcelField {
   public boolean isUnique() {
     return unique;
   }
-  
-  public static void main(String[] args) {
-    for(ExcelField ef : ExcelField.values())
-      System.out.println(ef);
-  }
 
 }
