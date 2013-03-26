@@ -22,16 +22,33 @@ public final class Piis {
 
   private Piis() {}
 
+  public static int count() {
+    int count = 0;
+
+    try {
+      sqlSession = sqlMapper.openSession();
+      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
+
+      PiiExample piiEx = new PiiExample();
+      piiEx.or().andGuidIsNotNull();
+      count = piiMap.countByExample(piiEx);
+    } finally {
+      sqlSession.close();
+    }
+
+    return count;
+  }
+
   public static List<Pii> all() {
     List<Pii> piis = Collections.emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();
-      PiiMapper historyMap = sqlSession.getMapper(PiiMapper.class);
+      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
 
       PiiExample piiEx = new PiiExample();
       piiEx.or().andGuidIsNotNull();
-      piis = historyMap.selectByExample(piiEx);
+      piis = piiMap.selectByExample(piiEx);
     } finally {
       sqlSession.close();
     }

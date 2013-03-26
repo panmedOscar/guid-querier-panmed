@@ -3,6 +3,7 @@ package tw.edu.ym.guid.querier.gui;
 import static wmw.util.bean.BeanConverter.toObjectArray;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +12,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,6 +25,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -51,6 +54,8 @@ public class QueryPanel {
   private JMenuBar menuBar;
   private final ExcelManager em;
   private DefaultTableModel dataModel;
+  private JPanel statusPanel;
+  private JLabel statusLabel;
 
   public QueryPanel() throws SQLException, ClassNotFoundException {
     autoShutdown();
@@ -64,6 +69,10 @@ public class QueryPanel {
       retry++;
     } while (!(em.authenticate("admin", password)));
     initialize();
+  }
+
+  private void setTotalRecords() {
+    statusLabel.setText(" Total Records: " + em.total());
   }
 
   private void autoShutdown() {
@@ -108,6 +117,7 @@ public class QueryPanel {
     dataModel.setColumnIdentifiers(em.getHeader());
     for (Object[] record : em.selectAll(100))
       dataModel.addRow(record);
+    setTotalRecords();
     return dataModel;
   }
 
@@ -180,13 +190,23 @@ public class QueryPanel {
 
   private void initialize() {
     frame = new JFrame();
+    frame.setTitle("GUID Querier");
     frame.setBounds(100, 100, 640, 480);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setLayout(
         new FormLayout(new ColumnSpec[] { ColumnSpec.decode("640px:grow"),
             ColumnSpec.decode("1px"), }, new RowSpec[] {
             RowSpec.decode("30px"),
-            RowSpec.decode("fill:max(264dlu;default):grow"), }));
+            RowSpec.decode("fill:max(240dlu;default):grow"),
+            RowSpec.decode("bottom:default"), }));
+
+    statusPanel = new JPanel();
+    frame.getContentPane().add(statusPanel, "1, 3, fill, bottom");
+    statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 16));
+    statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+    statusLabel = new JLabel(" Total Records: 0");
+    statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+    statusPanel.add(statusLabel);
 
     textField = new JTextField();
     textField.getDocument().addDocumentListener(new DocumentListener() {
@@ -206,8 +226,7 @@ public class QueryPanel {
       }
     });
 
-    frame.getContentPane().add(textField, "1, 1, center, top");
-    textField.setColumns(1024);
+    frame.getContentPane().add(textField, "1, 1, fill, top");
 
     scrollPane = new JScrollPane();
     frame.getContentPane().add(scrollPane, "1, 2, fill, fill");

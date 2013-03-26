@@ -46,6 +46,10 @@ public final class ExcelManager {
     updateExcels();
   }
 
+  public int total() {
+    return Piis.count();
+  }
+
   private void updateExcels() {
     Folder folder = Folders.findFirst();
 
