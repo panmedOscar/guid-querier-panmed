@@ -180,11 +180,10 @@ public final class ExcelManager {
         fields[i] = Varchar(ExcelField.values()[i].toString());
       es.createTable("pii", fields);
 
-      for (ExcelField ef : ExcelField.values()) {
+      for (ExcelField ef : ExcelField.values())
         es.index("pii", ef.toString());
-        if (ef.isUnique())
-          es.unique("pii", ef.toString());
-      }
+
+      es.unique("pii", ExcelField.allFields());
     }
     if (!(es.hasTable("history"))) {
       es.createTable("history", Varchar("file_name"));

@@ -128,12 +128,18 @@ public final class JDBCHelper {
     }
   }
 
-  public static void unique(Connection c, String table, String column)
+  public static void unique(Connection c, String table, List<String> columns)
       throws SQLException {
-    String unique = "ALTER TABLE " + table + " ADD UNIQUE (" + column + ")";
+    String fields = columns.toString().replace("[", "(").replace("]", ")");
+    String unique = "ALTER TABLE " + table + " ADD UNIQUE " + fields;
     Statement stmt = c.createStatement();
     stmt.executeUpdate(unique);
     stmt.close();
+  }
+
+  public static void unique(Connection c, String table, String... columns)
+      throws SQLException {
+    unique(c, table, Arrays.asList(columns));
   }
 
   private static String buildSQLInterpolations(int times) {
