@@ -60,7 +60,7 @@ public final class ExcelManager {
   public String[] getHeader() {
     List<String> header = Collections.emptyList();
     try {
-      header = es.getColumns("pii");
+      header = es.getColumns(ExcelField.sheetName());
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
@@ -131,7 +131,7 @@ public final class ExcelManager {
         wb = WorkbookFactory.create(is);
         Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
         for (List<Map<String, String>> list : maps.values())
-          es.safeInsertRecords("pii", list);
+          es.safeInsertRecords(ExcelField.sheetName(), list);
       } catch (InvalidFormatException e) {
         logger.error(e.getMessage());
       } catch (IOException e) {
@@ -174,16 +174,20 @@ public final class ExcelManager {
 
   @SuppressWarnings("unchecked")
   private void initDatabase() throws SQLException {
-    if (!(es.hasTable("pii"))) {
+    if (!(es.hasTable(ExcelField.sheetName()))) {
       Field[] fields = new Field[ExcelField.values().length];
       for (int i = 0; i < ExcelField.values().length; i++)
         fields[i] = Varchar(ExcelField.values()[i].toString());
-      es.createTable("pii", fields);
+      es.createTable(ExcelField.sheetName(), fields);
 
-      for (ExcelField ef : ExcelField.values())
-        es.index("pii", ef.toString());
+      for (ExcelField ef : ExcelField.values()) {
+        es.index(ExcelField.sheetName(), ef.toString());
+        if (ef.isUnique())
+          es.unique(ExcelField.sheetName(), ef.toString());
+      }
 
-      es.unique("pii", ExcelField.allFields());
+      for (List<String> efs : ExcelField.multiColumnsIndexes())
+        es.unique(ExcelField.sheetName(), efs);
     }
     if (!(es.hasTable("history"))) {
       es.createTable("history", Varchar("file_name"));

@@ -73,6 +73,10 @@ public final class EmbeddedStorage {
     JDBCHelper.safeInsertRecords(c, table, records);
   }
 
+  public void unique(String table, List<String> columns) throws SQLException {
+    JDBCHelper.unique(c, table, columns);
+  }
+
   public void unique(String table, String... columns) throws SQLException {
     JDBCHelper.unique(c, table, columns);
   }

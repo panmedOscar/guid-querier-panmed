@@ -1034,73 +1034,73 @@ public class PiiExample {
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱IsNull() {
-            addCriterion("醫院名稱 is null");
+        public Criteria and收案醫院名稱IsNull() {
+            addCriterion("收案醫院名稱 is null");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱IsNotNull() {
-            addCriterion("醫院名稱 is not null");
+        public Criteria and收案醫院名稱IsNotNull() {
+            addCriterion("收案醫院名稱 is not null");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱EqualTo(String value) {
-            addCriterion("醫院名稱 =", value, "醫院名稱");
+        public Criteria and收案醫院名稱EqualTo(String value) {
+            addCriterion("收案醫院名稱 =", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱NotEqualTo(String value) {
-            addCriterion("醫院名稱 <>", value, "醫院名稱");
+        public Criteria and收案醫院名稱NotEqualTo(String value) {
+            addCriterion("收案醫院名稱 <>", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱GreaterThan(String value) {
-            addCriterion("醫院名稱 >", value, "醫院名稱");
+        public Criteria and收案醫院名稱GreaterThan(String value) {
+            addCriterion("收案醫院名稱 >", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱GreaterThanOrEqualTo(String value) {
-            addCriterion("醫院名稱 >=", value, "醫院名稱");
+        public Criteria and收案醫院名稱GreaterThanOrEqualTo(String value) {
+            addCriterion("收案醫院名稱 >=", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱LessThan(String value) {
-            addCriterion("醫院名稱 <", value, "醫院名稱");
+        public Criteria and收案醫院名稱LessThan(String value) {
+            addCriterion("收案醫院名稱 <", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱LessThanOrEqualTo(String value) {
-            addCriterion("醫院名稱 <=", value, "醫院名稱");
+        public Criteria and收案醫院名稱LessThanOrEqualTo(String value) {
+            addCriterion("收案醫院名稱 <=", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱Like(String value) {
-            addCriterion("醫院名稱 like", value, "醫院名稱");
+        public Criteria and收案醫院名稱Like(String value) {
+            addCriterion("收案醫院名稱 like", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱NotLike(String value) {
-            addCriterion("醫院名稱 not like", value, "醫院名稱");
+        public Criteria and收案醫院名稱NotLike(String value) {
+            addCriterion("收案醫院名稱 not like", value, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱In(List<String> values) {
-            addCriterion("醫院名稱 in", values, "醫院名稱");
+        public Criteria and收案醫院名稱In(List<String> values) {
+            addCriterion("收案醫院名稱 in", values, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱NotIn(List<String> values) {
-            addCriterion("醫院名稱 not in", values, "醫院名稱");
+        public Criteria and收案醫院名稱NotIn(List<String> values) {
+            addCriterion("收案醫院名稱 not in", values, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱Between(String value1, String value2) {
-            addCriterion("醫院名稱 between", value1, value2, "醫院名稱");
+        public Criteria and收案醫院名稱Between(String value1, String value2) {
+            addCriterion("收案醫院名稱 between", value1, value2, "收案醫院名稱");
             return (Criteria) this;
         }
 
-        public Criteria and醫院名稱NotBetween(String value1, String value2) {
-            addCriterion("醫院名稱 not between", value1, value2, "醫院名稱");
+        public Criteria and收案醫院名稱NotBetween(String value1, String value2) {
+            addCriterion("收案醫院名稱 not between", value1, value2, "收案醫院名稱");
             return (Criteria) this;
         }
     }

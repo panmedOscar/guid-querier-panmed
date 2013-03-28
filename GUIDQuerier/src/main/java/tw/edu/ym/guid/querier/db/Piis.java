@@ -83,7 +83,7 @@ public final class Piis {
           piiEx.or().and聯絡電話EqualTo(value);
           piiEx.or().and性別EqualTo(value);
           piiEx.or().and收案醫師EqualTo(value);
-          piiEx.or().and醫院名稱EqualTo(value);
+          piiEx.or().and收案醫院名稱EqualTo(value);
         } else {
           piiEx.or().andLocalIdLike("%" + value + "%");
           piiEx.or().andGuidLike("%" + value + "%");
@@ -97,7 +97,7 @@ public final class Piis {
           piiEx.or().and聯絡電話Like("%" + value + "%");
           piiEx.or().and性別Like("%" + value + "%");
           piiEx.or().and收案醫師Like("%" + value + "%");
-          piiEx.or().and醫院名稱Like("%" + value + "%");
+          piiEx.or().and收案醫院名稱Like("%" + value + "%");
         }
       }
 
