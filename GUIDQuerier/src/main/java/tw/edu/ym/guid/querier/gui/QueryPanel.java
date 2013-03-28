@@ -115,7 +115,7 @@ public class QueryPanel {
   private DefaultTableModel initDataModel() {
     dataModel = new DefaultTableModel();
     dataModel.setColumnIdentifiers(em.getHeader());
-    for (Object[] record : em.selectAll(100))
+    for (Object[] record : em.selectAll(500))
       dataModel.addRow(record);
     setTotalRecords();
     return dataModel;
