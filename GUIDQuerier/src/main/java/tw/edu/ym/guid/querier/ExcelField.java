@@ -24,8 +24,7 @@ public enum ExcelField {
 
   public static List<List<String>> multiColumnsIndexes() {
     ExcelField[][] multiColumnsIndexes =
-        { { 編碼日期, GUID, MRN, 身份證字號, 姓氏, 名字, 出生月, 出生日, 出生年, 聯絡電話, 性別, 收案醫師,
-            收案醫院名稱 } };
+        { { GUID, MRN, 身份證字號, 姓氏, 名字, 出生月, 出生日, 出生年, 聯絡電話, 性別, 收案醫師, 收案醫院名稱 } };
     List<List<String>> list = new ArrayList<List<String>>();
     for (ExcelField[] multiColumnsIndex : multiColumnsIndexes) {
       List<String> fields = new ArrayList<String>();
