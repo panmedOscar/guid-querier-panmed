@@ -39,6 +39,7 @@ public final class ExcelManager {
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
   private static final String ZIP_PASSWORD =
       "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
+  private static final String DEFAULT_PASSWORD = "ERY!VB%";
   private final EmbeddedStorage es;
 
   public ExcelManager() throws SQLException, ClassNotFoundException {
@@ -199,7 +200,7 @@ public final class ExcelManager {
       es.createTable("authentication", Varchar("role"), Varchar("password"));
       Map<String, String> defaultPassword = new HashMap<String, String>();
       defaultPassword.put("role", "admin");
-      defaultPassword.put("password", "0000");
+      defaultPassword.put("password", DEFAULT_PASSWORD);
       es.insertRecords("authentication", defaultPassword);
     }
     if (!(es.hasTable("folder"))) {
