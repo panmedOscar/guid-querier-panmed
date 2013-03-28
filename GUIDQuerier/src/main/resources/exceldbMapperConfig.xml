@@ -9,8 +9,9 @@
 			<dataSource type="POOLED">
 				<property name="driver" value="org.h2.Driver" />
 				<property name="url" value="jdbc:h2:exceldb" />
-				<property name="username" value="sa" />
-				<property name="password" value="bD@F7$6iv*2#%)E}g" />
+				<property name="username" value="sa_pro" />
+				<property name="password"
+					value="bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{" />
 			</dataSource>
 		</environment>
 	</environments>

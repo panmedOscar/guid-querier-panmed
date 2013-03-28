@@ -71,7 +71,7 @@ public final class Piis {
       for (String value : values) {
         value = value.trim();
         if (value.getBytes(Charset.forName("UTF-8")).length < 3) {
-          piiEx.or().andLocalIdEqualTo(value);
+          piiEx.or().and編碼日期EqualTo(value);
           piiEx.or().andGuidEqualTo(value);
           piiEx.or().andMrnEqualTo(value);
           piiEx.or().and身份證字號EqualTo(value);
@@ -85,7 +85,7 @@ public final class Piis {
           piiEx.or().and收案醫師EqualTo(value);
           piiEx.or().and收案醫院名稱EqualTo(value);
         } else {
-          piiEx.or().andLocalIdLike("%" + value + "%");
+          piiEx.or().and編碼日期Like("%" + value + "%");
           piiEx.or().andGuidLike("%" + value + "%");
           piiEx.or().andMrnLike("%" + value + "%");
           piiEx.or().and身份證字號Like("%" + value + "%");

@@ -34,7 +34,9 @@ public final class EmbeddedStorage {
 
   public EmbeddedStorage(String db) throws SQLException, ClassNotFoundException {
     Class.forName("org.h2.Driver");
-    c = DriverManager.getConnection("jdbc:h2:" + db, "sa", "bD@F7$6iv*2#%)E}g");
+    c =
+        DriverManager.getConnection("jdbc:h2:" + db, "sa_pro",
+            "bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{");
   }
 
   public List<String> getTables() throws SQLException {

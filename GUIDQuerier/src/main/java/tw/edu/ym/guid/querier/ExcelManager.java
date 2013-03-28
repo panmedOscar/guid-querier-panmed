@@ -37,7 +37,8 @@ import exceldb.model.Pii;
 
 public final class ExcelManager {
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
-  private static final String ZIP_PASSWORD = "H9z6gaYajuSA";
+  private static final String ZIP_PASSWORD =
+      "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
   private final EmbeddedStorage es;
 
   public ExcelManager() throws SQLException, ClassNotFoundException {

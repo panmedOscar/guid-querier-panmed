@@ -194,73 +194,73 @@ public class PiiExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        public Criteria andLocalIdIsNull() {
-            addCriterion("LOCAL_ID is null");
+        public Criteria and編碼日期IsNull() {
+            addCriterion("編碼日期 is null");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdIsNotNull() {
-            addCriterion("LOCAL_ID is not null");
+        public Criteria and編碼日期IsNotNull() {
+            addCriterion("編碼日期 is not null");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdEqualTo(String value) {
-            addCriterion("LOCAL_ID =", value, "localId");
+        public Criteria and編碼日期EqualTo(String value) {
+            addCriterion("編碼日期 =", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdNotEqualTo(String value) {
-            addCriterion("LOCAL_ID <>", value, "localId");
+        public Criteria and編碼日期NotEqualTo(String value) {
+            addCriterion("編碼日期 <>", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdGreaterThan(String value) {
-            addCriterion("LOCAL_ID >", value, "localId");
+        public Criteria and編碼日期GreaterThan(String value) {
+            addCriterion("編碼日期 >", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdGreaterThanOrEqualTo(String value) {
-            addCriterion("LOCAL_ID >=", value, "localId");
+        public Criteria and編碼日期GreaterThanOrEqualTo(String value) {
+            addCriterion("編碼日期 >=", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdLessThan(String value) {
-            addCriterion("LOCAL_ID <", value, "localId");
+        public Criteria and編碼日期LessThan(String value) {
+            addCriterion("編碼日期 <", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdLessThanOrEqualTo(String value) {
-            addCriterion("LOCAL_ID <=", value, "localId");
+        public Criteria and編碼日期LessThanOrEqualTo(String value) {
+            addCriterion("編碼日期 <=", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdLike(String value) {
-            addCriterion("LOCAL_ID like", value, "localId");
+        public Criteria and編碼日期Like(String value) {
+            addCriterion("編碼日期 like", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdNotLike(String value) {
-            addCriterion("LOCAL_ID not like", value, "localId");
+        public Criteria and編碼日期NotLike(String value) {
+            addCriterion("編碼日期 not like", value, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdIn(List<String> values) {
-            addCriterion("LOCAL_ID in", values, "localId");
+        public Criteria and編碼日期In(List<String> values) {
+            addCriterion("編碼日期 in", values, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdNotIn(List<String> values) {
-            addCriterion("LOCAL_ID not in", values, "localId");
+        public Criteria and編碼日期NotIn(List<String> values) {
+            addCriterion("編碼日期 not in", values, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdBetween(String value1, String value2) {
-            addCriterion("LOCAL_ID between", value1, value2, "localId");
+        public Criteria and編碼日期Between(String value1, String value2) {
+            addCriterion("編碼日期 between", value1, value2, "編碼日期");
             return (Criteria) this;
         }
 
-        public Criteria andLocalIdNotBetween(String value1, String value2) {
-            addCriterion("LOCAL_ID not between", value1, value2, "localId");
+        public Criteria and編碼日期NotBetween(String value1, String value2) {
+            addCriterion("編碼日期 not between", value1, value2, "編碼日期");
             return (Criteria) this;
         }
 
