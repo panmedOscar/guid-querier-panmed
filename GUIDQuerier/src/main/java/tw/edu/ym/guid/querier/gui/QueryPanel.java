@@ -3,7 +3,6 @@ package tw.edu.ym.guid.querier.gui;
 import static wmw.util.bean.BeanConverter.toObjectArray;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +11,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,7 +24,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -54,8 +52,8 @@ public class QueryPanel {
   private JMenuBar menuBar;
   private final ExcelManager em;
   private DefaultTableModel dataModel;
-  private JPanel statusPanel;
-  private JLabel statusLabel;
+  // private JPanel statusPanel;
+  private JMenu totalRecords;
 
   public QueryPanel() throws SQLException, ClassNotFoundException {
     autoShutdown();
@@ -72,7 +70,7 @@ public class QueryPanel {
   }
 
   private void setTotalRecords() {
-    statusLabel.setText(" Total Records: " + em.total());
+    totalRecords.setText(" Total Records: " + em.total());
   }
 
   private void autoShutdown() {
@@ -200,13 +198,40 @@ public class QueryPanel {
             RowSpec.decode("fill:max(240dlu;default):grow"),
             RowSpec.decode("bottom:default"), }));
 
-    statusPanel = new JPanel();
-    frame.getContentPane().add(statusPanel, "1, 3, fill, bottom");
-    statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 16));
-    statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
-    statusLabel = new JLabel(" Total Records: 0");
-    statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-    statusPanel.add(statusLabel);
+    menuBar = new JMenuBar();
+    JMenu menu = new JMenu("Import Excels");
+    JMenuItem item = new JMenuItem("Select a folder...");
+    item.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        importExcels();
+      }
+    });
+    menu.add(item);
+    menuBar.add(menu);
+
+    JMenu auth = new JMenu("Authentication");
+    JMenuItem password = new JMenuItem("Change password");
+    password.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        setPassword();
+      }
+    });
+    auth.add(password);
+    menuBar.add(auth);
+
+    menuBar.add(Box.createHorizontalGlue());
+    totalRecords = new JMenu("Total Records: 0");
+    menuBar.add(totalRecords);
+
+    /*
+     * statusPanel = new JPanel(); frame.getContentPane().add(statusPanel,
+     * "1, 3, fill, bottom"); statusPanel.setPreferredSize(new
+     * Dimension(frame.getWidth(), 16)); statusPanel.setLayout(new
+     * BoxLayout(statusPanel, BoxLayout.X_AXIS)); statusLabel = new
+     * JLabel(" Total Records: 0");
+     * statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+     * statusPanel.add(statusLabel);
+     */
 
     textField = new JTextField();
     textField.getDocument().addDocumentListener(new DocumentListener() {
@@ -236,27 +261,6 @@ public class QueryPanel {
 
     scrollPane.setViewportView(table);
     table.setModel(initDataModel());
-
-    menuBar = new JMenuBar();
-    JMenu menu = new JMenu("Import Excels");
-    JMenuItem item = new JMenuItem("Select a folder...");
-    item.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-        importExcels();
-      }
-    });
-    menu.add(item);
-    menuBar.add(menu);
-
-    JMenu auth = new JMenu("Authentication");
-    JMenuItem password = new JMenuItem("Set password");
-    password.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-        setPassword();
-      }
-    });
-    auth.add(password);
-    menuBar.add(auth);
 
     frame.setJMenuBar(menuBar);
   }
