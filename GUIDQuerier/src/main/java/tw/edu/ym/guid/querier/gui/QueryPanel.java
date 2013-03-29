@@ -195,8 +195,7 @@ public class QueryPanel {
         new FormLayout(new ColumnSpec[] { ColumnSpec.decode("640px:grow"),
             ColumnSpec.decode("1px"), }, new RowSpec[] {
             RowSpec.decode("30px"),
-            RowSpec.decode("fill:max(240dlu;default):grow"),
-            RowSpec.decode("bottom:default"), }));
+            RowSpec.decode("fill:max(240dlu;default):grow"), }));
 
     menuBar = new JMenuBar();
     JMenu menu = new JMenu("Import Excels");
