@@ -82,7 +82,7 @@ public final class JDBCHelper {
       PreparedStatement prepStmt = c.prepareStatement(insertRecords);
       int setIndex = 1;
       for (String column : record.keySet()) {
-        prepStmt.setObject(setIndex, record.get(column));
+        prepStmt.setObject(setIndex, record.get(column).trim());
         setIndex++;
       }
       prepStmt.executeUpdate();
@@ -99,7 +99,7 @@ public final class JDBCHelper {
       PreparedStatement prepStmt = c.prepareStatement(insertRecords);
       int setIndex = 1;
       for (String column : record.keySet()) {
-        prepStmt.setObject(setIndex, record.get(column));
+        prepStmt.setObject(setIndex, record.get(column).trim());
         setIndex++;
       }
       prepStmt.executeUpdate();
@@ -117,7 +117,7 @@ public final class JDBCHelper {
         PreparedStatement prepStmt = c.prepareStatement(insertRecords);
         int setIndex = 1;
         for (String column : record.keySet()) {
-          prepStmt.setObject(setIndex, record.get(column));
+          prepStmt.setObject(setIndex, record.get(column).trim());
           setIndex++;
         }
         prepStmt.executeUpdate();
