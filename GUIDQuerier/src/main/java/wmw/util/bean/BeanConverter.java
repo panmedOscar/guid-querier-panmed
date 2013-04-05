@@ -1,7 +1,8 @@
 package wmw.util.bean;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public final class BeanConverter {
 
   public static List<String> toStringList(Object obj) {
     Field[] fields = obj.getClass().getDeclaredFields();
-    List<String> strings = new ArrayList<String>();
+    List<String> strings = newArrayList();
     for (Field field : fields)
       try {
         field.setAccessible(true);
@@ -76,7 +77,7 @@ public final class BeanConverter {
 
   public static List<Object> toObjectList(Object obj) {
     Field[] fields = obj.getClass().getDeclaredFields();
-    List<Object> objects = new ArrayList<Object>();
+    List<Object> objects = newArrayList();
     for (Field field : fields)
       try {
         field.setAccessible(true);

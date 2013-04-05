@@ -1,5 +1,7 @@
 package tw.edu.ym.guid.querier;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 import static wmw.util.jdbc.Field.Varchar;
 
@@ -7,10 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,7 +96,7 @@ public final class ExcelManager {
   }
 
   public void importExcelsInFolder(String folder) {
-    List<File> files = retrieveAllFiles(folder);
+    List<File> files = retrieveAllFiles(folder, "zip");
     List<EncryptedZip> encryptedZips = getEncryptedZips(files);
     Map<String, InputStream> excels = Collections.emptyMap();
     try {
@@ -146,14 +146,14 @@ public final class ExcelManager {
 
   private Map<String, InputStream> getUnprocessedExcels(
       List<EncryptedZip> encryptedZips) throws ZipException {
-    List<String> allFiles = new ArrayList<String>();
+    List<String> allFiles = newArrayList();
     for (EncryptedZip ez : encryptedZips)
       for (String fileName : ez.getAllFileNames())
         if (fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
           allFiles.add(fileName);
 
     Set<String> unprocessedFiles = Histories.filterUnprocessedFiles(allFiles);
-    Map<String, InputStream> excels = new HashMap<String, InputStream>();
+    Map<String, InputStream> excels = newHashMap();
     for (EncryptedZip ez : encryptedZips)
       for (String fileName : ez.getAllFileNames())
         if (unprocessedFiles.contains(fileName))
@@ -162,7 +162,7 @@ public final class ExcelManager {
   }
 
   private List<EncryptedZip> getEncryptedZips(List<File> files) {
-    List<EncryptedZip> encryptedZips = new ArrayList<EncryptedZip>();
+    List<EncryptedZip> encryptedZips = newArrayList();
     for (File file : files)
       if (file.getName().matches("^.*\\.zip$"))
         try {
@@ -174,7 +174,6 @@ public final class ExcelManager {
     return encryptedZips;
   }
 
-  @SuppressWarnings("unchecked")
   private void initDatabase() throws SQLException {
     if (!(es.hasTable(ExcelField.sheetName()))) {
       Field[] fields = new Field[ExcelField.values().length];
@@ -191,21 +190,30 @@ public final class ExcelManager {
       for (List<String> efs : ExcelField.multiColumnsIndexes())
         es.unique(ExcelField.sheetName(), efs);
     }
-    if (!(es.hasTable("history"))) {
-      es.createTable("history", Varchar("file_name"));
-      es.unique("history", "file_name");
-      es.index("history", "file_name");
-    }
-    if (!(es.hasTable("authentication"))) {
-      es.createTable("authentication", Varchar("role"), Varchar("password"));
-      Map<String, String> defaultPassword = new HashMap<String, String>();
-      defaultPassword.put("role", "admin");
-      defaultPassword.put("password", DEFAULT_PASSWORD);
-      es.insertRecords("authentication", defaultPassword);
-    }
-    if (!(es.hasTable("folder"))) {
+
+    if (!(es.hasTable("history")))
+      createHistoryTable();
+
+    if (!(es.hasTable("authentication")))
+      createAuthenticationTable();
+
+    if (!(es.hasTable("folder")))
       es.createTable("folder", Varchar("path"));
-    }
+  }
+
+  private void createHistoryTable() throws SQLException {
+    es.createTable("history", Varchar("file_name"));
+    es.unique("history", "file_name");
+    es.index("history", "file_name");
+  }
+
+  @SuppressWarnings("unchecked")
+  private void createAuthenticationTable() throws SQLException {
+    es.createTable("authentication", Varchar("role"), Varchar("password"));
+    Map<String, String> defaultPassword = newHashMap();
+    defaultPassword.put("role", "admin");
+    defaultPassword.put("password", DEFAULT_PASSWORD);
+    es.insertRecords("authentication", defaultPassword);
   }
 
 }

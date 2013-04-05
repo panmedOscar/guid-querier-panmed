@@ -12,6 +12,8 @@ import static wmw.util.jdbc.DataType.TIME;
 import static wmw.util.jdbc.DataType.TIMESTAMP;
 import static wmw.util.jdbc.DataType.VARCHAR;
 
+import com.google.common.base.Strings;
+
 /**
  * 
  * @author Wei-Ming Wu
@@ -97,7 +99,7 @@ public final class Field {
   }
 
   private static void validateString(String str) {
-    if (str == null || "".equals(str.trim()))
+    if (Strings.isNullOrEmpty(str))
       throw new IllegalArgumentException("Input can't be null or empty.");
   }
 

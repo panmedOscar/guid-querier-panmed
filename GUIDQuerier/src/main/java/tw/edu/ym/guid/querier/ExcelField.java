@@ -1,6 +1,7 @@
 package tw.edu.ym.guid.querier;
 
-import java.util.ArrayList;
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.util.List;
 
 public enum ExcelField {
@@ -25,9 +26,9 @@ public enum ExcelField {
   public static List<List<String>> multiColumnsIndexes() {
     ExcelField[][] multiColumnsIndexes =
         { { GUID, MRN, 身份證字號, 姓氏, 名字, 出生月, 出生日, 出生年, 聯絡電話, 性別, 收案醫師, 收案醫院名稱 } };
-    List<List<String>> list = new ArrayList<List<String>>();
+    List<List<String>> list = newArrayList();
     for (ExcelField[] multiColumnsIndex : multiColumnsIndexes) {
-      List<String> fields = new ArrayList<String>();
+      List<String> fields = newArrayList();
       for (ExcelField ef : multiColumnsIndex)
         fields.add(ef.name());
     }

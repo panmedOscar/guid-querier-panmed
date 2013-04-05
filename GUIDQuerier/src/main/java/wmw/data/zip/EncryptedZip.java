@@ -1,7 +1,8 @@
 package wmw.data.zip;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -25,7 +26,7 @@ public final class EncryptedZip {
   }
 
   public List<String> getAllFileNames() throws ZipException {
-    List<String> fileNames = new ArrayList<String>();
+    List<String> fileNames = newArrayList();
     for (FileHeader fh : fileHeaders)
       fileNames.add(fh.getFileName());
     return fileNames;

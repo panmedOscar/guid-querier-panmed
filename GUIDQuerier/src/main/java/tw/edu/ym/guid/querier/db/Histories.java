@@ -1,9 +1,9 @@
 package tw.edu.ym.guid.querier.db;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,7 +54,7 @@ public final class Histories {
   }
 
   public static Set<String> filterUnprocessedFiles(List<String> files) {
-    Set<String> unprocessedFiles = new HashSet<String>(files);
+    Set<String> unprocessedFiles = newHashSet(files);
 
     try {
       sqlSession = sqlMapper.openSession();

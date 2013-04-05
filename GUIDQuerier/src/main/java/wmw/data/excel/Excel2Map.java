@@ -1,7 +1,8 @@
 package wmw.data.excel;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -35,16 +36,15 @@ public final class Excel2Map {
   private Excel2Map() {}
 
   public static Map<String, List<Map<String, String>>> convert(Workbook wb) {
-    Map<String, List<Map<String, String>>> map =
-        new LinkedHashMap<String, List<Map<String, String>>>();
+    Map<String, List<Map<String, String>>> map = newLinkedHashMap();
 
     for (int i = 0; i < wb.getNumberOfSheets(); i++) {
       Sheet sheet = wb.getSheetAt(i);
 
       Row header = sheet.getRow(0);
-      List<Map<String, String>> rows = new ArrayList<Map<String, String>>();
+      List<Map<String, String>> rows = newArrayList();
       for (Row row : sheet) {
-        Map<String, String> record = new LinkedHashMap<String, String>();
+        Map<String, String> record = newLinkedHashMap();
         for (int j = 0; j < header.getLastCellNum(); j++)
           record.put(cell2Str(header.getCell(j)), cell2Str(row.getCell(j)));
         rows.add(record);

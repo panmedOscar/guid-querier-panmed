@@ -1,7 +1,8 @@
 package wmw.util.dir;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,25 +29,37 @@ import java.util.List;
 public class FolderTraverser {
 
   public static List<File> retrieveAllFiles(String path) {
-    return retrieveAllFiles(new File(path));
+    return retrieveAllFiles(new File(path), null);
+  }
+
+  public static List<File> retrieveAllFiles(String path, String ext) {
+    return retrieveAllFiles(new File(path), ext);
   }
 
   public static List<File> retrieveAllFiles(File folder) {
-    List<File> files = new ArrayList<File>();
-    files = traverseFolder(folder);
+    return retrieveAllFiles(folder);
+  }
+
+  public static List<File> retrieveAllFiles(File folder, String ext) {
+    List<File> files = newArrayList();
+    files = traverseFolder(folder, ext);
     return files;
   }
 
-  private static List<File> traverseFolder(File file) {
-    List<File> files = new ArrayList<File>();
-    List<File> tempFiles = new ArrayList<File>(Arrays.asList(file.listFiles()));
+  private static List<File> traverseFolder(File file, String ext) {
+    List<File> files = newArrayList();
+    List<File> tempFiles = newArrayList(Arrays.asList(file.listFiles()));
 
     while (!(tempFiles.isEmpty())) {
       File item = tempFiles.remove(0);
-      if (item.isDirectory())
+      if (item.isDirectory()) {
         tempFiles.addAll(Arrays.asList(item.listFiles()));
-      else
-        files.add(item);
+      } else {
+        if (ext == null)
+          files.add(item);
+        else if (item.getName().endsWith(ext))
+          files.add(item);
+      }
     }
 
     return files;
