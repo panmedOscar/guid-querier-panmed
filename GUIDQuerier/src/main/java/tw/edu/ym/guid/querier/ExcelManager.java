@@ -1,5 +1,6 @@
 package tw.edu.ym.guid.querier;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
@@ -210,9 +211,8 @@ public final class ExcelManager {
   @SuppressWarnings("unchecked")
   private void createAuthenticationTable() throws SQLException {
     es.createTable("authentication", Varchar("role"), Varchar("password"));
-    Map<String, String> defaultPassword = newHashMap();
-    defaultPassword.put("role", "admin");
-    defaultPassword.put("password", DEFAULT_PASSWORD);
+    Map<String, String> defaultPassword =
+        of("role", "admin", "password", DEFAULT_PASSWORD);
     es.insertRecords("authentication", defaultPassword);
   }
 
