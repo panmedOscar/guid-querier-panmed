@@ -40,7 +40,8 @@ public final class ExcelManager {
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
   private static final String ZIP_PASSWORD =
       "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
-  private static final String DEFAULT_PASSWORD = "ERY!VB%";
+  private static final String DEFAULT_PASSWORD_1 = "ERY!VB%";
+  private static final String DEFAULT_PASSWORD_2 = "Ur)TH#G";
   private final EmbeddedStorage es;
 
   public ExcelManager() throws SQLException, ClassNotFoundException {
@@ -118,8 +119,8 @@ public final class ExcelManager {
     return auth != null;
   }
 
-  public void setAdminPassword(String password) {
-    Authentications.setAdminPassword(password);
+  public void setAdminPassword(String role, String newpwd) {
+    Authentications.setAdminPassword(role, newpwd);
   }
 
   private void recordProcessedFiles(Collection<String> fileNames) {
@@ -212,7 +213,9 @@ public final class ExcelManager {
   private void createAuthenticationTable() throws SQLException {
     es.createTable("authentication", Varchar("role"), Varchar("password"));
     Map<String, String> defaultPassword =
-        of("role", "admin", "password", DEFAULT_PASSWORD);
+        of("role", "admin1", "password", DEFAULT_PASSWORD_1);
+    es.insertRecords("authentication", defaultPassword);
+    defaultPassword = of("role", "admin2", "password", DEFAULT_PASSWORD_2);
     es.insertRecords("authentication", defaultPassword);
   }
 

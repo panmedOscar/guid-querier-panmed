@@ -39,10 +39,10 @@ public final class Authentications {
     return auths.isEmpty() ? null : auths.get(0);
   }
 
-  public static void setAdminPassword(String password) {
+  public static void setAdminPassword(String role, String newpwd) {
     Authentication auth = new Authentication();
-    auth.setRole("admin");
-    auth.setPassword(password);
+    auth.setRole(role);
+    auth.setPassword(newpwd);
 
     try {
       sqlSession = sqlMapper.openSession();
@@ -50,7 +50,7 @@ public final class Authentications {
           sqlSession.getMapper(AuthenticationMapper.class);
 
       AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(auth.getRole());
+      authEx.or().andRoleEqualTo(role);
       authMap.updateByExample(auth, authEx);
 
       sqlSession.commit();

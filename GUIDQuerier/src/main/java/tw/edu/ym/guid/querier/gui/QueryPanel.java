@@ -58,14 +58,25 @@ public class QueryPanel {
   public QueryPanel() throws SQLException, ClassNotFoundException {
     autoShutdown();
     em = new ExcelManager();
-    String password = null;
+    String password1 = null;
+    String password2 = null;
     int retry = 0;
     do {
       if (retry >= 3)
         System.exit(0);
-      password = getPassword("Enter Password:", true).getValue();
+      password1 = getPassword("Enter first Password:", true).getValue();
       retry++;
-    } while (!(em.authenticate("admin", password)));
+    } while (!(em.authenticate("admin1", password1))
+        && !(em.authenticate("admin2", password1)));
+
+    retry = 0;
+    do {
+      if (retry >= 3)
+        System.exit(0);
+      password2 = getPassword("Enter second Password:", true).getValue();
+      retry++;
+    } while (em.authenticate("admin1", password1) ? !(em.authenticate("admin2",
+        password2)) : !(em.authenticate("admin1", password2)));
     initialize();
   }
 
@@ -152,15 +163,22 @@ public class QueryPanel {
   private void setPassword() {
     int option = -1;
 
+    String role = null;
     String oldPassword = null;
     do {
       Entry<Integer, String> pwd = getPassword("Enter old password:");
       option = pwd.getKey();
       oldPassword = pwd.getValue();
-    } while (!(em.authenticate("admin", oldPassword)) && option == 0);
+    } while ((!em.authenticate("admin1", oldPassword) && !em.authenticate(
+        "admin2", oldPassword)) && option == 0);
 
     if (option != 0)
       return;
+
+    if (em.authenticate("admin1", oldPassword))
+      role = "admin1";
+    else
+      role = "admin2";
 
     String newPassword = null;
     do {
@@ -183,7 +201,7 @@ public class QueryPanel {
     if (option != 0)
       return;
 
-    em.setAdminPassword(newPassword);
+    em.setAdminPassword(role, newPassword);
   }
 
   private void initialize() {
