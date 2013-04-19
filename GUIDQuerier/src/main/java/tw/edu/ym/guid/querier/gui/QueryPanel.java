@@ -64,7 +64,7 @@ public class QueryPanel {
     do {
       if (retry >= 3)
         System.exit(0);
-      password1 = getPassword("Enter first Password:", true).getValue();
+      password1 = getPassword("Enter 1st Password:", true).getValue();
       retry++;
     } while (!(em.authenticate("admin1", password1))
         && !(em.authenticate("admin2", password1)));
@@ -73,7 +73,7 @@ public class QueryPanel {
     do {
       if (retry >= 3)
         System.exit(0);
-      password2 = getPassword("Enter second Password:", true).getValue();
+      password2 = getPassword("Enter 2nd Password:", true).getValue();
       retry++;
     } while (em.authenticate("admin1", password1) ? !(em.authenticate("admin2",
         password2)) : !(em.authenticate("admin1", password2)));
