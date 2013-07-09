@@ -1,10 +1,3 @@
-package wmw.util.bean;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -25,6 +18,13 @@ import java.util.List;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.util.bean;
+
+import java.lang.reflect.Field;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+
 public final class BeanConverter {
 
   private BeanConverter() {}

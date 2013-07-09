@@ -1,7 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -13,7 +11,10 @@ import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
 
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 public final class Folders {
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;
@@ -73,4 +74,5 @@ public final class Folders {
       sqlSession.close();
     }
   }
+
 }

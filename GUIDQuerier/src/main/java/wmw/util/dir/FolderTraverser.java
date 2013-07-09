@@ -1,11 +1,3 @@
-package wmw.util.dir;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -26,6 +18,14 @@ import java.util.List;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.util.dir;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+
 public class FolderTraverser {
 
   public static List<File> retrieveAllFiles(String path) {

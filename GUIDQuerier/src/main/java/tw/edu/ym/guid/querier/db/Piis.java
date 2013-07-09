@@ -1,7 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,10 @@ import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
 import exceldb.model.PiiExample;
 
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 public final class Piis {
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;
@@ -108,4 +109,5 @@ public final class Piis {
 
     return piis;
   }
+
 }

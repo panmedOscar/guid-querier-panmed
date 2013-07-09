@@ -1,8 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +12,11 @@ import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 public final class Histories {
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;

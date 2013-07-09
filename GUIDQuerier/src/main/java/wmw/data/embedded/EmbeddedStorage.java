@@ -1,14 +1,3 @@
-package wmw.data.embedded;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-
-import wmw.util.jdbc.Field;
-import wmw.util.jdbc.JDBCHelper;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -29,7 +18,19 @@ import wmw.util.jdbc.JDBCHelper;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.data.embedded;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import wmw.util.jdbc.Field;
+import wmw.util.jdbc.JDBCHelper;
+
 public final class EmbeddedStorage {
+
   private final Connection c;
 
   public EmbeddedStorage(String db) throws SQLException, ClassNotFoundException {

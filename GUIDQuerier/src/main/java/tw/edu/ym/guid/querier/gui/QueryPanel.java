@@ -1,7 +1,5 @@
 package tw.edu.ym.guid.querier.gui;
 
-import static wmw.util.bean.BeanConverter.toObjectArray;
-
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -40,7 +38,10 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import exceldb.model.Pii;
 
+import static wmw.util.bean.BeanConverter.toObjectArray;
+
 public class QueryPanel {
+
   static final Logger logger = LoggerFactory.getLogger(QueryPanel.class);
 
   private static final long shutdownTime = 300000000000L; // 5 minutes

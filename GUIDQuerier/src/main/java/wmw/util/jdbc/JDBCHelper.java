@@ -1,20 +1,3 @@
-package wmw.util.jdbc;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.base.Joiner;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -35,7 +18,25 @@ import com.google.common.base.Joiner;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.util.jdbc;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.base.Joiner;
+
+import static com.google.common.collect.Lists.newArrayList;
+
 public final class JDBCHelper {
+
   private static Joiner joiner = Joiner.on(", ").skipNulls();
 
   private JDBCHelper() {}

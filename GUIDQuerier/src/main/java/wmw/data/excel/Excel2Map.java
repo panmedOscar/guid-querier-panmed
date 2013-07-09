@@ -1,16 +1,3 @@
-package wmw.data.excel;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-
-import java.util.List;
-import java.util.Map;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -31,6 +18,19 @@ import org.apache.poi.ss.usermodel.Workbook;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.data.excel;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 public final class Excel2Map {
 
   private Excel2Map() {}
@@ -59,7 +59,7 @@ public final class Excel2Map {
 
   private static String cell2Str(Cell cell) {
     String value = cell.toString();
-    if (value.matches("^.*\\.0$"))
+    if (value.matches("^\\d+\\.0$"))
       return value.substring(0, value.lastIndexOf("."));
     return value;
   }

@@ -1,5 +1,3 @@
-package wmw.util.jdbc;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -20,6 +18,8 @@ package wmw.util.jdbc;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.util.jdbc;
+
 public enum DataType {
   BINARY, BOOLEAN, DATE, DATETIME, DECIMAL, FLOAT, INTEGER, TEXT, TIME,
   TIMESTAMP, VARCHAR;
@@ -27,4 +27,5 @@ public enum DataType {
   public String toString() {
     return this.name().toLowerCase();
   }
+
 }

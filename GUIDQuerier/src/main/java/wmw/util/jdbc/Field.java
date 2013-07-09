@@ -1,19 +1,3 @@
-package wmw.util.jdbc;
-
-import static wmw.util.jdbc.DataType.BINARY;
-import static wmw.util.jdbc.DataType.BOOLEAN;
-import static wmw.util.jdbc.DataType.DATE;
-import static wmw.util.jdbc.DataType.DATETIME;
-import static wmw.util.jdbc.DataType.DECIMAL;
-import static wmw.util.jdbc.DataType.FLOAT;
-import static wmw.util.jdbc.DataType.INTEGER;
-import static wmw.util.jdbc.DataType.TEXT;
-import static wmw.util.jdbc.DataType.TIME;
-import static wmw.util.jdbc.DataType.TIMESTAMP;
-import static wmw.util.jdbc.DataType.VARCHAR;
-
-import com.google.common.base.Strings;
-
 /**
  * 
  * @author Wei-Ming Wu
@@ -34,7 +18,24 @@ import com.google.common.base.Strings;
  *         permissions and limitations under the License.
  * 
  */
+package wmw.util.jdbc;
+
+import com.google.common.base.Strings;
+
+import static wmw.util.jdbc.DataType.BINARY;
+import static wmw.util.jdbc.DataType.BOOLEAN;
+import static wmw.util.jdbc.DataType.DATE;
+import static wmw.util.jdbc.DataType.DATETIME;
+import static wmw.util.jdbc.DataType.DECIMAL;
+import static wmw.util.jdbc.DataType.FLOAT;
+import static wmw.util.jdbc.DataType.INTEGER;
+import static wmw.util.jdbc.DataType.TEXT;
+import static wmw.util.jdbc.DataType.TIME;
+import static wmw.util.jdbc.DataType.TIMESTAMP;
+import static wmw.util.jdbc.DataType.VARCHAR;
+
 public final class Field {
+
   private final String name;
   private final DataType dataType;
 

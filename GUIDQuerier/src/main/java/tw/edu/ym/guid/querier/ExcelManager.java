@@ -1,11 +1,5 @@
 package tw.edu.ym.guid.querier;
 
-import static com.google.common.collect.ImmutableMap.of;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
-import static wmw.util.jdbc.Field.Varchar;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +30,17 @@ import exceldb.model.Authentication;
 import exceldb.model.Folder;
 import exceldb.model.Pii;
 
+import static com.google.common.collect.ImmutableMap.of;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
+import static wmw.util.jdbc.Field.Varchar;
+
 public final class ExcelManager {
+
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
+
+  private static final String SHEET = "pii";
   private static final String ZIP_PASSWORD =
       "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
   private static final String DEFAULT_PASSWORD_1 = "ERY!VB%";
@@ -64,7 +67,7 @@ public final class ExcelManager {
   public String[] getHeader() {
     List<String> header = Collections.emptyList();
     try {
-      header = es.getColumns(ExcelField.sheetName());
+      header = es.getColumns(SHEET);
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
@@ -135,7 +138,7 @@ public final class ExcelManager {
         wb = WorkbookFactory.create(is);
         Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
         for (List<Map<String, String>> list : maps.values())
-          es.safeInsertRecords(ExcelField.sheetName(), list);
+          es.safeInsertRecords(SHEET, list);
       } catch (InvalidFormatException e) {
         logger.error(e.getMessage());
       } catch (IOException e) {
@@ -177,20 +180,17 @@ public final class ExcelManager {
   }
 
   private void initDatabase() throws SQLException {
-    if (!(es.hasTable(ExcelField.sheetName()))) {
+    if (!(es.hasTable(SHEET))) {
       Field[] fields = new Field[ExcelField.values().length];
       for (int i = 0; i < ExcelField.values().length; i++)
         fields[i] = Varchar(ExcelField.values()[i].toString());
-      es.createTable(ExcelField.sheetName(), fields);
+      es.createTable(SHEET, fields);
 
       for (ExcelField ef : ExcelField.values()) {
-        es.index(ExcelField.sheetName(), ef.toString());
+        es.index(SHEET, ef.toString());
         if (ef.isUnique())
-          es.unique(ExcelField.sheetName(), ef.toString());
+          es.unique(SHEET, ef.toString());
       }
-
-      for (List<String> efs : ExcelField.multiColumnsIndexes())
-        es.unique(ExcelField.sheetName(), efs);
     }
 
     if (!(es.hasTable("history")))

@@ -1,7 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -13,7 +11,10 @@ import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
 
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 public final class Authentications {
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;
