@@ -1,6 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +12,7 @@ import exceldb.model.History;
 import exceldb.model.HistoryExample;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptyList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Histories {
@@ -24,7 +24,7 @@ public final class Histories {
   private Histories() {}
 
   public static List<History> all() {
-    List<History> histories = Collections.emptyList();
+    List<History> histories = emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();

@@ -2,7 +2,6 @@ package tw.edu.ym.guid.querier.db;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -13,6 +12,7 @@ import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
 import exceldb.model.PiiExample;
 
+import static java.util.Collections.emptyList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Piis {
@@ -41,7 +41,7 @@ public final class Piis {
   }
 
   public static List<Pii> all() {
-    List<Pii> piis = Collections.emptyList();
+    List<Pii> piis = emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();
@@ -62,7 +62,7 @@ public final class Piis {
   }
 
   public static List<Pii> globalSearch(List<String> values) {
-    List<Pii> piis = Collections.emptyList();
+    List<Pii> piis = emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();

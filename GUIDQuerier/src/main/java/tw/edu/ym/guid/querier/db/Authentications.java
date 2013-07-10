@@ -1,6 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -11,6 +10,7 @@ import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
 
+import static java.util.Collections.emptyList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Authentications {
@@ -23,7 +23,7 @@ public final class Authentications {
 
   public static Authentication findByRoleAndPassword(String role,
       String password) {
-    List<Authentication> auths = Collections.emptyList();
+    List<Authentication> auths = emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();

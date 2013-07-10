@@ -1,6 +1,5 @@
 package tw.edu.ym.guid.querier.db;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -11,6 +10,7 @@ import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
 
+import static java.util.Collections.emptyList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Folders {
@@ -22,7 +22,7 @@ public final class Folders {
   private Folders() {}
 
   public static Folder findFirst() {
-    List<Folder> folders = Collections.emptyList();
+    List<Folder> folders = emptyList();
 
     try {
       sqlSession = sqlMapper.openSession();
