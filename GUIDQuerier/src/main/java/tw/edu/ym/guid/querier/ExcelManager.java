@@ -40,7 +40,8 @@ public final class ExcelManager {
 
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
 
-  private static final String SHEET = "pii";
+  public static final String DB = "exceldb";
+  public static final String SHEET = "pii";
   private static final String ZIP_PASSWORD =
       "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
   private static final String DEFAULT_PASSWORD_1 = "ERY!VB%";
@@ -48,7 +49,7 @@ public final class ExcelManager {
   private final EmbeddedStorage es;
 
   public ExcelManager() throws SQLException, ClassNotFoundException {
-    es = new EmbeddedStorage("exceldb");
+    es = new EmbeddedStorage(DB);
     initDatabase();
     updateExcels();
   }

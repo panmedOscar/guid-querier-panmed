@@ -13,7 +13,8 @@
 		</commentGenerator>
 
 		<jdbcConnection driverClass="org.h2.Driver"
-			connectionURL="jdbc:h2:exceldb" userId="sa" password="bD@F7$6iv*2#%)E}g">
+			connectionURL="jdbc:h2:exceldb" userId="sa_pro"
+			password="bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{">
 		</jdbcConnection>
 
 		<javaTypeResolver>

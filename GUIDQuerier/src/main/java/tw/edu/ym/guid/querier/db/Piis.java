@@ -79,31 +79,9 @@ public final class Piis {
       for (String value : values) {
         value = value.trim();
         if (value.getBytes(Charset.forName("UTF-8")).length < 3) {
-          for (ExcelField ef : ExcelField.values()) {
-            Criteria c = piiEx.createCriteria();
-            try {
-              Method method =
-                  Criteria.class.getDeclaredMethod(
-                      equalToMethod(ef.toString()), String.class);
-              method.invoke(c, value);
-            } catch (Exception e) {
-              logger.error(e.getMessage());
-            }
-            piiEx.or(c);
-          }
+          buildEqualToQuery(piiEx, value);
         } else {
-          for (ExcelField ef : ExcelField.values()) {
-            Criteria c = piiEx.createCriteria();
-            try {
-              Method method =
-                  Criteria.class.getDeclaredMethod(likeMethod(ef.toString()),
-                      String.class);
-              method.invoke(c, "%" + value + "%");
-            } catch (Exception e) {
-              logger.error(e.getMessage());
-            }
-            piiEx.or(c);
-          }
+          buildLikeQuery(piiEx, value);
         }
       }
 
@@ -113,6 +91,36 @@ public final class Piis {
     }
 
     return piis;
+  }
+
+  private static void buildEqualToQuery(PiiExample piiEx, String value) {
+    for (ExcelField ef : ExcelField.values()) {
+      Criteria c = piiEx.createCriteria();
+      try {
+        Method method =
+            Criteria.class.getDeclaredMethod(equalToMethod(ef.toString()),
+                String.class);
+        method.invoke(c, value);
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+      }
+      piiEx.or(c);
+    }
+  }
+
+  private static void buildLikeQuery(PiiExample piiEx, String value) {
+    for (ExcelField ef : ExcelField.values()) {
+      Criteria c = piiEx.createCriteria();
+      try {
+        Method method =
+            Criteria.class.getDeclaredMethod(likeMethod(ef.toString()),
+                String.class);
+        method.invoke(c, "%" + value + "%");
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+      }
+      piiEx.or(c);
+    }
   }
 
   private static String equalToMethod(String field) {

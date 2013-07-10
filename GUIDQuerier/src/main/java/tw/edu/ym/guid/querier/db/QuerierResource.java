@@ -23,11 +23,9 @@ public enum QuerierResource {
     try {
       reader = Resources.getResourceAsReader(resource);
     } catch (IOException e) {
-      e.printStackTrace();
       logger.error(e.getMessage());
     }
 
     return reader;
   }
-
 }
