@@ -20,11 +20,14 @@
  */
 package wmw.data.embedded;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import wmw.util.jdbc.Field;
 import wmw.util.jdbc.JDBCHelper;
@@ -33,11 +36,14 @@ public final class EmbeddedStorage {
 
   private final Connection c;
 
-  public EmbeddedStorage(String db) throws SQLException, ClassNotFoundException {
-    Class.forName("org.h2.Driver");
+  public EmbeddedStorage() throws SQLException, ClassNotFoundException,
+      FileNotFoundException, IOException {
+    Properties props = new Properties();
+    props.load(ClassLoader.getSystemResourceAsStream("mybatis.properties"));
+    Class.forName(props.getProperty("db.driver"));
     c =
-        DriverManager.getConnection("jdbc:h2:" + db, "sa_pro",
-            "bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{");
+        DriverManager.getConnection(props.getProperty("db.url"),
+            props.getProperty("db.username"), props.getProperty("db.password"));
   }
 
   public List<String> getTables() throws SQLException {

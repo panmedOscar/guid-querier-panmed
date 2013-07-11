@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
@@ -56,7 +58,8 @@ public class QueryPanel {
   // private JPanel statusPanel;
   private JMenu totalRecords;
 
-  public QueryPanel() throws SQLException, ClassNotFoundException {
+  public QueryPanel() throws SQLException, ClassNotFoundException,
+      FileNotFoundException, IOException {
     autoShutdown();
     em = new ExcelManager();
     String password1 = null;

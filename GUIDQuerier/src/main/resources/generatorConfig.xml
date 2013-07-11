@@ -4,6 +4,8 @@
   "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
+	<properties resource="mybatis.properties" />
+
 	<classPathEntry location="src/main/resources/h2-1.3.171.jar" />
 
 	<context id="DB2Tables" targetRuntime="MyBatis3">
@@ -12,9 +14,8 @@
 			<property name="suppressDate" value="true" />
 		</commentGenerator>
 
-		<jdbcConnection driverClass="org.h2.Driver"
-			connectionURL="jdbc:h2:exceldb" userId="sa_pro"
-			password="bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{">
+		<jdbcConnection driverClass="${db.driver}"
+			connectionURL="${db.url}" userId="${db.username}" password="${db.password}">
 		</jdbcConnection>
 
 		<javaTypeResolver>

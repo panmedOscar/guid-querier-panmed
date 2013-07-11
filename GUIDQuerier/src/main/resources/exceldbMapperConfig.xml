@@ -3,15 +3,15 @@
     PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<properties resource="mybatis.properties" />
 	<environments default="production">
 		<environment id="production">
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
-				<property name="driver" value="org.h2.Driver" />
-				<property name="url" value="jdbc:h2:exceldb" />
-				<property name="username" value="sa_pro" />
-				<property name="password"
-					value="bD@F7$6iv*2#%)EgIH?SD976~5o4h^g55`54$o}gZ,NOsqdwS{" />
+				<property name="driver" value="${db.driver}" />
+				<property name="url" value="${db.url}" />
+				<property name="username" value="${db.username}" />
+				<property name="password" value="${db.password}" />
 			</dataSource>
 		</environment>
 	</environments>

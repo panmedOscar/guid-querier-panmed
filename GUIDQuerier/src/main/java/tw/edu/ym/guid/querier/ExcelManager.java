@@ -1,6 +1,7 @@
 package tw.edu.ym.guid.querier;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -40,7 +41,6 @@ public final class ExcelManager {
 
   static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
 
-  public static final String DB = "exceldb";
   public static final String SHEET = "pii";
   private static final String ZIP_PASSWORD =
       "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
@@ -48,8 +48,9 @@ public final class ExcelManager {
   private static final String DEFAULT_PASSWORD_2 = "Ur)TH#G";
   private final EmbeddedStorage es;
 
-  public ExcelManager() throws SQLException, ClassNotFoundException {
-    es = new EmbeddedStorage(DB);
+  public ExcelManager() throws SQLException, ClassNotFoundException,
+      FileNotFoundException, IOException {
+    es = new EmbeddedStorage();
     initDatabase();
     updateExcels();
   }
