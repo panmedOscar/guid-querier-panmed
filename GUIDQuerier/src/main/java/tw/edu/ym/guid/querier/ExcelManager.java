@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.lingala.zip4j.exception.ZipException;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
@@ -34,6 +32,8 @@ import exceldb.model.Pii;
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 import static wmw.util.jdbc.Field.Varchar;
 
@@ -67,7 +67,7 @@ public final class ExcelManager {
   }
 
   public String[] getHeader() {
-    List<String> header = Collections.emptyList();
+    List<String> header = emptyList();
     try {
       header = es.getColumns(SHEET);
     } catch (SQLException e) {
@@ -86,7 +86,7 @@ public final class ExcelManager {
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
-    return Collections.emptyList();
+    return emptyList();
   }
 
   public List<Object[]> selectAll(int limit) {
@@ -95,19 +95,19 @@ public final class ExcelManager {
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
-    return Collections.emptyList();
+    return emptyList();
   }
 
   public List<Pii> query(String... values) {
     return Piis.globalSearch(values);
   }
 
-  public void importExcelsInFolder(String folder) {
+  public void importExcelsInFolder(final String folder) {
     List<File> files = retrieveAllFiles(folder, "zip");
-    List<EncryptedZip> encryptedZips = getEncryptedZips(files);
-    Map<String, InputStream> excels = Collections.emptyMap();
+    List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
+    Map<String, InputStream> excels = emptyMap();
     try {
-      excels = getUnprocessedExcels(encryptedZips);
+      excels = filterUnprocessedExcels(encryptedZips);
       insertExcelRecords(excels.values());
     } catch (ZipException e) {
       logger.error(e.getMessage());
@@ -141,17 +141,13 @@ public final class ExcelManager {
         Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
         for (List<Map<String, String>> list : maps.values())
           es.safeInsertRecords(SHEET, list);
-      } catch (InvalidFormatException e) {
-        logger.error(e.getMessage());
-      } catch (IOException e) {
-        logger.error(e.getMessage());
-      } catch (SQLException e) {
+      } catch (Exception e) {
         logger.error(e.getMessage());
       }
     }
   }
 
-  private Map<String, InputStream> getUnprocessedExcels(
+  private Map<String, InputStream> filterUnprocessedExcels(
       List<EncryptedZip> encryptedZips) throws ZipException {
     List<String> allFiles = newArrayList();
     for (EncryptedZip ez : encryptedZips)
@@ -168,7 +164,7 @@ public final class ExcelManager {
     return excels;
   }
 
-  private List<EncryptedZip> getEncryptedZips(List<File> files) {
+  private List<EncryptedZip> filterEncryptedZips(List<File> files) {
     List<EncryptedZip> encryptedZips = newArrayList();
     for (File file : files)
       if (file.getName().matches("^.*\\.zip$"))

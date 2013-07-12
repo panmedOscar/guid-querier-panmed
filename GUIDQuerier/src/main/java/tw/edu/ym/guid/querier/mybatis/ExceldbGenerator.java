@@ -15,7 +15,8 @@ public final class ExceldbGenerator {
   public static void main(String[] args) throws SQLException,
       ClassNotFoundException, FileNotFoundException, IOException {
     Properties props = new Properties();
-    props.load(ClassLoader.getSystemResourceAsStream("mybatis.properties"));
+    props.load(ExceldbGenerator.class.getClassLoader().getResourceAsStream(
+        "mybatis.properties"));
     String dbFile =
         ra(props.getProperty("db.url").split(":")).last() + ".h2.db";
     RubyFile.delete(dbFile);

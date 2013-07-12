@@ -30,6 +30,8 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
@@ -127,8 +129,9 @@ public final class JDBCHelper {
         }
         prepStmt.executeUpdate();
         prepStmt.close();
-      } catch (Exception e) {
-        System.err.println(e.getMessage());
+      } catch (Exception ex) {
+        Logger.getLogger(JDBCHelper.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }

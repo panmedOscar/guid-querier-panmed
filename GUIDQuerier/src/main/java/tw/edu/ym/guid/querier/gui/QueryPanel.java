@@ -293,7 +293,6 @@ public class QueryPanel {
           QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);
         } catch (Exception e) {
-          e.printStackTrace();
           logger.error(e.getMessage());
         }
       }

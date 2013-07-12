@@ -22,6 +22,8 @@ package wmw.util.bean;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -37,27 +39,15 @@ public final class BeanConverter {
         fields[i].setAccessible(true);
         strings[i] =
             fields[i].get(obj) == null ? "" : fields[i].get(obj).toString();
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
+      } catch (Exception ex) {
+        Logger.getLogger(BeanConverter.class.getName()).log(Level.SEVERE, null,
+            ex);
       }
     return strings;
   }
 
   public static List<String> toStringList(Object obj) {
-    Field[] fields = obj.getClass().getDeclaredFields();
-    List<String> strings = newArrayList();
-    for (Field field : fields)
-      try {
-        field.setAccessible(true);
-        strings.add(field.get(obj) == null ? "" : field.get(obj).toString());
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      }
-    return strings;
+    return newArrayList(toStringArray(obj));
   }
 
   public static Object[] toObjectArray(Object obj) {
@@ -67,27 +57,15 @@ public final class BeanConverter {
       try {
         fields[i].setAccessible(true);
         objects[i] = fields[i].get(obj);
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
+      } catch (Exception ex) {
+        Logger.getLogger(BeanConverter.class.getName()).log(Level.SEVERE, null,
+            ex);
       }
     return objects;
   }
 
   public static List<Object> toObjectList(Object obj) {
-    Field[] fields = obj.getClass().getDeclaredFields();
-    List<Object> objects = newArrayList();
-    for (Field field : fields)
-      try {
-        field.setAccessible(true);
-        objects.add(field.get(obj));
-      } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      }
-    return objects;
+    return newArrayList(toObjectArray(obj));
   }
 
 }

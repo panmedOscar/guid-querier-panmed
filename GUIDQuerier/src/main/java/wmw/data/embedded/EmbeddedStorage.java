@@ -39,7 +39,8 @@ public final class EmbeddedStorage {
   public EmbeddedStorage() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
     Properties props = new Properties();
-    props.load(ClassLoader.getSystemResourceAsStream("mybatis.properties"));
+    props.load(this.getClass().getClassLoader()
+        .getResourceAsStream("mybatis.properties"));
     Class.forName(props.getProperty("db.driver"));
     c =
         DriverManager.getConnection(props.getProperty("db.url"),

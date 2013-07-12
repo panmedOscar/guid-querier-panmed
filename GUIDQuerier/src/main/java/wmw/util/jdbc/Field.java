@@ -100,7 +100,7 @@ public final class Field {
   }
 
   private static void validateString(String str) {
-    if (Strings.isNullOrEmpty(str))
+    if (Strings.isNullOrEmpty(str) || str.trim().isEmpty())
       throw new IllegalArgumentException("Input can't be null or empty.");
   }
 
