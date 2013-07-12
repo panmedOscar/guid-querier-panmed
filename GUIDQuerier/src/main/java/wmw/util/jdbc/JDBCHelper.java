@@ -28,6 +28,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -98,7 +99,7 @@ public final class JDBCHelper {
   }
 
   public static void insertRecords(Connection c, String table,
-      List<Map<String, String>> records) throws SQLException {
+      Collection<Map<String, String>> records) throws SQLException {
     for (Map<String, String> record : records) {
       String insertRecords =
           "INSERT INTO " + table + "(" + joiner.join(record.keySet())
@@ -115,7 +116,7 @@ public final class JDBCHelper {
   }
 
   public static void safeInsertRecords(Connection c, String table,
-      List<Map<String, String>> records) throws SQLException {
+      Collection<Map<String, String>> records) throws SQLException {
     for (Map<String, String> record : records) {
       try {
         String insertRecords =

@@ -25,6 +25,9 @@ import wmw.data.embedded.EmbeddedStorage;
 import wmw.data.excel.Excel2Map;
 import wmw.data.zip.EncryptedZip;
 import wmw.util.jdbc.Field;
+
+import com.google.common.collect.Multimap;
+
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
 import exceldb.model.Pii;
@@ -82,7 +85,7 @@ public final class ExcelManager {
 
   public List<Object[]> selectAll() {
     try {
-      return es.selectAll();
+      return es.selectAll(SHEET);
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
@@ -91,7 +94,7 @@ public final class ExcelManager {
 
   public List<Object[]> selectAll(int limit) {
     try {
-      return es.selectAll(limit);
+      return es.selectAll(SHEET, limit);
     } catch (SQLException e) {
       logger.error(e.getMessage());
     }
@@ -138,9 +141,11 @@ public final class ExcelManager {
       Workbook wb;
       try {
         wb = WorkbookFactory.create(is);
-        Map<String, List<Map<String, String>>> maps = Excel2Map.convert(wb);
-        for (List<Map<String, String>> list : maps.values())
-          es.safeInsertRecords(SHEET, list);
+        Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
+        for (String sheet : maps.keySet()) {
+          if (sheet.trim().matches("(?i)" + SHEET + ".*"))
+            es.safeInsertRecords(SHEET, maps.get(sheet));
+        }
       } catch (Exception e) {
         logger.error(e.getMessage());
       }

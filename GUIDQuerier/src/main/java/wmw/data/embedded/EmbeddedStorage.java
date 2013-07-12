@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -72,14 +73,13 @@ public final class EmbeddedStorage {
     JDBCHelper.insertRecords(c, table, records);
   }
 
-  public void insertRecords(String table, List<Map<String, String>> records)
-      throws SQLException {
+  public void insertRecords(String table,
+      Collection<Map<String, String>> records) throws SQLException {
     JDBCHelper.insertRecords(c, table, records);
   }
 
-  public void
-      safeInsertRecords(String table, List<Map<String, String>> records)
-          throws SQLException {
+  public void safeInsertRecords(String table,
+      Collection<Map<String, String>> records) throws SQLException {
     JDBCHelper.safeInsertRecords(c, table, records);
   }
 
@@ -95,12 +95,12 @@ public final class EmbeddedStorage {
     JDBCHelper.index(c, table, column);
   }
 
-  public List<Object[]> selectAll() throws SQLException {
-    return JDBCHelper.selectAll(c, "pii");
+  public List<Object[]> selectAll(String table) throws SQLException {
+    return JDBCHelper.selectAll(c, table);
   }
 
-  public List<Object[]> selectAll(int limit) throws SQLException {
-    return JDBCHelper.selectAll(c, "pii", limit);
+  public List<Object[]> selectAll(String table, int limit) throws SQLException {
+    return JDBCHelper.selectAll(c, table, limit);
   }
 
 }

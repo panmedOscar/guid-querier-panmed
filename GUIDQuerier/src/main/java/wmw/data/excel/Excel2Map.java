@@ -20,7 +20,7 @@
  */
 package wmw.data.excel;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,30 +28,33 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import static com.google.common.collect.Lists.newArrayList;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public final class Excel2Map {
 
   private Excel2Map() {}
 
-  public static Map<String, List<Map<String, String>>> convert(Workbook wb) {
-    Map<String, List<Map<String, String>>> map = newLinkedHashMap();
+  public static Multimap<String, Map<String, String>> convert(Workbook wb) {
+    Multimap<String, Map<String, String>> map = ArrayListMultimap.create();
 
     for (int i = 0; i < wb.getNumberOfSheets(); i++) {
       Sheet sheet = wb.getSheetAt(i);
 
-      Row header = sheet.getRow(0);
-      List<Map<String, String>> rows = newArrayList();
-      for (Row row : sheet) {
+      Row header = null;
+      Iterator<Row> rows = sheet.rowIterator();
+      if (rows.hasNext())
+        header = rows.next();
+
+      while (rows.hasNext()) {
+        Row row = rows.next();
         Map<String, String> record = newLinkedHashMap();
         for (int j = 0; j < header.getLastCellNum(); j++)
           record.put(cell2Str(header.getCell(j)), cell2Str(row.getCell(j)));
-        rows.add(record);
+        map.put(sheet.getSheetName(), record);
       }
-
-      rows.remove(0);
-      map.put(sheet.getSheetName(), rows);
     }
 
     return map;
