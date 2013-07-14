@@ -97,4 +97,9 @@ public class ExcelManagerTest {
     assertEquals(703, manager.query("12", "23").size());
   }
 
+  @Test
+  public void testToString() {
+    assertEquals("ExcelManager{Sheet=pii}", manager.toString());
+  }
+
 }

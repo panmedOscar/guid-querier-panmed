@@ -1,7 +1,6 @@
 package tw.edu.ym.guid.querier;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -27,11 +26,8 @@ import wmw.db.jdbc.Field;
 import wmw.file.excel.Excel2Map;
 import wmw.file.zip.EncryptedZip;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;
-
-import static wmw.db.jdbc.Field.Varchar;
-
-import static wmw.db.embedded.EmbeddedStorage.newEmbeddedStorage;
 
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
@@ -42,6 +38,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static wmw.db.embedded.EmbeddedStorage.newEmbeddedStorage;
+import static wmw.db.jdbc.Field.Varchar;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 
 /**
@@ -61,8 +59,22 @@ public final class ExcelManager {
   private final String defaultPassword2;
   private final EmbeddedStorage es;
 
+  /**
+   * 
+   * Creates a ExcelManager by given properties path.
+   * 
+   * @param propertiesPath
+   *          the classpath to the properties
+   * @return an ExcelManager
+   * @throws IOException
+   *           if properties not found
+   * @throws ClassNotFoundException
+   *           if DB driver not found
+   * @throws SQLException
+   *           if DB creation failed
+   */
   public static ExcelManager newExcelManager(String propertiesPath)
-      throws IOException, SQLException, ClassNotFoundException {
+      throws IOException, ClassNotFoundException, SQLException {
     Properties props = new Properties();
     InputStream in =
         ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
@@ -71,8 +83,21 @@ public final class ExcelManager {
     return new ExcelManager(props);
   }
 
+  /**
+   * Creates a ExcelManager by given Properties.
+   * 
+   * @param props
+   *          a Properties
+   * @return an ExcelManager
+   * @throws IOException
+   *           if properties not found
+   * @throws ClassNotFoundException
+   *           if DB driver not found
+   * @throws SQLException
+   *           if DB creation failed
+   */
   public ExcelManager(Properties props) throws SQLException,
-      ClassNotFoundException, FileNotFoundException, IOException {
+      ClassNotFoundException, IOException {
     sheet = props.getProperty("sheet");
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
@@ -82,6 +107,11 @@ public final class ExcelManager {
     updateExcels();
   }
 
+  /**
+   * Returns the total of records.
+   * 
+   * @return the total of records
+   */
   public int total() {
     return Piis.count();
   }
@@ -93,6 +123,11 @@ public final class ExcelManager {
       importExcelsInFolder(folder.getPath());
   }
 
+  /**
+   * Returns the header of the excel.
+   * 
+   * @return the header of the excel
+   */
   public String[] getHeader() {
     List<String> header = emptyList();
     try {
@@ -103,10 +138,20 @@ public final class ExcelManager {
     return header.toArray(new String[header.size()]);
   }
 
+  /**
+   * Returns all Piis.
+   * 
+   * @return a List of Pii
+   */
   public List<Pii> getAll() {
     return Piis.all();
   }
 
+  /**
+   * Returns all Piis by storing the properties of each Pii in an Object Array.
+   * 
+   * @return a List of Object Array which contains the properties of each Pii
+   */
   public List<Object[]> selectAll() {
     try {
       return es.selectAll(sheet);
@@ -116,6 +161,13 @@ public final class ExcelManager {
     return emptyList();
   }
 
+  /**
+   * Returns all Piis by storing the properties of each Pii in an Object Array.
+   * 
+   * @param limit
+   *          the maximum records to return
+   * @return a List of Object Array which contains the properties of each Pii
+   */
   public List<Object[]> selectAll(int limit) {
     try {
       return es.selectAll(sheet, limit);
@@ -125,10 +177,23 @@ public final class ExcelManager {
     return emptyList();
   }
 
-  public List<Pii> query(String... values) {
-    return Piis.globalSearch(values);
+  /**
+   * Searches Piis by given keywords.
+   * 
+   * @param keywords
+   *          used to query
+   * @return a List of Pii
+   */
+  public List<Pii> query(String... keywords) {
+    return Piis.globalSearch(keywords);
   }
 
+  /**
+   * Imports all excels in encrypted zips within a folder.
+   * 
+   * @param folder
+   *          contains encrypted zips
+   */
   public void importExcelsInFolder(final String folder) {
     List<File> files = retrieveAllFiles(folder, "zip");
     List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
@@ -146,11 +211,28 @@ public final class ExcelManager {
       Folders.setFolderPath(folder);
   }
 
+  /**
+   * Authenticates the password of a role.
+   * 
+   * @param role
+   *          to be authenticated
+   * @param password
+   *          to be verified
+   * @return true if authentication passed, false otherwise
+   */
   public boolean authenticate(String role, String password) {
     Authentication auth = Authentications.findByRoleAndPassword(role, password);
     return auth != null;
   }
 
+  /**
+   * Sets a new password of the role.
+   * 
+   * @param role
+   *          to be reset
+   * @param newpwd
+   *          the new password
+   */
   public void setAdminPassword(String role, String newpwd) {
     Authentications.setAdminPassword(role, newpwd);
   }
@@ -244,6 +326,12 @@ public final class ExcelManager {
     es.insertRecords("authentication", defaultPassword);
     defaultPassword = of("role", "admin2", "password", defaultPassword2);
     es.insertRecords("authentication", defaultPassword);
+  }
+
+  @Override
+  public String toString() {
+    return Objects.toStringHelper(this.getClass()).add("Sheet", sheet)
+        .toString();
   }
 
 }

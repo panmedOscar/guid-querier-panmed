@@ -14,8 +14,21 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+/**
+ * 
+ * MybatisGenerator generates Mybatis models by given configuration xml file.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class MybatisGenerator {
 
+  /**
+   * Generates Mybatis models.
+   * 
+   * @param configFile
+   *          an InputStream of configuration xml file
+   */
   public static void generate(InputStream configFile) {
     List<String> warnings = newArrayList();
     boolean overwrite = true;

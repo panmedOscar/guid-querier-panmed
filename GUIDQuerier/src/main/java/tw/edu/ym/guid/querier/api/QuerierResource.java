@@ -7,6 +7,13 @@ import org.apache.ibatis.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * QuerierResource defines the DB resource of the ExcelManager.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public enum QuerierResource {
   EXCELDB("exceldbMapperConfig.xml");
 
@@ -18,6 +25,11 @@ public enum QuerierResource {
     this.resource = resource;
   }
 
+  /**
+   * Retuens the Mybatis mapper xml.
+   * 
+   * @return a Reader of Mybatis mapper xml
+   */
   public Reader getResource() {
     Reader reader = null;
 
@@ -29,4 +41,5 @@ public enum QuerierResource {
 
     return reader;
   }
+
 }

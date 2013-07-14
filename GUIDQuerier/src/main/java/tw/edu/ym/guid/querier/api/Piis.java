@@ -11,8 +11,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
-
 import tw.edu.ym.guid.querier.ExcelField;
 import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
@@ -20,7 +18,15 @@ import exceldb.model.PiiExample;
 import exceldb.model.PiiExample.Criteria;
 
 import static java.util.Collections.emptyList;
+import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
 
+/**
+ * 
+ * Piis is an API class which contains lot of helpers of Pii model.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class Piis {
 
   private static final Logger log = LoggerFactory.getLogger(Piis.class);
@@ -31,6 +37,11 @@ public final class Piis {
 
   private Piis() {}
 
+  /**
+   * Returns the number of total records in Pii table.
+   * 
+   * @return the number of total records in Pii table
+   */
   public static int count() {
     int count = 0;
 
@@ -48,6 +59,11 @@ public final class Piis {
     return count;
   }
 
+  /**
+   * Returns all Piis.
+   * 
+   * @return a List of Pii
+   */
   public static List<Pii> all() {
     List<Pii> piis = emptyList();
 
@@ -65,11 +81,25 @@ public final class Piis {
     return piis;
   }
 
-  public static List<Pii> globalSearch(String[] values) {
-    return globalSearch(Arrays.asList(values));
+  /**
+   * Searches Piis by given keywords.
+   * 
+   * @param keywords
+   *          used to query
+   * @return a List of Pii
+   */
+  public static List<Pii> globalSearch(String[] keywords) {
+    return globalSearch(Arrays.asList(keywords));
   }
 
-  public static List<Pii> globalSearch(List<String> values) {
+  /**
+   * Searches Piis by given keywords.
+   * 
+   * @param keywords
+   *          used to query
+   * @return a List of Pii
+   */
+  public static List<Pii> globalSearch(List<String> keywords) {
     List<Pii> piis = emptyList();
 
     try {
@@ -77,12 +107,12 @@ public final class Piis {
       PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
 
       PiiExample piiEx = new PiiExample();
-      for (String value : values) {
-        value = value.trim();
-        if (value.getBytes(Charset.forName("UTF-8")).length < 3) {
-          buildEqualToQuery(piiEx, value);
+      for (String keyword : keywords) {
+        keyword = keyword.trim();
+        if (keyword.getBytes(Charset.forName("UTF-8")).length < 3) {
+          buildEqualToQuery(piiEx, keyword);
         } else {
-          buildLikeQuery(piiEx, value);
+          buildLikeQuery(piiEx, keyword);
         }
       }
 

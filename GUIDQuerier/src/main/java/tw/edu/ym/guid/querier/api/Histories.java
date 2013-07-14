@@ -7,15 +7,21 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
-
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptyList;
+import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
 
+/**
+ * 
+ * Histories is an API class which contains lot of helpers of History model.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class Histories {
 
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
@@ -24,6 +30,11 @@ public final class Histories {
 
   private Histories() {}
 
+  /**
+   * Returns all History records.
+   * 
+   * @return a List of History
+   */
   public static List<History> all() {
     List<History> histories = emptyList();
 
@@ -41,6 +52,12 @@ public final class Histories {
     return histories;
   }
 
+  /**
+   * Adds a file name to the History.
+   * 
+   * @param fileName
+   *          to be added to the History
+   */
   public static void create(String fileName) {
     History record = new History();
     record.setFileName(fileName);
@@ -55,6 +72,14 @@ public final class Histories {
     }
   }
 
+  /**
+   * Compares a List of file names with records of History table and returns an
+   * Set of unprocessed file names.
+   * 
+   * @param files
+   *          to be filtered
+   * @return a Set of unprocessed file names
+   */
   public static Set<String> filterUnprocessedFiles(List<String> files) {
     Set<String> unprocessedFiles = newHashSet(files);
 

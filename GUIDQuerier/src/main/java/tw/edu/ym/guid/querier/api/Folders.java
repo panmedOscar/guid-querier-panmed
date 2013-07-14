@@ -6,14 +6,20 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
-
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
 
 import static java.util.Collections.emptyList;
+import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
 
+/**
+ * 
+ * Folders is an API class which contains lot of helpers of Folder model.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class Folders {
 
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()

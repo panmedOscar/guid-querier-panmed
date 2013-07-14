@@ -32,7 +32,6 @@ import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
@@ -42,6 +41,13 @@ import exceldb.model.Pii;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static wmw.util.bean.BeanConverter.toObjectArray;
 
+/**
+ * 
+ * QueryPanel is the GUI of ExcelManager.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class QueryPanel {
 
   private static final Logger log = LoggerFactory.getLogger(QueryPanel.class);

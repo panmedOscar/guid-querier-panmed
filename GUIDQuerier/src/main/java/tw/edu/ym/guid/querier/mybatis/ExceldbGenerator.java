@@ -10,6 +10,13 @@ import tw.edu.ym.guid.querier.QueryPanel;
 
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
+/**
+ * 
+ * ExceldbGenerator is needed to be executed each time after ExcelField changed.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class ExceldbGenerator {
 
   public static void main(String[] args) throws SQLException,

@@ -3,6 +3,8 @@ package tw.edu.ym.guid.querier;
 /**
  * 
  * ExcelField defines all fields that an ExcelManger needs to display and query.
+ * Remembers to execute ExceldbGenerator each time after ExcelField has been
+ * modified.
  * 
  * @author Wei-Ming Wu
  * 
