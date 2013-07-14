@@ -37,7 +37,7 @@ public final class EmbeddedStorage {
 
   private final Connection c;
 
-  public static EmbeddedStorage create(String propertiesPath)
+  public static EmbeddedStorage newEmbeddedStorage(String propertiesPath)
       throws IOException, SQLException, ClassNotFoundException {
     Properties props = new Properties();
     InputStream in =

@@ -1,15 +1,14 @@
 package tw.edu.ym.guid.querier.mybatis;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import net.sf.rubycollect4j.RubyFile;
-import tw.edu.ym.guid.querier.ExcelManager;
 import tw.edu.ym.guid.querier.gui.QueryPanel;
 
-import static net.sf.rubycollect4j.RubyCollections.ra;
+import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
 public final class ExceldbGenerator {
 
@@ -20,14 +19,16 @@ public final class ExceldbGenerator {
         QueryPanel.PROPS_PATH));
     props.load(ExceldbGenerator.class.getClassLoader().getResourceAsStream(
         props.getProperty("db_props")));
-    String dbFile =
-        ra(props.getProperty("db.url").split(":")).last() + ".h2.db";
-    RubyFile.delete(dbFile);
-    ExcelManager.create(QueryPanel.PROPS_PATH);
+
+    String[] dbURL = props.getProperty("db.url").split(":");
+    String dbFile = dbURL[dbURL.length - 1] + ".h2.db";
+
+    new File(dbFile).delete();
+    newExcelManager(QueryPanel.PROPS_PATH);
     MybatisGenerator.generate(ExceldbGenerator.class.getClassLoader()
         .getResourceAsStream("generatorConfig.xml"));
-    RubyFile.delete(dbFile);
-    RubyFile.delete("guid_querier.log");
+    new File(dbFile).delete();
+    new File("guid_querier.log").delete();
   }
 
 }

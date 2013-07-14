@@ -38,6 +38,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static wmw.data.embedded.EmbeddedStorage.newEmbeddedStorage;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 import static wmw.util.jdbc.Field.Varchar;
 
@@ -58,8 +59,8 @@ public final class ExcelManager {
   private final String defaultPassword2;
   private final EmbeddedStorage es;
 
-  public static ExcelManager create(String propertiesPath) throws IOException,
-      SQLException, ClassNotFoundException {
+  public static ExcelManager newExcelManager(String propertiesPath)
+      throws IOException, SQLException, ClassNotFoundException {
     Properties props = new Properties();
     InputStream in =
         ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
@@ -74,7 +75,7 @@ public final class ExcelManager {
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
     defaultPassword2 = props.getProperty("default_password_2");
-    es = EmbeddedStorage.create(props.getProperty("db_props"));
+    es = newEmbeddedStorage(props.getProperty("db_props"));
     initDatabase();
     updateExcels();
   }

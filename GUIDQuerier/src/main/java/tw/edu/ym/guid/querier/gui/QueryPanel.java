@@ -40,6 +40,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import exceldb.model.Pii;
 
+import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static wmw.util.bean.BeanConverter.toObjectArray;
 
 public final class QueryPanel {
@@ -62,7 +63,7 @@ public final class QueryPanel {
   public QueryPanel() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
     autoShutdown();
-    em = ExcelManager.create(PROPS_PATH);
+    em = newExcelManager(PROPS_PATH);
     String password1 = null;
     String password2 = null;
     int retry = 0;
