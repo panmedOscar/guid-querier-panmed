@@ -22,7 +22,7 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Piis {
 
-  static final Logger logger = LoggerFactory.getLogger(Piis.class);
+  private static final Logger log = LoggerFactory.getLogger(Piis.class);
 
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
@@ -102,7 +102,7 @@ public final class Piis {
                 String.class);
         method.invoke(c, value);
       } catch (Exception e) {
-        logger.error(e.getMessage());
+        log.error(e.getMessage());
       }
       piiEx.or(c);
     }
@@ -117,7 +117,7 @@ public final class Piis {
                 String.class);
         method.invoke(c, "%" + value + "%");
       } catch (Exception e) {
-        logger.error(e.getMessage());
+        log.error(e.getMessage());
       }
       piiEx.or(c);
     }

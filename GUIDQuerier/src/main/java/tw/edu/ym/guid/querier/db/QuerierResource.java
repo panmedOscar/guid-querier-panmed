@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory;
 public enum QuerierResource {
   EXCELDB("exceldbMapperConfig.xml");
 
-  static final Logger logger = LoggerFactory.getLogger(QuerierResource.class);
+  private static final Logger log = LoggerFactory
+      .getLogger(QuerierResource.class);
   private final String resource;
 
   private QuerierResource(String resource) {
@@ -23,7 +24,7 @@ public enum QuerierResource {
     try {
       reader = Resources.getResourceAsReader(resource);
     } catch (IOException e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
 
     return reader;
