@@ -58,16 +58,23 @@ public final class ExcelManager {
   private final String defaultPassword2;
   private final EmbeddedStorage es;
 
-  public ExcelManager(String properties) throws SQLException,
-      ClassNotFoundException, FileNotFoundException, IOException {
+  public static ExcelManager create(String propertiesPath) throws IOException,
+      SQLException, ClassNotFoundException {
     Properties props = new Properties();
-    props.load(ExcelManager.class.getClassLoader().getResourceAsStream(
-        properties));
+    InputStream in =
+        ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
+    props.load(in);
+    in.close();
+    return new ExcelManager(props);
+  }
+
+  public ExcelManager(Properties props) throws SQLException,
+      ClassNotFoundException, FileNotFoundException, IOException {
     sheet = props.getProperty("sheet");
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
     defaultPassword2 = props.getProperty("default_password_2");
-    es = EmbeddedStorage.build(props.getProperty("db_props"));
+    es = EmbeddedStorage.create(props.getProperty("db_props"));
     initDatabase();
     updateExcels();
   }

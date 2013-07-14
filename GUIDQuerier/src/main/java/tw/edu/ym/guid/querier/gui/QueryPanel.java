@@ -42,11 +42,11 @@ import exceldb.model.Pii;
 
 import static wmw.util.bean.BeanConverter.toObjectArray;
 
-public class QueryPanel {
+public final class QueryPanel {
 
   private static final Logger log = LoggerFactory.getLogger(QueryPanel.class);
 
-  public static final String PROPS = "excel_manager.properties";
+  public static final String PROPS_PATH = "excel_manager.properties";
   private static final long SHUTDOWN_TIME = 300000000000L; // 5 minutes
   private long idleTime = System.nanoTime();
   private JFrame frame;
@@ -62,7 +62,7 @@ public class QueryPanel {
   public QueryPanel() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
     autoShutdown();
-    em = new ExcelManager(PROPS);
+    em = ExcelManager.create(PROPS_PATH);
     String password1 = null;
     String password2 = null;
     int retry = 0;

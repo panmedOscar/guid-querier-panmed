@@ -21,6 +21,7 @@
 package wmw.data.embedded;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -36,20 +37,18 @@ public final class EmbeddedStorage {
 
   private final Connection c;
 
-  public static EmbeddedStorage build(String properties) throws IOException,
-      SQLException, ClassNotFoundException {
+  public static EmbeddedStorage create(String propertiesPath)
+      throws IOException, SQLException, ClassNotFoundException {
     Properties props = new Properties();
-    props.load(EmbeddedStorage.class.getClassLoader().getResourceAsStream(
-        properties));
+    InputStream in =
+        EmbeddedStorage.class.getClassLoader().getResourceAsStream(
+            propertiesPath);
+    props.load(in);
+    in.close();
     return new EmbeddedStorage(props);
   }
 
-  public static EmbeddedStorage build(Properties props) throws SQLException,
-      ClassNotFoundException {
-    return new EmbeddedStorage(props);
-  }
-
-  private EmbeddedStorage(Properties props) throws SQLException,
+  public EmbeddedStorage(Properties props) throws SQLException,
       ClassNotFoundException {
     Class.forName(props.getProperty("db.driver"));
     c =
