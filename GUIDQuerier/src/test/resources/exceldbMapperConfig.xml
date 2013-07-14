@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-	<properties resource="test_mybatis.properties" />
+	<properties resource="test_database.properties" />
 	<environments default="production">
 		<environment id="production">
 			<transactionManager type="JDBC" />

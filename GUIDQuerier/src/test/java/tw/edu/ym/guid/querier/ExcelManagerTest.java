@@ -25,7 +25,7 @@ public class ExcelManagerTest {
         .getResourceAsStream("test_excel_manager.properties"));
     db_props = new Properties();
     db_props.load(ExcelManagerTest.class.getClassLoader().getResourceAsStream(
-        "test_mybatis.properties"));
+        "test_database.properties"));
     manager = newExcelManager("test_excel_manager.properties");
     manager.importExcelsInFolder("src/test/resources");
   }
