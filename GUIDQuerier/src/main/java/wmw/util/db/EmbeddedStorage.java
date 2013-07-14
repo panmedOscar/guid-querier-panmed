@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.db.embedded;
+package wmw.util.db;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import wmw.db.jdbc.Field;
-import wmw.db.jdbc.JDBCHelper;
 
 public final class EmbeddedStorage {
 
@@ -68,11 +66,11 @@ public final class EmbeddedStorage {
     return JDBCHelper.getColumns(c, table);
   }
 
-  public void createTable(String table, List<Field> fields) throws SQLException {
+  public void createTable(String table, List<TableField> fields) throws SQLException {
     JDBCHelper.createTable(c, table, fields);
   }
 
-  public void createTable(String table, Field... fields) throws SQLException {
+  public void createTable(String table, TableField... fields) throws SQLException {
     JDBCHelper.createTable(c, table, fields);
   }
 

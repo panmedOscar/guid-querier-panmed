@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.bean;
+package wmw.util;
 
 import java.lang.reflect.Field;
 import java.util.List;

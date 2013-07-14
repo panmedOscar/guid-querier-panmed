@@ -22,14 +22,20 @@ import tw.edu.ym.guid.querier.api.Folders;
 import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
-import wmw.db.embedded.EmbeddedStorage;
-import wmw.db.jdbc.Field;
-import wmw.file.BackupUtil;
-import wmw.file.excel.Excel2Map;
-import wmw.file.zip.EncryptedZip;
+import wmw.util.BackupUtil;
+import wmw.util.EncryptedZip;
+import wmw.util.Excel2Map;
+import wmw.util.db.EmbeddedStorage;
+import wmw.util.db.TableField;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;
+
+import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
+import static wmw.util.db.TableField.Varchar;
+
+
+import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
@@ -40,9 +46,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static wmw.db.embedded.EmbeddedStorage.newEmbeddedStorage;
-import static wmw.db.jdbc.Field.Varchar;
-import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 
 /**
  * 
@@ -337,7 +340,7 @@ public final class ExcelManager {
 
   private void initDatabase() throws SQLException {
     if (!(es.hasTable(sheet))) {
-      Field[] fields = new Field[ExcelField.values().length];
+      TableField[] fields = new TableField[ExcelField.values().length];
       for (int i = 0; i < ExcelField.values().length; i++)
         fields[i] = Varchar(ExcelField.values()[i].toString());
       es.createTable(sheet, fields);

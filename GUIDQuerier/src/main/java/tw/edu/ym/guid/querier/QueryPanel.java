@@ -36,10 +36,11 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
+import static wmw.util.BeanConverter.toObjectArray;
+
 import exceldb.model.Pii;
 
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static wmw.util.bean.BeanConverter.toObjectArray;
 
 /**
  * 

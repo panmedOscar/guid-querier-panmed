@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.file.excel;
+package wmw.util;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -33,10 +33,22 @@ import com.google.common.collect.Multimap;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
+/**
+ * 
+ * Excel2Map converts Apache POI Excel Workbook to an Google Guava Multimap.
+ * 
+ */
 public final class Excel2Map {
 
   private Excel2Map() {}
 
+  /**
+   * Converts Apache POI Excel Workbook to a Multimap.
+   * 
+   * @param wb
+   *          an Excel Workbook
+   * @return a Multimap which contains all sheets of the excel
+   */
   public static Multimap<String, Map<String, String>> convert(Workbook wb) {
     Multimap<String, Map<String, String>> map = ArrayListMultimap.create();
 

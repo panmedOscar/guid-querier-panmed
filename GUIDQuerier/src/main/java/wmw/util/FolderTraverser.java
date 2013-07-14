@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.dir;
+package wmw.util;
 
 import java.io.File;
 import java.util.Arrays;

@@ -18,86 +18,85 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.db.jdbc;
+package wmw.util.db;
 
 import com.google.common.base.Strings;
 
-import static wmw.db.jdbc.DataType.BINARY;
-import static wmw.db.jdbc.DataType.BOOLEAN;
-import static wmw.db.jdbc.DataType.DATE;
-import static wmw.db.jdbc.DataType.DATETIME;
-import static wmw.db.jdbc.DataType.DECIMAL;
-import static wmw.db.jdbc.DataType.FLOAT;
-import static wmw.db.jdbc.DataType.INTEGER;
-import static wmw.db.jdbc.DataType.TEXT;
-import static wmw.db.jdbc.DataType.TIME;
-import static wmw.db.jdbc.DataType.TIMESTAMP;
-import static wmw.db.jdbc.DataType.VARCHAR;
+import static wmw.util.db.DataType.BINARY;
+import static wmw.util.db.DataType.BOOLEAN;
+import static wmw.util.db.DataType.DATE;
+import static wmw.util.db.DataType.DATETIME;
+import static wmw.util.db.DataType.DECIMAL;
+import static wmw.util.db.DataType.FLOAT;
+import static wmw.util.db.DataType.INTEGER;
+import static wmw.util.db.DataType.TEXT;
+import static wmw.util.db.DataType.TIME;
+import static wmw.util.db.DataType.TIMESTAMP;
+import static wmw.util.db.DataType.VARCHAR;
 
-
-public final class Field {
+public final class TableField {
 
   private final String name;
   private final DataType dataType;
 
-  private Field(String name, DataType dataType) {
+  private TableField(String name, DataType dataType) {
     this.name = name;
     this.dataType = dataType;
   }
 
-  public static Field Binary(String name) {
+  public static TableField Binary(String name) {
     validateString(name);
-    return new Field(name, BINARY);
+    return new TableField(name, BINARY);
   }
 
-  public static Field Boolean(String name) {
+  public static TableField Boolean(String name) {
     validateString(name);
-    return new Field(name, BOOLEAN);
+    return new TableField(name, BOOLEAN);
   }
 
-  public static Field Date(String name) {
+  public static TableField Date(String name) {
     validateString(name);
-    return new Field(name, DATE);
+    return new TableField(name, DATE);
   }
 
-  public static Field Datetime(String name) {
+  public static TableField Datetime(String name) {
     validateString(name);
-    return new Field(name, DATETIME);
+    return new TableField(name, DATETIME);
   }
 
-  public static Field Decimal(String name) {
+  public static TableField Decimal(String name) {
     validateString(name);
-    return new Field(name, DECIMAL);
+    return new TableField(name, DECIMAL);
   }
 
-  public static Field Float(String name) {
+  public static TableField Float(String name) {
     validateString(name);
-    return new Field(name, FLOAT);
+    return new TableField(name, FLOAT);
   }
 
-  public static Field Integer(String name) {
+  public static TableField Integer(String name) {
     validateString(name);
-    return new Field(name, INTEGER);
+    return new TableField(name, INTEGER);
   }
 
-  public static Field Text(String name) {
+  public static TableField Text(String name) {
     validateString(name);
-    return new Field(name, TEXT);
+    return new TableField(name, TEXT);
   }
 
-  public static Field Time(String name) {
+  public static TableField Time(String name) {
     validateString(name);
-    return new Field(name, TIME);
+    return new TableField(name, TIME);
   }
 
-  public static Field Timestamp(String name) {
+  public static TableField Timestamp(String name) {
     validateString(name);
-    return new Field(name, TIMESTAMP);
+    return new TableField(name, TIMESTAMP);
   }
 
-  public static Field Varchar(String name) {
+  public static TableField Varchar(String name) {
     validateString(name);
-    return new Field(name, VARCHAR);
+    return new TableField(name, VARCHAR);
   }
 
   private static void validateString(String str) {

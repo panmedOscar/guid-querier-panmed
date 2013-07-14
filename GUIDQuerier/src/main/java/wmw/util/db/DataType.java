@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.db.jdbc;
+package wmw.util.db;
 
 public enum DataType {
   BINARY, BOOLEAN, DATE, DATETIME, DECIMAL, FLOAT, INTEGER, TEXT, TIME,

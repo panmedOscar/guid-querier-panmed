@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.db.jdbc;
+package wmw.util.db;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -66,12 +66,12 @@ public final class JDBCHelper {
     return columns;
   }
 
-  public static void createTable(Connection c, String name, Field... fields)
+  public static void createTable(Connection c, String name, TableField... fields)
       throws SQLException {
     createTable(c, name, Arrays.asList(fields));
   }
 
-  public static void createTable(Connection c, String name, List<Field> fields)
+  public static void createTable(Connection c, String name, List<TableField> fields)
       throws SQLException {
     Statement stmt = c.createStatement();
     String createTable =
