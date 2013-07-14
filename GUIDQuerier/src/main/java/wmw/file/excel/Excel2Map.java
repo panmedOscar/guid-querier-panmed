@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.data.excel;
+package wmw.file.excel;
 
 import java.util.Iterator;
 import java.util.Map;

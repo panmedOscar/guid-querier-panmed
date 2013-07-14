@@ -18,21 +18,22 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.jdbc;
+package wmw.db.jdbc;
 
 import com.google.common.base.Strings;
 
-import static wmw.util.jdbc.DataType.BINARY;
-import static wmw.util.jdbc.DataType.BOOLEAN;
-import static wmw.util.jdbc.DataType.DATE;
-import static wmw.util.jdbc.DataType.DATETIME;
-import static wmw.util.jdbc.DataType.DECIMAL;
-import static wmw.util.jdbc.DataType.FLOAT;
-import static wmw.util.jdbc.DataType.INTEGER;
-import static wmw.util.jdbc.DataType.TEXT;
-import static wmw.util.jdbc.DataType.TIME;
-import static wmw.util.jdbc.DataType.TIMESTAMP;
-import static wmw.util.jdbc.DataType.VARCHAR;
+import static wmw.db.jdbc.DataType.BINARY;
+import static wmw.db.jdbc.DataType.BOOLEAN;
+import static wmw.db.jdbc.DataType.DATE;
+import static wmw.db.jdbc.DataType.DATETIME;
+import static wmw.db.jdbc.DataType.DECIMAL;
+import static wmw.db.jdbc.DataType.FLOAT;
+import static wmw.db.jdbc.DataType.INTEGER;
+import static wmw.db.jdbc.DataType.TEXT;
+import static wmw.db.jdbc.DataType.TIME;
+import static wmw.db.jdbc.DataType.TIMESTAMP;
+import static wmw.db.jdbc.DataType.VARCHAR;
+
 
 public final class Field {
 

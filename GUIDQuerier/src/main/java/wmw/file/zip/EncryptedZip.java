@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.data.zip;
+package wmw.file.zip;
 
 import java.io.InputStream;
 import java.util.List;

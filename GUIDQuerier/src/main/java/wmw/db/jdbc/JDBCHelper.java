@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.jdbc;
+package wmw.db.jdbc;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

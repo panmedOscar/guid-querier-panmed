@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.data.embedded;
+package wmw.db.embedded;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import wmw.util.jdbc.Field;
-import wmw.util.jdbc.JDBCHelper;
+import wmw.db.jdbc.Field;
+import wmw.db.jdbc.JDBCHelper;
 
 public final class EmbeddedStorage {
 
