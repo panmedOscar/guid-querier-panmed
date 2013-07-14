@@ -24,6 +24,7 @@ import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
 import wmw.db.embedded.EmbeddedStorage;
 import wmw.db.jdbc.Field;
+import wmw.file.BackupUtil;
 import wmw.file.excel.Excel2Map;
 import wmw.file.zip.EncryptedZip;
 
@@ -236,6 +237,51 @@ public final class ExcelManager {
    */
   public void setAdminPassword(String role, String newpwd) {
     Authentications.setAdminPassword(role, newpwd);
+  }
+
+  /**
+   * Sets backup folder.
+   * 
+   * @param backupFolder
+   *          used to backup encrypted zips
+   */
+  public void setBackup(String backupFolder) {
+    Folders.setFolderPath(FolderType.BACKUP, backupFolder);
+    backup();
+  }
+
+  /**
+   * Backups all encrypted zips from import folder to backup folder.
+   */
+  public void backup() {
+    Folder src = Folders.findFirst(FolderType.IMPORT);
+    Folder dest = Folders.findFirst(FolderType.BACKUP);
+    if (src != null && dest != null) {
+      File srcFolder = new File(src.getPath());
+      File destFolder = new File(dest.getPath());
+      if (srcFolder.exists() && destFolder.exists()) {
+        List<File> files = retrieveAllFiles(srcFolder.getAbsolutePath(), "zip");
+        List<File> encryptedFiles = filterEncryptedFiles(files);
+        try {
+          BackupUtil.backup(encryptedFiles, destFolder);
+        } catch (IOException e) {
+          log.warn(e.getMessage());
+        }
+      }
+    }
+  }
+
+  private List<File> filterEncryptedFiles(List<File> files) {
+    List<File> encryptedFiles = newArrayList();
+    for (File file : files)
+      if (file.getName().matches("^.*\\.zip$"))
+        try {
+          new EncryptedZip(file.getAbsolutePath(), zipPassword);
+          encryptedFiles.add(file);
+        } catch (Exception e) {
+          log.warn(e.getMessage());
+        }
+    return encryptedFiles;
   }
 
   private void recordProcessedFiles(Collection<String> fileNames) {

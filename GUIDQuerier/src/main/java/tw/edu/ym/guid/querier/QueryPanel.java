@@ -60,7 +60,7 @@ public final class QueryPanel {
   private JScrollPane scrollPane;
   private JTable table;
   private JMenuBar menuBar;
-  private final ExcelManager em;
+  private final ExcelManager manager;
   private DefaultTableModel dataModel;
   // private JPanel statusPanel;
   private JMenu totalRecords;
@@ -68,7 +68,7 @@ public final class QueryPanel {
   public QueryPanel() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
     autoShutdown();
-    em = newExcelManager(PROPS_PATH);
+    manager = newExcelManager(PROPS_PATH);
     String password1 = null;
     String password2 = null;
     int retry = 0;
@@ -77,8 +77,8 @@ public final class QueryPanel {
         System.exit(0);
       password1 = getPassword("Enter 1st Password:", true).getValue();
       retry++;
-    } while (!(em.authenticate("admin1", password1))
-        && !(em.authenticate("admin2", password1)));
+    } while (!(manager.authenticate("admin1", password1))
+        && !(manager.authenticate("admin2", password1)));
 
     retry = 0;
     do {
@@ -86,13 +86,24 @@ public final class QueryPanel {
         System.exit(0);
       password2 = getPassword("Enter 2nd Password:", true).getValue();
       retry++;
-    } while (em.authenticate("admin1", password1) ? !(em.authenticate("admin2",
-        password2)) : !(em.authenticate("admin1", password2)));
+    } while (manager.authenticate("admin1", password1) ? !(manager
+        .authenticate("admin2", password2)) : !(manager.authenticate("admin1",
+        password2)));
     initialize();
+    autoBackup();
   }
 
   private void setTotalRecords() {
-    totalRecords.setText(" Total Records: " + em.total());
+    totalRecords.setText(" Total Records: " + manager.total());
+  }
+
+  private void autoBackup() {
+    Timer timer = new Timer(600000, new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        manager.backup();
+      }
+    });
+    timer.start();
   }
 
   private void autoShutdown() {
@@ -134,8 +145,8 @@ public final class QueryPanel {
 
   private DefaultTableModel initDataModel() {
     dataModel = new DefaultTableModel();
-    dataModel.setColumnIdentifiers(em.getHeader());
-    for (Object[] record : em.selectAll(500))
+    dataModel.setColumnIdentifiers(manager.getHeader());
+    for (Object[] record : manager.selectAll(500))
       dataModel.addRow(record);
     setTotalRecords();
     return dataModel;
@@ -150,9 +161,9 @@ public final class QueryPanel {
       table.setModel(dataModel);
     } else {
       String[] keywords = query.trim().split("\\s+");
-      List<Pii> piis = em.query(keywords);
+      List<Pii> piis = manager.query(keywords);
       dataModel = new DefaultTableModel();
-      dataModel.setColumnIdentifiers(em.getHeader());
+      dataModel.setColumnIdentifiers(manager.getHeader());
       for (Pii pii : piis)
         dataModel.addRow(toObjectArray(pii));
       table.setModel(dataModel);
@@ -166,7 +177,7 @@ public final class QueryPanel {
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
     if (chooser.getSelectedFile() != null) {
-      em.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
+      manager.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
       table.setModel(initDataModel());
     }
   }
@@ -180,13 +191,13 @@ public final class QueryPanel {
       Entry<Integer, String> pwd = getPassword("Enter old password:");
       option = pwd.getKey();
       oldPassword = pwd.getValue();
-    } while ((!em.authenticate("admin1", oldPassword) && !em.authenticate(
-        "admin2", oldPassword)) && option == 0);
+    } while ((!manager.authenticate("admin1", oldPassword) && !manager
+        .authenticate("admin2", oldPassword)) && option == 0);
 
     if (option != 0)
       return;
 
-    if (em.authenticate("admin1", oldPassword))
+    if (manager.authenticate("admin1", oldPassword))
       role = "admin1";
     else
       role = "admin2";
@@ -212,7 +223,17 @@ public final class QueryPanel {
     if (option != 0)
       return;
 
-    em.setAdminPassword(role, newPassword);
+    manager.setAdminPassword(role, newPassword);
+  }
+
+  private void backup() {
+    resetIdleTime();
+
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.showOpenDialog(frame);
+    if (chooser.getSelectedFile() != null)
+      manager.setBackup(chooser.getSelectedFile().getAbsolutePath());
   }
 
   private void initialize() {
@@ -246,6 +267,16 @@ public final class QueryPanel {
     });
     auth.add(password);
     menuBar.add(auth);
+
+    JMenu backup = new JMenu("Backup");
+    JMenuItem backupPath = new JMenuItem("Select a backup folder...");
+    backupPath.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        backup();
+      }
+    });
+    backup.add(backupPath);
+    menuBar.add(backup);
 
     menuBar.add(Box.createHorizontalGlue());
     totalRecords = new JMenu("Total Records: 0");
