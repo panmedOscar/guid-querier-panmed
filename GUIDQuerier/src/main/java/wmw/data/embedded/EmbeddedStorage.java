@@ -20,7 +20,6 @@
  */
 package wmw.data.embedded;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,11 +36,21 @@ public final class EmbeddedStorage {
 
   private final Connection c;
 
-  public EmbeddedStorage() throws SQLException, ClassNotFoundException,
-      FileNotFoundException, IOException {
+  public static EmbeddedStorage build(String properties) throws IOException,
+      SQLException, ClassNotFoundException {
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader()
-        .getResourceAsStream("mybatis.properties"));
+    props.load(EmbeddedStorage.class.getClassLoader().getResourceAsStream(
+        properties));
+    return new EmbeddedStorage(props);
+  }
+
+  public static EmbeddedStorage build(Properties props) throws SQLException,
+      ClassNotFoundException {
+    return new EmbeddedStorage(props);
+  }
+
+  private EmbeddedStorage(Properties props) throws SQLException,
+      ClassNotFoundException {
     Class.forName(props.getProperty("db.driver"));
     c =
         DriverManager.getConnection(props.getProperty("db.url"),

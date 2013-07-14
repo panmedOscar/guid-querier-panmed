@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import net.lingala.zip4j.exception.ZipException;
@@ -40,20 +41,33 @@ import static java.util.Collections.emptyMap;
 import static wmw.util.dir.FolderTraverser.retrieveAllFiles;
 import static wmw.util.jdbc.Field.Varchar;
 
+/**
+ * 
+ * ExcelManager manages data of a Excel by an embedded database.
+ * 
+ * @author Wei-Ming Wu
+ * 
+ */
 public final class ExcelManager {
 
-  static final Logger logger = LoggerFactory.getLogger(ExcelManager.class);
+  private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
-  public static final String SHEET = "pii";
-  private static final String ZIP_PASSWORD =
-      "4b565f5@a6d8d395e!73616f$ab41e361#b618f7c386def2f25f&eef28dded0e";
-  private static final String DEFAULT_PASSWORD_1 = "ERY!VB%";
-  private static final String DEFAULT_PASSWORD_2 = "Ur)TH#G";
+  private final String sheet;
+  private final String zipPassword;
+  private final String defaultPassword1;
+  private final String defaultPassword2;
   private final EmbeddedStorage es;
 
-  public ExcelManager() throws SQLException, ClassNotFoundException,
-      FileNotFoundException, IOException {
-    es = new EmbeddedStorage();
+  public ExcelManager(String properties) throws SQLException,
+      ClassNotFoundException, FileNotFoundException, IOException {
+    Properties props = new Properties();
+    props.load(ExcelManager.class.getClassLoader().getResourceAsStream(
+        properties));
+    sheet = props.getProperty("sheet");
+    zipPassword = props.getProperty("zip_password");
+    defaultPassword1 = props.getProperty("default_password_1");
+    defaultPassword2 = props.getProperty("default_password_2");
+    es = EmbeddedStorage.build(props.getProperty("db_props"));
     initDatabase();
     updateExcels();
   }
@@ -72,9 +86,9 @@ public final class ExcelManager {
   public String[] getHeader() {
     List<String> header = emptyList();
     try {
-      header = es.getColumns(SHEET);
+      header = es.getColumns(sheet);
     } catch (SQLException e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
     return header.toArray(new String[header.size()]);
   }
@@ -85,18 +99,18 @@ public final class ExcelManager {
 
   public List<Object[]> selectAll() {
     try {
-      return es.selectAll(SHEET);
+      return es.selectAll(sheet);
     } catch (SQLException e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
     return emptyList();
   }
 
   public List<Object[]> selectAll(int limit) {
     try {
-      return es.selectAll(SHEET, limit);
+      return es.selectAll(sheet, limit);
     } catch (SQLException e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
     return emptyList();
   }
@@ -113,7 +127,7 @@ public final class ExcelManager {
       excels = filterUnprocessedExcels(encryptedZips);
       insertExcelRecords(excels.values());
     } catch (ZipException e) {
-      logger.error(e.getMessage());
+      log.error(e.getMessage());
     }
     recordProcessedFiles(excels.keySet());
     if (files.isEmpty())
@@ -143,11 +157,11 @@ public final class ExcelManager {
         wb = WorkbookFactory.create(is);
         Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
         for (String sheet : maps.keySet()) {
-          if (sheet.trim().matches("(?i)" + SHEET + ".*"))
-            es.safeInsertRecords(SHEET, maps.get(sheet));
+          if (sheet.trim().matches("(?i)" + sheet + ".*"))
+            es.safeInsertRecords(sheet, maps.get(sheet));
         }
       } catch (Exception e) {
-        logger.error(e.getMessage());
+        log.error(e.getMessage());
       }
     }
   }
@@ -175,24 +189,24 @@ public final class ExcelManager {
       if (file.getName().matches("^.*\\.zip$"))
         try {
           encryptedZips.add(new EncryptedZip(file.getAbsolutePath(),
-              ZIP_PASSWORD));
+              zipPassword));
         } catch (Exception e) {
-          logger.warn(e.getMessage());
+          log.warn(e.getMessage());
         }
     return encryptedZips;
   }
 
   private void initDatabase() throws SQLException {
-    if (!(es.hasTable(SHEET))) {
+    if (!(es.hasTable(sheet))) {
       Field[] fields = new Field[ExcelField.values().length];
       for (int i = 0; i < ExcelField.values().length; i++)
         fields[i] = Varchar(ExcelField.values()[i].toString());
-      es.createTable(SHEET, fields);
+      es.createTable(sheet, fields);
 
       for (ExcelField ef : ExcelField.values()) {
-        es.index(SHEET, ef.toString());
+        es.index(sheet, ef.toString());
         if (ef.isUnique())
-          es.unique(SHEET, ef.toString());
+          es.unique(sheet, ef.toString());
       }
     }
 
@@ -216,9 +230,9 @@ public final class ExcelManager {
   private void createAuthenticationTable() throws SQLException {
     es.createTable("authentication", Varchar("role"), Varchar("password"));
     Map<String, String> defaultPassword =
-        of("role", "admin1", "password", DEFAULT_PASSWORD_1);
+        of("role", "admin1", "password", defaultPassword1);
     es.insertRecords("authentication", defaultPassword);
-    defaultPassword = of("role", "admin2", "password", DEFAULT_PASSWORD_2);
+    defaultPassword = of("role", "admin2", "password", defaultPassword2);
     es.insertRecords("authentication", defaultPassword);
   }
 
