@@ -22,13 +22,31 @@ import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
  */
 public final class Folders {
 
+  /**
+   * 
+   * FolderType defines all usages of folder paths.
+   * 
+   * @author Wei-Ming Wu
+   * 
+   */
+  public enum FolderType {
+    IMPORT, BACKUP;
+  }
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;
 
   private Folders() {}
 
-  public static Folder findFirst() {
+  /**
+   * Returns the first record of the specified usage.
+   * 
+   * @param usage
+   *          of the folder
+   * @return a Folder
+   */
+  public static Folder findFirst(FolderType usage) {
     List<Folder> folders = emptyList();
 
     try {
@@ -36,7 +54,7 @@ public final class Folders {
       FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
 
       FolderExample folderEx = new FolderExample();
-      folderEx.or().andPathIsNotNull();
+      folderEx.or().andUsageEqualTo(usage.toString());
       folders = folderMap.selectByExample(folderEx);
     } finally {
       sqlSession.close();
@@ -45,9 +63,18 @@ public final class Folders {
     return folders.isEmpty() ? null : folders.get(0);
   }
 
-  public static void setFolderPath(String path) {
-    boolean isPathExisted = findFirst() != null;
+  /**
+   * Sets the path of specified usage in Folder table.
+   * 
+   * @param usage
+   *          of the folder
+   * @param path
+   *          of the folder
+   */
+  public static void setFolderPath(FolderType usage, String path) {
+    boolean isPathExisted = findFirst(usage) != null;
     Folder folder = new Folder();
+    folder.setUsage(usage.toString());
     folder.setPath(path);
 
     try {
@@ -55,7 +82,7 @@ public final class Folders {
       FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
 
       FolderExample folderEx = new FolderExample();
-      folderEx.or().andPathIsNotNull();
+      folderEx.or().andUsageEqualTo(usage.toString());
       if (isPathExisted)
         folderMap.updateByExample(folder, folderEx);
       else
@@ -67,13 +94,19 @@ public final class Folders {
     }
   }
 
-  public static void removeFolderPath() {
+  /**
+   * Removes the path of specified usage in Folder table.
+   * 
+   * @param usage
+   *          of the folder
+   */
+  public static void removeFolderPath(FolderType usage) {
     try {
       sqlSession = sqlMapper.openSession();
       FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
 
       FolderExample folderEx = new FolderExample();
-      folderEx.or().andPathIsNotNull();
+      folderEx.or().andUsageEqualTo(usage.toString());
       folderMap.deleteByExample(folderEx);
 
       sqlSession.commit();

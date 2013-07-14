@@ -12,7 +12,8 @@ import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
 /**
  * 
- * ExceldbGenerator is needed to be executed each time after ExcelField changed.
+ * ExceldbGenerator is needed to be executed each time after ExcelField changed
+ * or any schema modification.
  * 
  * @author Wei-Ming Wu
  * 

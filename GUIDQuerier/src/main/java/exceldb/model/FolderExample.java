@@ -194,6 +194,76 @@ public class FolderExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
+        public Criteria andUsageIsNull() {
+            addCriterion("USAGE is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageIsNotNull() {
+            addCriterion("USAGE is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageEqualTo(String value) {
+            addCriterion("USAGE =", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageNotEqualTo(String value) {
+            addCriterion("USAGE <>", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageGreaterThan(String value) {
+            addCriterion("USAGE >", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageGreaterThanOrEqualTo(String value) {
+            addCriterion("USAGE >=", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageLessThan(String value) {
+            addCriterion("USAGE <", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageLessThanOrEqualTo(String value) {
+            addCriterion("USAGE <=", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageLike(String value) {
+            addCriterion("USAGE like", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageNotLike(String value) {
+            addCriterion("USAGE not like", value, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageIn(List<String> values) {
+            addCriterion("USAGE in", values, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageNotIn(List<String> values) {
+            addCriterion("USAGE not in", values, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageBetween(String value1, String value2) {
+            addCriterion("USAGE between", value1, value2, "usage");
+            return (Criteria) this;
+        }
+
+        public Criteria andUsageNotBetween(String value1, String value2) {
+            addCriterion("USAGE not between", value1, value2, "usage");
+            return (Criteria) this;
+        }
+
         public Criteria andPathIsNull() {
             addCriterion("PATH is null");
             return (Criteria) this;

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.api.Authentications;
 import tw.edu.ym.guid.querier.api.Folders;
+import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
 import wmw.db.embedded.EmbeddedStorage;
@@ -117,7 +118,7 @@ public final class ExcelManager {
   }
 
   private void updateExcels() {
-    Folder folder = Folders.findFirst();
+    Folder folder = Folders.findFirst(FolderType.IMPORT);
 
     if (folder != null)
       importExcelsInFolder(folder.getPath());
@@ -191,11 +192,11 @@ public final class ExcelManager {
   /**
    * Imports all excels in encrypted zips within a folder.
    * 
-   * @param folder
-   *          contains encrypted zips
+   * @param folderPath
+   *          where encrypted zips located
    */
-  public void importExcelsInFolder(final String folder) {
-    List<File> files = retrieveAllFiles(folder, "zip");
+  public void importExcelsInFolder(final String folderPath) {
+    List<File> files = retrieveAllFiles(folderPath, "zip");
     List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
     Map<String, InputStream> excels = emptyMap();
     try {
@@ -206,9 +207,9 @@ public final class ExcelManager {
     }
     recordProcessedFiles(excels.keySet());
     if (files.isEmpty())
-      Folders.removeFolderPath();
+      Folders.removeFolderPath(FolderType.IMPORT);
     else
-      Folders.setFolderPath(folder);
+      Folders.setFolderPath(FolderType.IMPORT, folderPath);
   }
 
   /**
@@ -309,7 +310,7 @@ public final class ExcelManager {
       createAuthenticationTable();
 
     if (!(es.hasTable("folder")))
-      es.createTable("folder", Varchar("path"));
+      es.createTable("folder", Varchar("usage"), Varchar("path"));
   }
 
   private void createHistoryTable() throws SQLException {
