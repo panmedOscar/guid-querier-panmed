@@ -1,4 +1,4 @@
-package tw.edu.ym.guid.querier.gui;
+package tw.edu.ym.guid.querier;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -32,7 +32,6 @@ import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.edu.ym.guid.querier.ExcelManager;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;

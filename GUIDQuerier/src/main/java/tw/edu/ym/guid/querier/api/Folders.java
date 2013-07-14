@@ -1,4 +1,4 @@
-package tw.edu.ym.guid.querier.db;
+package tw.edu.ym.guid.querier.api;
 
 import java.util.List;
 
@@ -6,12 +6,13 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
+
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
 
 import static java.util.Collections.emptyList;
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Folders {
 

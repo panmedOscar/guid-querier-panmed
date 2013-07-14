@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import tw.edu.ym.guid.querier.gui.QueryPanel;
+import tw.edu.ym.guid.querier.QueryPanel;
 
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 

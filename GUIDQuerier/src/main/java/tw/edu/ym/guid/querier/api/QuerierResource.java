@@ -1,4 +1,4 @@
-package tw.edu.ym.guid.querier.db;
+package tw.edu.ym.guid.querier.api;
 
 import java.io.IOException;
 import java.io.Reader;

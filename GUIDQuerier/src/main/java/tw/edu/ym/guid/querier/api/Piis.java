@@ -1,4 +1,4 @@
-package tw.edu.ym.guid.querier.db;
+package tw.edu.ym.guid.querier.api;
 
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -11,6 +11,8 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
+
 import tw.edu.ym.guid.querier.ExcelField;
 import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
@@ -18,7 +20,6 @@ import exceldb.model.PiiExample;
 import exceldb.model.PiiExample.Criteria;
 
 import static java.util.Collections.emptyList;
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 public final class Piis {
 
