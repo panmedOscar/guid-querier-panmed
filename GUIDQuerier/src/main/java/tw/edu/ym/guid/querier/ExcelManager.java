@@ -166,7 +166,7 @@ public final class ExcelManager {
         Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
         for (String sheet : maps.keySet()) {
           if (sheet.trim().matches("(?i)" + sheet + ".*"))
-            es.safeInsertRecords(sheet, maps.get(sheet));
+            es.safeInsertRecords(this.sheet, maps.get(sheet));
         }
       } catch (Exception e) {
         log.error(e.getMessage());
