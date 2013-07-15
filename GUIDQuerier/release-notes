@@ -1,0 +1,76 @@
+Version 1.0.0
+
++ First release
+
+
+Version 1.0.1
+
+* Query phrase length detection bug fixed
+
+* Password panel bug fixed
+
+
+Version 1.0.2
+
++ In-time querying during typing
+
++ Added auto-shutdown feature
+
+
+Version 1.0.3
+
++ Added auto-update feature
+
+
+Version 1.0.3
+
++ Added auto-update feature
+
+
+Version 1.0.4
+
++ Added status bar to show the number of total records
+
+
+Version 1.1.0
+
+* Changed 醫院名稱 to 收案醫院名稱
+
+
+Version 1.2.0
+
+* Changed Local_ID to 編碼日期
+
+
+Version 1.2.1
+
+* Set default max number of records to 500
+
+* Changed default login password to more complex phrase
+
+
+Version 1.2.1
+
+* Set default max list records to 500
+
+* Change default login password to more complex phrase
+
+
+Version 1.2.2
+
+* Put total records on menu bar instead of bottom status bar due to Windows compatibility
+
+
+Version 1.2.3
+
+* Trimmed excel columns before inserting into db
+
+
+Version 1.3.0
+
+* Reruired 2 passwords to login
+
+
+Version 1.4.0
+
++ Added auto-backup feature
