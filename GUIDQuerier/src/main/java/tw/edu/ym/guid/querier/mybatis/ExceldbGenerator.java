@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+
 import tw.edu.ym.guid.querier.QueryPanel;
 
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
@@ -35,6 +37,8 @@ public final class ExceldbGenerator {
     newExcelManager(QueryPanel.PROPS_PATH);
     MybatisGenerator.generate(ExceldbGenerator.class.getClassLoader()
         .getResourceAsStream("generatorConfig.xml"));
+    FileUtils.copyDirectory(new File("src/main/resources/exceldb"), new File(
+        "src/test/resources/exceldb"));
     new File(dbFile).delete();
     new File("guid_querier.log").delete();
   }

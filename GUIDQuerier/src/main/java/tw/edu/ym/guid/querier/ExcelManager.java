@@ -251,7 +251,8 @@ public final class ExcelManager {
    *          used to backup encrypted zips
    */
   public void setBackup(String backupFolder) {
-    Folders.setFolderPath(FolderType.BACKUP, backupFolder);
+    Folders.setFolderPath(FolderType.BACKUP,
+        new File(backupFolder).getAbsolutePath());
     backup();
   }
 

@@ -39,6 +39,24 @@ public final class Folders {
 
   private Folders() {}
 
+  public static List<Folder> all() {
+    List<Folder> folders = emptyList();
+
+    try {
+      sqlSession = sqlMapper.openSession();
+      FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
+
+      FolderExample folderEx = new FolderExample();
+      folderEx.or().andUsageIsNotNull();
+      folderEx.or().andPathIsNotNull();
+      folders = folderMap.selectByExample(folderEx);
+    } finally {
+      sqlSession.close();
+    }
+
+    return folders;
+  }
+
   /**
    * Returns the first record of the specified usage.
    * 

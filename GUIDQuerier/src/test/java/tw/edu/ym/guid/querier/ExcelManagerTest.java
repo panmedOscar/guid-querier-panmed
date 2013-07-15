@@ -1,6 +1,7 @@
 package tw.edu.ym.guid.querier;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.AfterClass;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 public class ExcelManagerTest {
 
@@ -28,7 +30,7 @@ public class ExcelManagerTest {
     db_props.load(ExcelManagerTest.class.getClassLoader().getResourceAsStream(
         "test_database.properties"));
     manager = newExcelManager("test_excel_manager.properties");
-    manager.importExcelsInFolder("src/test/resources");
+    manager.importExcelsInFolder("src/test/resources/example");
   }
 
   @AfterClass
@@ -73,7 +75,6 @@ public class ExcelManagerTest {
 
   @Test
   public void testImportExcelsInFolder() {
-    manager.importExcelsInFolder("src/test/resources");
     assertEquals(5009, manager.total());
   }
 
@@ -97,6 +98,19 @@ public class ExcelManagerTest {
     assertEquals(1, manager.query("12345").size());
     assertEquals(568, manager.query("12").size());
     assertEquals(703, manager.query("12", "23").size());
+  }
+
+  @Test
+  public void testBackup() {
+    List<File> oldFiles = retrieveAllFiles("src/test/resources/backup", "zip");
+    for (File file : oldFiles)
+      file.delete();
+    manager.setBackup("src/test/resources/backup");
+    List<File> backupFiles =
+        retrieveAllFiles("src/test/resources/backup", "zip");
+    assertEquals(1, backupFiles.size());
+    assertEquals("PII_20130328.zip", backupFiles.get(0).getName());
+    backupFiles.get(0).delete();
   }
 
   @Test
