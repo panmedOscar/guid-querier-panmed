@@ -16,10 +16,11 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>tw.edu.ym.guid.querier.gui.QueryPanel</mainClass>
+							<mainClass>tw.edu.ym.guid.querier.QueryPanel</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

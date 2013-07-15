@@ -6,7 +6,7 @@
 <generatorConfiguration>
 	<properties resource="database.properties" />
 
-	<classPathEntry location="src/main/resources/h2-1.3.172.jar" />
+	<classPathEntry location="h2-1.3.172.jar" />
 
 	<context id="DB2Tables" targetRuntime="MyBatis3">
 
