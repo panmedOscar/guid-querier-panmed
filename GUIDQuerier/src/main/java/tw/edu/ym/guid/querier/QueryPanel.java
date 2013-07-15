@@ -36,11 +36,11 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-import static wmw.util.BeanConverter.toObjectArray;
-
 import exceldb.model.Pii;
 
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.util.BeanConverter.toObjectArray;
 
 /**
  * 
@@ -77,19 +77,11 @@ public final class QueryPanel {
       if (retry >= 3)
         System.exit(0);
       password1 = getPassword("Enter 1st Password:", true).getValue();
-      retry++;
-    } while (!(manager.authenticate("admin1", password1))
-        && !(manager.authenticate("admin2", password1)));
-
-    retry = 0;
-    do {
-      if (retry >= 3)
-        System.exit(0);
       password2 = getPassword("Enter 2nd Password:", true).getValue();
       retry++;
-    } while (manager.authenticate("admin1", password1) ? !(manager
-        .authenticate("admin2", password2)) : !(manager.authenticate("admin1",
-        password2)));
+    } while (!manager.authenticate(ADMIN, password1)
+        || !manager.authenticate(ADMIN, password2));
+
     initialize();
     autoBackup();
   }
@@ -186,22 +178,16 @@ public final class QueryPanel {
   private void setPassword() {
     int option = -1;
 
-    String role = null;
     String oldPassword = null;
     do {
       Entry<Integer, String> pwd = getPassword("Enter old password:");
       option = pwd.getKey();
       oldPassword = pwd.getValue();
-    } while ((!manager.authenticate("admin1", oldPassword) && !manager
-        .authenticate("admin2", oldPassword)) && option == 0);
+    } while (!manager.authenticate(ADMIN, oldPassword)
+        && !manager.authenticate(ADMIN, oldPassword) && option == 0);
 
     if (option != 0)
       return;
-
-    if (manager.authenticate("admin1", oldPassword))
-      role = "admin1";
-    else
-      role = "admin2";
 
     String newPassword = null;
     do {
@@ -219,12 +205,12 @@ public final class QueryPanel {
       Entry<Integer, String> pwd = getPassword("Enter new password again:");
       option = pwd.getKey();
       verifyPassword = pwd.getValue();
-    } while (!(verifyPassword.equals(newPassword)) && option == 0);
+    } while (!verifyPassword.equals(newPassword) && option == 0);
 
     if (option != 0)
       return;
 
-    manager.setAdminPassword(role, newPassword);
+    manager.setAdminPassword(ADMIN, oldPassword, newPassword);
   }
 
   private void backup() {

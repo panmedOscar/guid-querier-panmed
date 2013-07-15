@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.api.Authentications;
+import tw.edu.ym.guid.querier.api.Authentications.RoleType;
 import tw.edu.ym.guid.querier.api.Folders;
 import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
@@ -31,12 +32,6 @@ import wmw.util.db.TableField;
 import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;
 
-import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
-import static wmw.util.db.TableField.Varchar;
-
-
-import static wmw.util.FolderTraverser.retrieveAllFiles;
-
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
 import exceldb.model.Pii;
@@ -46,6 +41,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.util.FolderTraverser.retrieveAllFiles;
+import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
+import static wmw.util.db.TableField.Varchar;
 
 /**
  * 
@@ -225,7 +224,7 @@ public final class ExcelManager {
    *          to be verified
    * @return true if authentication passed, false otherwise
    */
-  public boolean authenticate(String role, String password) {
+  public boolean authenticate(RoleType role, String password) {
     Authentication auth = Authentications.findByRoleAndPassword(role, password);
     return auth != null;
   }
@@ -235,11 +234,14 @@ public final class ExcelManager {
    * 
    * @param role
    *          to be reset
-   * @param newpwd
+   * @param oldPassword
+   *          the old password
+   * @param newPassword
    *          the new password
    */
-  public void setAdminPassword(String role, String newpwd) {
-    Authentications.setAdminPassword(role, newpwd);
+  public void setAdminPassword(RoleType role, String oldPassword,
+      String newPassword) {
+    Authentications.setAdminPassword(role, oldPassword, newPassword);
   }
 
   /**
@@ -371,11 +373,9 @@ public final class ExcelManager {
   @SuppressWarnings("unchecked")
   private void createAuthenticationTable() throws SQLException {
     es.createTable("authentication", Varchar("role"), Varchar("password"));
-    Map<String, String> defaultPassword =
-        of("role", "admin1", "password", defaultPassword1);
-    es.insertRecords("authentication", defaultPassword);
-    defaultPassword = of("role", "admin2", "password", defaultPassword2);
-    es.insertRecords("authentication", defaultPassword);
+    es.insertRecords("authentication",
+        of("role", ADMIN.toString(), "password", defaultPassword1),
+        of("role", ADMIN.toString(), "password", defaultPassword2));
   }
 
   @Override

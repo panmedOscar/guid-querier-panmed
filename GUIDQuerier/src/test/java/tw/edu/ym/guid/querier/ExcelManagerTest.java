@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 
 public class ExcelManagerTest {
 
@@ -51,22 +52,23 @@ public class ExcelManagerTest {
 
   @Test
   public void testAuthenticate() {
-    assertTrue(manager.authenticate("admin1",
+    assertTrue(manager.authenticate(ADMIN,
         manager_props.getProperty("default_password_1")));
-    assertTrue(manager.authenticate("admin2",
+    assertTrue(manager.authenticate(ADMIN,
         manager_props.getProperty("default_password_2")));
-    assertFalse(manager.authenticate("admin3", "haha"));
+    assertFalse(manager.authenticate(ADMIN, "haha"));
   }
 
   @Test
   public void testSetAdminPassword() {
-    manager.setAdminPassword("admin3", "yaya");
-    assertFalse(manager.authenticate("admin3", "yaya"));
-    manager.setAdminPassword("admin1", "ohoh");
-    assertFalse(manager.authenticate("admin1",
+    manager.setAdminPassword(ADMIN,
+        manager_props.getProperty("default_password_1"), "yaya");
+    assertTrue(manager.authenticate(ADMIN, "yaya"));
+    manager.setAdminPassword(ADMIN,
+        manager_props.getProperty("default_password_2"), "ohoh");
+    assertFalse(manager.authenticate(ADMIN,
         manager_props.getProperty("default_password_1")));
-    manager.setAdminPassword("admin1", "ohoh");
-    assertTrue(manager.authenticate("admin1", "ohoh"));
+    assertTrue(manager.authenticate(ADMIN, "ohoh"));
   }
 
   @Test

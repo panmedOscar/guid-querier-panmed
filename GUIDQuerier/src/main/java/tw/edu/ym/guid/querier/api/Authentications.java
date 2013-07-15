@@ -23,6 +23,17 @@ import static tw.edu.ym.guid.querier.api.QuerierResource.EXCELDB;
  */
 public final class Authentications {
 
+  /**
+   * 
+   * RoleType defines all roles of Authentication.
+   * 
+   * @author Wei-Ming Wu
+   * 
+   */
+  public enum RoleType {
+    ADMIN;
+  }
+
   private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
       .build(EXCELDB.getResource());
   private static SqlSession sqlSession;
@@ -38,7 +49,7 @@ public final class Authentications {
    *          to be searched
    * @return an Authentication if found, null otherwise
    */
-  public static Authentication findByRoleAndPassword(String role,
+  public static Authentication findByRoleAndPassword(RoleType role,
       String password) {
     List<Authentication> auths = emptyList();
 
@@ -48,7 +59,7 @@ public final class Authentications {
           sqlSession.getMapper(AuthenticationMapper.class);
 
       AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role).andPasswordEqualTo(password);
+      authEx.or().andRoleEqualTo(role.toString()).andPasswordEqualTo(password);
       auths = authMap.selectByExample(authEx);
     } finally {
       sqlSession.close();
@@ -65,9 +76,10 @@ public final class Authentications {
    * @param newPassword
    *          to set
    */
-  public static void setAdminPassword(String role, String newPassword) {
+  public static void setAdminPassword(RoleType role, String oldPassword,
+      String newPassword) {
     Authentication auth = new Authentication();
-    auth.setRole(role);
+    auth.setRole(role.toString());
     auth.setPassword(newPassword);
 
     try {
@@ -76,7 +88,8 @@ public final class Authentications {
           sqlSession.getMapper(AuthenticationMapper.class);
 
       AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role);
+      authEx.or().andRoleEqualTo(role.toString())
+          .andPasswordEqualTo(oldPassword);
       authMap.updateByExample(auth, authEx);
 
       sqlSession.commit();
