@@ -32,6 +32,11 @@ import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import wmw.aop.terminator.CountdownTerminatorModule;
+import wmw.aop.terminator.ResetTerminator;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
@@ -54,8 +59,6 @@ public final class QueryPanel {
   private static final Logger log = LoggerFactory.getLogger(QueryPanel.class);
 
   public static final String PROPS_PATH = "excel_manager.properties";
-  private static final long SHUTDOWN_TIME = 300000000000L; // 5 minutes
-  private long idleTime = System.nanoTime();
   private JFrame frame;
   private JTextField textField;
   private JScrollPane scrollPane;
@@ -68,8 +71,13 @@ public final class QueryPanel {
 
   public QueryPanel() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
-    autoShutdown();
     manager = newExcelManager(PROPS_PATH);
+    authenticate();
+    initialize();
+    autoBackup();
+  }
+
+  private void authenticate() {
     String password1 = null;
     String password2 = null;
     int retry = 0;
@@ -81,9 +89,6 @@ public final class QueryPanel {
       retry++;
     } while (!manager.authenticate(ADMIN, password1)
         || !manager.authenticate(ADMIN, password2));
-
-    initialize();
-    autoBackup();
   }
 
   private void setTotalRecords() {
@@ -99,27 +104,12 @@ public final class QueryPanel {
     timer.start();
   }
 
-  private void autoShutdown() {
-    Timer timer = new Timer(2000, new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (System.nanoTime() - idleTime > SHUTDOWN_TIME)
-          System.exit(0);
-      }
-    });
-    timer.start();
-  }
-
-  private void resetIdleTime() {
-    idleTime = System.nanoTime();
-  }
-
   private Entry<Integer, String> getPassword(String msg) {
     return getPassword(msg, false);
   }
 
+  @ResetTerminator
   private Entry<Integer, String> getPassword(String msg, boolean enableExit) {
-    resetIdleTime();
-
     JPanel panel = new JPanel();
     JLabel label = new JLabel(msg);
     JPasswordField pass = new JPasswordField(16);
@@ -145,9 +135,8 @@ public final class QueryPanel {
     return dataModel;
   }
 
+  @ResetTerminator
   private void querying() {
-    resetIdleTime();
-
     String query = textField.getText().trim();
     if (query.isEmpty()) {
       dataModel = initDataModel();
@@ -163,9 +152,8 @@ public final class QueryPanel {
     }
   }
 
+  @ResetTerminator
   private void importExcels() {
-    resetIdleTime();
-
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
@@ -213,9 +201,8 @@ public final class QueryPanel {
     manager.setAdminPassword(ADMIN, oldPassword, newPassword);
   }
 
+  @ResetTerminator
   private void backup() {
-    resetIdleTime();
-
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
@@ -315,7 +302,11 @@ public final class QueryPanel {
     EventQueue.invokeLater(new Runnable() {
       public void run() {
         try {
-          QueryPanel window = new QueryPanel();
+          Injector injector =
+              Guice
+                  .createInjector(new CountdownTerminatorModule(300000000000L));
+          QueryPanel window = injector.getInstance(QueryPanel.class);
+          // QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);
         } catch (Exception e) {
           log.error(e.getMessage());
