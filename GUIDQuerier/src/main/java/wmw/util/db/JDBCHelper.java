@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Joiner;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public final class JDBCHelper {
 
@@ -61,18 +62,18 @@ public final class JDBCHelper {
     ResultSet rs = stmt.executeQuery(sql);
     ResultSetMetaData md = rs.getMetaData();
     for (int i = 1; i <= md.getColumnCount(); i++)
-      columns.add(md.getColumnName(i));
+      columns.add(md.getColumnName(i).toLowerCase());
     stmt.close();
     return columns;
   }
 
-  public static void createTable(Connection c, String name, TableField... fields)
-      throws SQLException {
+  public static void createTable(Connection c, String name,
+      TableField... fields) throws SQLException {
     createTable(c, name, Arrays.asList(fields));
   }
 
-  public static void createTable(Connection c, String name, List<TableField> fields)
-      throws SQLException {
+  public static void createTable(Connection c, String name,
+      List<TableField> fields) throws SQLException {
     Statement stmt = c.createStatement();
     String createTable =
         "CREATE TABLE " + name.toLowerCase()
@@ -83,24 +84,14 @@ public final class JDBCHelper {
 
   public static void insertRecords(Connection c, String table,
       Map<String, String>... records) throws SQLException {
-    for (Map<String, String> record : records) {
-      String insertRecords =
-          "INSERT INTO " + table + "(" + joiner.join(record.keySet())
-              + ") VALUES" + buildSQLInterpolations(record.keySet().size());
-      PreparedStatement prepStmt = c.prepareStatement(insertRecords);
-      int setIndex = 1;
-      for (String column : record.keySet()) {
-        prepStmt.setObject(setIndex, record.get(column).trim());
-        setIndex++;
-      }
-      prepStmt.executeUpdate();
-      prepStmt.close();
-    }
+    insertRecords(c, table, Arrays.asList(records));
   }
 
   public static void insertRecords(Connection c, String table,
       Collection<Map<String, String>> records) throws SQLException {
+    List<String> columns = getColumns(c, table);
     for (Map<String, String> record : records) {
+      record = filterValidColumns(columns, record);
       String insertRecords =
           "INSERT INTO " + table + "(" + joiner.join(record.keySet())
               + ") VALUES" + buildSQLInterpolations(record.keySet().size());
@@ -117,7 +108,9 @@ public final class JDBCHelper {
 
   public static void safeInsertRecords(Connection c, String table,
       Collection<Map<String, String>> records) throws SQLException {
+    List<String> columns = getColumns(c, table);
     for (Map<String, String> record : records) {
+      record = filterValidColumns(columns, record);
       try {
         String insertRecords =
             "INSERT INTO " + table + "(" + joiner.join(record.keySet())
@@ -135,6 +128,16 @@ public final class JDBCHelper {
             .log(Level.SEVERE, null, ex);
       }
     }
+  }
+
+  public static Map<String, String> filterValidColumns(List<String> columns,
+      Map<String, String> record) throws SQLException {
+    Map<String, String> validRecord = newLinkedHashMap();
+    for (String column : record.keySet()) {
+      if (columns.contains(column.toLowerCase()))
+        validRecord.put(column, record.get(column));
+    }
+    return validRecord;
   }
 
   public static void unique(Connection c, String table, List<String> columns)

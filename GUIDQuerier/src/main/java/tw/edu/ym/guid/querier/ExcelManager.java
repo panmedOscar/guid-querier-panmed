@@ -133,9 +133,10 @@ public final class ExcelManager {
    * @return the header of the excel
    */
   public String[] getHeader() {
-    List<String> header = emptyList();
+    List<String> header = newArrayList();
     try {
-      header = es.getColumns(sheet);
+      for (String field : es.getColumns(sheet))
+        header.add(field.toUpperCase());
     } catch (SQLException e) {
       log.error(e.getMessage());
     }
