@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -61,6 +62,7 @@ public final class QueryPanel {
   private static final Logger log = LoggerFactory.getLogger(QueryPanel.class);
 
   public static final String PROPS_PATH = "excel_manager.properties";
+  public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
   private JFrame frame;
   private JTextField textField;
   private JScrollPane scrollPane;
@@ -175,7 +177,7 @@ public final class QueryPanel {
 
   @ResetTerminator
   private void importExcels() {
-    JFileChooser chooser = new JFileChooser();
+    JFileChooser chooser = new JFileChooser(new File("./"));
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
     if (chooser.getSelectedFile() != null) {
@@ -324,8 +326,8 @@ public final class QueryPanel {
       public void run() {
         try {
           Injector injector =
-              Guice
-                  .createInjector(new CountdownTerminatorModule(300000000000L));
+              Guice.createInjector(new CountdownTerminatorModule(
+                  AUTO_SHUTDOWN_TIME));
           QueryPanel window = injector.getInstance(QueryPanel.class);
           // QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);

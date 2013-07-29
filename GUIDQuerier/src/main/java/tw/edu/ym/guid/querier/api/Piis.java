@@ -50,7 +50,6 @@ public final class Piis {
       PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
 
       PiiExample piiEx = new PiiExample();
-      piiEx.or().andGuidIsNotNull();
       count = piiMap.countByExample(piiEx);
     } finally {
       sqlSession.close();
@@ -72,7 +71,6 @@ public final class Piis {
       PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
 
       PiiExample piiEx = new PiiExample();
-      piiEx.or().andGuidIsNotNull();
       piis = piiMap.selectByExample(piiEx);
     } finally {
       sqlSession.close();

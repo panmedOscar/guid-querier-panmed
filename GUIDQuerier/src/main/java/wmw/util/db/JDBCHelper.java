@@ -134,8 +134,8 @@ public final class JDBCHelper {
       Map<String, String> record) throws SQLException {
     Map<String, String> validRecord = newLinkedHashMap();
     for (String column : record.keySet()) {
-      if (columns.contains(column.toLowerCase()))
-        validRecord.put(column, record.get(column));
+      if (columns.contains(column.trim().toLowerCase()))
+        validRecord.put(column.trim(), record.get(column));
     }
     return validRecord;
   }
