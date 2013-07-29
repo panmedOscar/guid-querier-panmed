@@ -20,8 +20,13 @@
  */
 package wmw.util;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -30,7 +35,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.ibm.icu.text.CharsetDetector;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
@@ -60,11 +67,16 @@ public final class Excel2Map {
       if (rows.hasNext())
         header = rows.next();
 
+      String encoding = detectEncoding(header);
+      if (encoding == null)
+        encoding = "UTF-8";
+
       while (rows.hasNext()) {
         Row row = rows.next();
         Map<String, String> record = newLinkedHashMap();
         for (int j = 0; j < header.getLastCellNum(); j++)
-          record.put(cell2Str(header.getCell(j)), cell2Str(row.getCell(j)));
+          record.put(cell2Str(header.getCell(j), encoding),
+              cell2Str(row.getCell(j), encoding));
         map.put(sheet.getSheetName(), record);
       }
     }
@@ -72,8 +84,23 @@ public final class Excel2Map {
     return map;
   }
 
-  private static String cell2Str(Cell cell) {
+  private static String detectEncoding(Row header) {
+    CharsetDetector txtDetect = new CharsetDetector();
+    List<Cell> cells = newArrayList(header.cellIterator());
+    String headerStr = "";
+    for (Cell cell : cells)
+      headerStr += cell.toString();
+    txtDetect.setText(headerStr.getBytes());
+    return txtDetect.detect().getName();
+  }
+
+  private static String cell2Str(Cell cell, String encoding) {
     String value = cell.toString();
+    try {
+      value = new String(value.getBytes(Charset.forName(encoding)), "UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(Excel2Map.class.getName()).log(Level.SEVERE, null, ex);
+    }
     if (value.matches("^\\d+\\.0$"))
       return value.substring(0, value.lastIndexOf("."));
     return value;

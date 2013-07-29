@@ -25,6 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -72,9 +74,28 @@ public final class QueryPanel {
   public QueryPanel() throws SQLException, ClassNotFoundException,
       FileNotFoundException, IOException {
     manager = newExcelManager(PROPS_PATH);
+    setStyle();
     authenticate();
     initialize();
     autoBackup();
+  }
+
+  private void setStyle() {
+    try {
+      for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+          UIManager.setLookAndFeel(info.getClassName());
+          break;
+        }
+      }
+    } catch (Exception e) {
+      try {
+        UIManager.setLookAndFeel(UIManager
+            .getCrossPlatformLookAndFeelClassName());
+      } catch (Exception ex) {
+        log.error(ex.getMessage());
+      }
+    }
   }
 
   private void authenticate() {
