@@ -11,8 +11,8 @@ package tw.edu.ym.guid.querier;
  */
 public enum ExcelField {
   編碼日期(false), GUID(false), MRN(false), 身份證字號(false), 姓氏(false), 名字(false),
-  出生月(false), 出生日(false), 出生年(false), 聯絡電話(false), 性別(false), 收案醫師(false),
-  收案醫院名稱(false);
+  出生月(false), 出生日(false), 出生年(false), 性別(false), 聯絡電話(false), 地址(false), 收案醫師(
+      false), 收案醫院名稱(false);
 
   private final boolean unique;
 

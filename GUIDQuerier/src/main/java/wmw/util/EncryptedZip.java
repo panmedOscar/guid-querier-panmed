@@ -20,6 +20,7 @@
  */
 package wmw.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -35,15 +36,28 @@ public final class EncryptedZip {
   private final List<FileHeader> fileHeaders;
 
   @SuppressWarnings("unchecked")
-  public EncryptedZip(String path, String password) throws ZipException {
+  public EncryptedZip(String path, String password) throws ZipException,
+      IOException {
     zipFile = new ZipFile(path);
-
-    if (zipFile.isEncrypted())
-      zipFile.setPassword(password);
-    else
-      throw new IllegalArgumentException("Zip file is not encrypted.");
-
     fileHeaders = zipFile.getFileHeaders();
+
+    if (zipFile.isEncrypted()) {
+      zipFile.setPassword(password);
+      if (!(isPasswordValid(zipFile)))
+        throw new IllegalArgumentException("Zip password is wrong.");
+    } else {
+      throw new IllegalStateException("Zip file is not encrypted.");
+    }
+  }
+
+  private boolean isPasswordValid(ZipFile zip) {
+    try {
+      InputStream is = zip.getInputStream(fileHeaders.get(0));
+      is.read();
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   public List<String> getAllFileNames() throws ZipException {

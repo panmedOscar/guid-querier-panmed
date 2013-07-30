@@ -205,11 +205,14 @@ public final class ExcelManager {
     Map<String, InputStream> excels = emptyMap();
     try {
       excels = filterUnprocessedExcels(encryptedZips);
-      insertExcelRecords(excels.values());
-    } catch (ZipException e) {
+      List<Workbook> wbs = newArrayList();
+      for (InputStream is : excels.values())
+        wbs.add(WorkbookFactory.create(is));
+      insertExcelRecords(wbs);
+      recordProcessedFiles(excels.keySet());
+    } catch (Exception e) {
       log.error(e.getMessage());
     }
-    recordProcessedFiles(excels.keySet());
     if (files.isEmpty())
       Folders.removeFolderPath(FolderType.IMPORT);
     else
@@ -296,18 +299,16 @@ public final class ExcelManager {
       Histories.create(fileName);
   }
 
-  private void insertExcelRecords(Collection<InputStream> excels) {
-    for (InputStream is : excels) {
-      Workbook wb;
-      try {
-        wb = WorkbookFactory.create(is);
-        Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
-        for (String sheet : maps.keySet()) {
-          if (sheet.trim().matches("(?i)" + sheet + ".*"))
+  private void insertExcelRecords(List<Workbook> wbs) {
+    for (Workbook wb : wbs) {
+      Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
+      for (String sheet : maps.keySet()) {
+        if (sheet.trim().matches("(?i)" + sheet + ".*"))
+          try {
             es.safeInsertRecords(this.sheet, maps.get(sheet));
-        }
-      } catch (Exception e) {
-        log.error(e.getMessage());
+          } catch (SQLException e) {
+            log.error(e.getMessage());
+          }
       }
     }
   }

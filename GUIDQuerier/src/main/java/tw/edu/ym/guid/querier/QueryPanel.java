@@ -347,14 +347,15 @@ public final class QueryPanel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-      return column >= 3;
+      return column >= 2;
     }
 
     @Override
     public void setValueAt(Object value, int row, int column) {
       Map<String, String> record = newLinkedHashMap();
       for (int i = 0; i < this.getColumnCount(); i++) {
-        record.put(this.getColumnName(i), this.getValueAt(row, i).toString());
+        record.put(this.getColumnName(i), this.getValueAt(row, i) == null ? ""
+            : this.getValueAt(row, i).toString());
       }
       record.put(this.getColumnName(column), value.toString());
       Piis.update(record);

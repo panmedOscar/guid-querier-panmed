@@ -824,6 +824,76 @@ public class PiiExample {
             return (Criteria) this;
         }
 
+        public Criteria and性別IsNull() {
+            addCriterion("性別 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別IsNotNull() {
+            addCriterion("性別 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別EqualTo(String value) {
+            addCriterion("性別 =", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別NotEqualTo(String value) {
+            addCriterion("性別 <>", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別GreaterThan(String value) {
+            addCriterion("性別 >", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別GreaterThanOrEqualTo(String value) {
+            addCriterion("性別 >=", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別LessThan(String value) {
+            addCriterion("性別 <", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別LessThanOrEqualTo(String value) {
+            addCriterion("性別 <=", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別Like(String value) {
+            addCriterion("性別 like", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別NotLike(String value) {
+            addCriterion("性別 not like", value, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別In(List<String> values) {
+            addCriterion("性別 in", values, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別NotIn(List<String> values) {
+            addCriterion("性別 not in", values, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別Between(String value1, String value2) {
+            addCriterion("性別 between", value1, value2, "性別");
+            return (Criteria) this;
+        }
+
+        public Criteria and性別NotBetween(String value1, String value2) {
+            addCriterion("性別 not between", value1, value2, "性別");
+            return (Criteria) this;
+        }
+
         public Criteria and聯絡電話IsNull() {
             addCriterion("聯絡電話 is null");
             return (Criteria) this;
@@ -894,73 +964,73 @@ public class PiiExample {
             return (Criteria) this;
         }
 
-        public Criteria and性別IsNull() {
-            addCriterion("性別 is null");
+        public Criteria and地址IsNull() {
+            addCriterion("地址 is null");
             return (Criteria) this;
         }
 
-        public Criteria and性別IsNotNull() {
-            addCriterion("性別 is not null");
+        public Criteria and地址IsNotNull() {
+            addCriterion("地址 is not null");
             return (Criteria) this;
         }
 
-        public Criteria and性別EqualTo(String value) {
-            addCriterion("性別 =", value, "性別");
+        public Criteria and地址EqualTo(String value) {
+            addCriterion("地址 =", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別NotEqualTo(String value) {
-            addCriterion("性別 <>", value, "性別");
+        public Criteria and地址NotEqualTo(String value) {
+            addCriterion("地址 <>", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別GreaterThan(String value) {
-            addCriterion("性別 >", value, "性別");
+        public Criteria and地址GreaterThan(String value) {
+            addCriterion("地址 >", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別GreaterThanOrEqualTo(String value) {
-            addCriterion("性別 >=", value, "性別");
+        public Criteria and地址GreaterThanOrEqualTo(String value) {
+            addCriterion("地址 >=", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別LessThan(String value) {
-            addCriterion("性別 <", value, "性別");
+        public Criteria and地址LessThan(String value) {
+            addCriterion("地址 <", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別LessThanOrEqualTo(String value) {
-            addCriterion("性別 <=", value, "性別");
+        public Criteria and地址LessThanOrEqualTo(String value) {
+            addCriterion("地址 <=", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別Like(String value) {
-            addCriterion("性別 like", value, "性別");
+        public Criteria and地址Like(String value) {
+            addCriterion("地址 like", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別NotLike(String value) {
-            addCriterion("性別 not like", value, "性別");
+        public Criteria and地址NotLike(String value) {
+            addCriterion("地址 not like", value, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別In(List<String> values) {
-            addCriterion("性別 in", values, "性別");
+        public Criteria and地址In(List<String> values) {
+            addCriterion("地址 in", values, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別NotIn(List<String> values) {
-            addCriterion("性別 not in", values, "性別");
+        public Criteria and地址NotIn(List<String> values) {
+            addCriterion("地址 not in", values, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別Between(String value1, String value2) {
-            addCriterion("性別 between", value1, value2, "性別");
+        public Criteria and地址Between(String value1, String value2) {
+            addCriterion("地址 between", value1, value2, "地址");
             return (Criteria) this;
         }
 
-        public Criteria and性別NotBetween(String value1, String value2) {
-            addCriterion("性別 not between", value1, value2, "性別");
+        public Criteria and地址NotBetween(String value1, String value2) {
+            addCriterion("地址 not between", value1, value2, "地址");
             return (Criteria) this;
         }
 
