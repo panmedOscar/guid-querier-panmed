@@ -86,3 +86,5 @@ Version 1.5.0
 + Added Nimbus to GUI
 
 + Columns are editable
+
++ Filter valid columns while importing excels

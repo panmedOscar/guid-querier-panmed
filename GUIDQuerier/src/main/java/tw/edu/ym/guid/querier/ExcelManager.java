@@ -159,7 +159,7 @@ public final class ExcelManager {
    */
   public List<Object[]> selectAll() {
     try {
-      return es.selectAll(sheet);
+      return es.selectAll(sheet, ExcelField.orderBy());
     } catch (SQLException e) {
       log.error(e.getMessage());
     }
@@ -175,7 +175,7 @@ public final class ExcelManager {
    */
   public List<Object[]> selectAll(int limit) {
     try {
-      return es.selectAll(sheet, limit);
+      return es.selectAll(sheet, limit, ExcelField.orderBy());
     } catch (SQLException e) {
       log.error(e.getMessage());
     }

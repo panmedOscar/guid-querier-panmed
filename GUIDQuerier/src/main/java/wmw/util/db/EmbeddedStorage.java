@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-
 public final class EmbeddedStorage {
 
   private final Connection c;
@@ -66,11 +65,13 @@ public final class EmbeddedStorage {
     return JDBCHelper.getColumns(c, table);
   }
 
-  public void createTable(String table, List<TableField> fields) throws SQLException {
+  public void createTable(String table, List<TableField> fields)
+      throws SQLException {
     JDBCHelper.createTable(c, table, fields);
   }
 
-  public void createTable(String table, TableField... fields) throws SQLException {
+  public void createTable(String table, TableField... fields)
+      throws SQLException {
     JDBCHelper.createTable(c, table, fields);
   }
 
@@ -105,8 +106,18 @@ public final class EmbeddedStorage {
     return JDBCHelper.selectAll(c, table);
   }
 
+  public List<Object[]> selectAll(String table, String orderBy)
+      throws SQLException {
+    return JDBCHelper.selectAll(c, table, orderBy);
+  }
+
   public List<Object[]> selectAll(String table, int limit) throws SQLException {
     return JDBCHelper.selectAll(c, table, limit);
+  }
+
+  public List<Object[]> selectAll(String table, int limit, String orderBy)
+      throws SQLException {
+    return JDBCHelper.selectAll(c, table, limit, orderBy);
   }
 
 }

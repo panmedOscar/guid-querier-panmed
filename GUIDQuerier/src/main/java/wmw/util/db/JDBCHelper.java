@@ -190,9 +190,50 @@ public final class JDBCHelper {
     return records;
   }
 
+  public static List<Object[]> selectAll(Connection c, String table,
+      String ordereBy) throws SQLException {
+    String selectAll = "SELECT * FROM " + table + " ORDER BY " + ordereBy;
+    Statement stmt = c.createStatement();
+    ResultSet rs = stmt.executeQuery(selectAll);
+
+    List<Object[]> records = newArrayList();
+    while (rs.next()) {
+      int cols = rs.getMetaData().getColumnCount();
+      Object[] arr = new Object[cols];
+      for (int i = 0; i < cols; i++) {
+        arr[i] = rs.getObject(i + 1);
+      }
+      records.add(arr);
+    }
+
+    stmt.close();
+    return records;
+  }
+
   public static List<Object[]> selectAll(Connection c, String table, int limit)
       throws SQLException {
     String selectAll = "SELECT * FROM " + table + " LIMIT " + limit;
+    Statement stmt = c.createStatement();
+    ResultSet rs = stmt.executeQuery(selectAll);
+
+    List<Object[]> records = newArrayList();
+    while (rs.next()) {
+      int cols = rs.getMetaData().getColumnCount();
+      Object[] arr = new Object[cols];
+      for (int i = 0; i < cols; i++) {
+        arr[i] = rs.getObject(i + 1);
+      }
+      records.add(arr);
+    }
+
+    stmt.close();
+    return records;
+  }
+
+  public static List<Object[]> selectAll(Connection c, String table, int limit,
+      String orderBy) throws SQLException {
+    String selectAll =
+        "SELECT * FROM " + table + " ORDER BY " + orderBy + " LIMIT " + limit;
     Statement stmt = c.createStatement();
     ResultSet rs = stmt.executeQuery(selectAll);
 

@@ -158,6 +158,7 @@ public final class Piis {
         }
       }
 
+      piiEx.setOrderByClause(ExcelField.orderBy());
       piis = piiMap.selectByExample(piiEx);
     } finally {
       sqlSession.close();
