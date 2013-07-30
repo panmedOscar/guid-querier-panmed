@@ -404,6 +404,76 @@ public class PiiExample {
             return (Criteria) this;
         }
 
+        public Criteria andSubjectidIsNull() {
+            addCriterion("SUBJECTID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidIsNotNull() {
+            addCriterion("SUBJECTID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidEqualTo(String value) {
+            addCriterion("SUBJECTID =", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidNotEqualTo(String value) {
+            addCriterion("SUBJECTID <>", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidGreaterThan(String value) {
+            addCriterion("SUBJECTID >", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidGreaterThanOrEqualTo(String value) {
+            addCriterion("SUBJECTID >=", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidLessThan(String value) {
+            addCriterion("SUBJECTID <", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidLessThanOrEqualTo(String value) {
+            addCriterion("SUBJECTID <=", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidLike(String value) {
+            addCriterion("SUBJECTID like", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidNotLike(String value) {
+            addCriterion("SUBJECTID not like", value, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidIn(List<String> values) {
+            addCriterion("SUBJECTID in", values, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidNotIn(List<String> values) {
+            addCriterion("SUBJECTID not in", values, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidBetween(String value1, String value2) {
+            addCriterion("SUBJECTID between", value1, value2, "subjectid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectidNotBetween(String value1, String value2) {
+            addCriterion("SUBJECTID not between", value1, value2, "subjectid");
+            return (Criteria) this;
+        }
+
         public Criteria and身份證字號IsNull() {
             addCriterion("身份證字號 is null");
             return (Criteria) this;
