@@ -79,4 +79,10 @@ Version 1.4.0
 Version 1.4.1
 
 + Added Google Guice
+
+
+Version 1.5.0
+
 + Added Nimbus to GUI
+
++ Columns are editable

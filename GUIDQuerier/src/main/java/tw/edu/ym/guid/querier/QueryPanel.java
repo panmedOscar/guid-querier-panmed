@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.Box;
@@ -35,6 +36,7 @@ import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.edu.ym.guid.querier.api.Piis;
 import wmw.aop.terminator.CountdownTerminatorModule;
 import wmw.aop.terminator.ResetTerminator;
 
@@ -46,6 +48,7 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import exceldb.model.Pii;
 
+import static com.google.common.collect.Maps.newLinkedHashMap;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 import static wmw.util.BeanConverter.toObjectArray;
@@ -150,7 +153,7 @@ public final class QueryPanel {
   }
 
   private DefaultTableModel initDataModel() {
-    dataModel = new DefaultTableModel();
+    dataModel = new ExcelTableModel();
     dataModel.setColumnIdentifiers(manager.getHeader());
     for (Object[] record : manager.selectAll(500))
       dataModel.addRow(record);
@@ -167,7 +170,7 @@ public final class QueryPanel {
     } else {
       String[] keywords = query.trim().split("\\s+");
       List<Pii> piis = manager.query(keywords);
-      dataModel = new DefaultTableModel();
+      dataModel = new ExcelTableModel();
       dataModel.setColumnIdentifiers(manager.getHeader());
       for (Pii pii : piis)
         dataModel.addRow(toObjectArray(pii));
@@ -336,6 +339,27 @@ public final class QueryPanel {
         }
       }
     });
+  }
+
+  private class ExcelTableModel extends DefaultTableModel {
+
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+      return column >= 3;
+    }
+
+    @Override
+    public void setValueAt(Object value, int row, int column) {
+      Map<String, String> record = newLinkedHashMap();
+      for (int i = 0; i < this.getColumnCount(); i++) {
+        record.put(this.getColumnName(i), this.getValueAt(row, i).toString());
+      }
+      record.put(this.getColumnName(column), value.toString());
+      Piis.update(record);
+      super.setValueAt(value, row, column);
+    }
   }
 
 }
