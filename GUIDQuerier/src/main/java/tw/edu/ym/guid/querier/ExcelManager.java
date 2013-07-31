@@ -18,12 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.api.Authentications;
-import tw.edu.ym.guid.querier.api.Authentications.RoleType;
 import tw.edu.ym.guid.querier.api.Folders;
 import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
 import wmw.util.BackupUtil;
+import wmw.util.BeanConverter;
 import wmw.util.EncryptedZip;
 import wmw.util.Excel2Map;
 import wmw.util.db.EmbeddedStorage;
@@ -53,7 +53,7 @@ import static wmw.util.db.TableField.Varchar;
  * @author Wei-Ming Wu
  * 
  */
-public final class ExcelManager {
+public final class ExcelManager implements RecordManager {
 
   private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
@@ -116,7 +116,8 @@ public final class ExcelManager {
    * 
    * @return the total of records
    */
-  public int total() {
+  @Override
+  public int totalRecord() {
     return Piis.count();
   }
 
@@ -124,7 +125,7 @@ public final class ExcelManager {
     Folder folder = Folders.findFirst(FolderType.IMPORT);
 
     if (folder != null)
-      importExcelsInFolder(folder.getPath());
+      importExcels(folder.getPath());
   }
 
   /**
@@ -132,6 +133,7 @@ public final class ExcelManager {
    * 
    * @return the header of the excel
    */
+  @Override
   public String[] getHeader() {
     List<String> header = newArrayList();
     try {
@@ -157,6 +159,7 @@ public final class ExcelManager {
    * 
    * @return a List of Object Array which contains the properties of each Pii
    */
+  @Override
   public List<Object[]> selectAll() {
     try {
       return es.selectAll(sheet, ExcelField.orderBy());
@@ -173,6 +176,7 @@ public final class ExcelManager {
    *          the maximum records to return
    * @return a List of Object Array which contains the properties of each Pii
    */
+  @Override
   public List<Object[]> selectAll(int limit) {
     try {
       return es.selectAll(sheet, limit, ExcelField.orderBy());
@@ -183,14 +187,29 @@ public final class ExcelManager {
   }
 
   /**
+   * Updates a row of record in database.
+   * 
+   * @param record
+   *          a row of record in database
+   */
+  @Override
+  public void update(Map<String, String> record) {
+    Piis.update(record);
+  }
+
+  /**
    * Searches Piis by given keywords.
    * 
    * @param keywords
    *          used to query
-   * @return a List of Pii
+   * @return a List of Object[]
    */
-  public List<Pii> query(String... keywords) {
-    return Piis.globalSearch(keywords);
+  @Override
+  public List<Object[]> query(String... keywords) {
+    List<Object[]> results = newArrayList();
+    for (Pii pii : Piis.globalSearch(keywords))
+      results.add(BeanConverter.toObjectArray(pii));
+    return results;
   }
 
   /**
@@ -199,7 +218,8 @@ public final class ExcelManager {
    * @param folderPath
    *          where encrypted zips located
    */
-  public void importExcelsInFolder(final String folderPath) {
+  @Override
+  public void importExcels(final String folderPath) {
     List<File> files = retrieveAllFiles(folderPath, "zip");
     List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
     Map<String, InputStream> excels = emptyMap();
@@ -228,7 +248,8 @@ public final class ExcelManager {
    *          to be verified
    * @return true if authentication passed, false otherwise
    */
-  public boolean authenticate(RoleType role, String password) {
+  @Override
+  public boolean authenticate(String role, String password) {
     Authentication auth = Authentications.findByRoleAndPassword(role, password);
     return auth != null;
   }
@@ -243,9 +264,9 @@ public final class ExcelManager {
    * @param newPassword
    *          the new password
    */
-  public void setAdminPassword(RoleType role, String oldPassword,
-      String newPassword) {
-    Authentications.setAdminPassword(role, oldPassword, newPassword);
+  @Override
+  public void setPassword(String role, String oldPassword, String newPassword) {
+    Authentications.setPassword(role, oldPassword, newPassword);
   }
 
   /**
@@ -254,7 +275,8 @@ public final class ExcelManager {
    * @param backupFolder
    *          used to backup encrypted zips
    */
-  public void setBackup(String backupFolder) {
+  @Override
+  public void setBackupFolder(String backupFolder) {
     Folders.setFolderPath(FolderType.BACKUP,
         new File(backupFolder).getAbsolutePath());
     backup();
@@ -263,6 +285,7 @@ public final class ExcelManager {
   /**
    * Backups all encrypted zips from import folder to backup folder.
    */
+  @Override
   public void backup() {
     Folder src = Folders.findFirst(FolderType.IMPORT);
     Folder dest = Folders.findFirst(FolderType.BACKUP);
