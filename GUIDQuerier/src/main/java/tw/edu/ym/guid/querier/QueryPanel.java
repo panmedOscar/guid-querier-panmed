@@ -340,7 +340,7 @@ public final class QueryPanel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-      return column >= 2;
+      return manager.isColumnEditableAt(column);
     }
 
     @Override

@@ -7,7 +7,7 @@ public interface RecordManager {
 
   boolean authenticate(String role, String password);
 
-  void setPassword(String role, String password1, String password2);
+  void setPassword(String role, String oldPassword, String newPassword);
 
   String[] getHeader();
 
@@ -26,5 +26,7 @@ public interface RecordManager {
   void setBackupFolder(String path);
 
   void backup();
+
+  boolean isColumnEditableAt(int index);
 
 }

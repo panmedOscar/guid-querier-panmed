@@ -146,6 +146,16 @@ public final class ExcelManager implements RecordManager {
   }
 
   /**
+   * Check if a column editable.
+   * 
+   * @return true if the column editable, false otherwise
+   */
+  @Override
+  public boolean isColumnEditableAt(int index) {
+    return ExcelField.values()[index].isEditable();
+  }
+
+  /**
    * Returns all Piis.
    * 
    * @return a List of Pii
