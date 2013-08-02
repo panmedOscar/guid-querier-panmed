@@ -56,3 +56,4 @@ Version 1.5.0
 
 Version 1.5.1
 * Using ExcelField to define editable fields
+* Using maven-plugin-shade to package jar
