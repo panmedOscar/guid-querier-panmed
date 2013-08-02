@@ -34,8 +34,7 @@
 							</transformers>
 							<artifactSet>
 								<excludes>
-									<exclude>junit:junit</exclude>
-									<excluse>org.mybatis.generator:mybatis-generator-core</excluse>
+									<exclude>org.mybatis.generator:mybatis-generator-core</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>
@@ -79,11 +78,6 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>ooxml-schemas</artifactId>
-			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jgoodies</groupId>
