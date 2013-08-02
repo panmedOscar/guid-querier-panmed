@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -36,7 +35,6 @@ import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.edu.ym.guid.querier.api.Piis;
 import wmw.aop.terminator.CountdownTerminatorModule;
 import wmw.aop.terminator.ResetTerminator;
 
@@ -46,12 +44,9 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-import exceldb.model.Pii;
-
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-import static wmw.util.BeanConverter.toObjectArray;
 
 /**
  * 
@@ -71,7 +66,7 @@ public final class QueryPanel {
   private JScrollPane scrollPane;
   private JTable table;
   private JMenuBar menuBar;
-  private final ExcelManager manager;
+  private final RecordManager manager;
   private DefaultTableModel dataModel;
   // private JPanel statusPanel;
   private JMenu totalRecords;
@@ -113,12 +108,12 @@ public final class QueryPanel {
       password1 = getPassword("Enter 1st Password:", true).getValue();
       password2 = getPassword("Enter 2nd Password:", true).getValue();
       retry++;
-    } while (!manager.authenticate(ADMIN, password1)
-        || !manager.authenticate(ADMIN, password2));
+    } while (!manager.authenticate(ADMIN.toString(), password1)
+        || !manager.authenticate(ADMIN.toString(), password2));
   }
 
   private void setTotalRecords() {
-    totalRecords.setText(" Total Records: " + manager.total());
+    totalRecords.setText(" Total Records: " + manager.totalRecord());
   }
 
   private void autoBackup() {
@@ -169,11 +164,10 @@ public final class QueryPanel {
       table.setModel(dataModel);
     } else {
       String[] keywords = query.trim().split("\\s+");
-      List<Pii> piis = manager.query(keywords);
       dataModel = new ExcelTableModel();
       dataModel.setColumnIdentifiers(manager.getHeader());
-      for (Pii pii : piis)
-        dataModel.addRow(toObjectArray(pii));
+      for (Object[] record : manager.query(keywords))
+        dataModel.addRow(record);
       table.setModel(dataModel);
     }
   }
@@ -184,7 +178,7 @@ public final class QueryPanel {
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
     if (chooser.getSelectedFile() != null) {
-      manager.importExcelsInFolder(chooser.getSelectedFile().getAbsolutePath());
+      manager.importExcels(chooser.getSelectedFile().getAbsolutePath());
       table.setModel(initDataModel());
     }
   }
@@ -197,8 +191,8 @@ public final class QueryPanel {
       Entry<Integer, String> pwd = getPassword("Enter old password:");
       option = pwd.getKey();
       oldPassword = pwd.getValue();
-    } while (!manager.authenticate(ADMIN, oldPassword)
-        && !manager.authenticate(ADMIN, oldPassword) && option == 0);
+    } while (!manager.authenticate(ADMIN.toString(), oldPassword)
+        && !manager.authenticate(ADMIN.toString(), oldPassword) && option == 0);
 
     if (option != 0)
       return;
@@ -224,7 +218,7 @@ public final class QueryPanel {
     if (option != 0)
       return;
 
-    manager.setAdminPassword(ADMIN, oldPassword, newPassword);
+    manager.setPassword(ADMIN.toString(), oldPassword, newPassword);
   }
 
   @ResetTerminator
@@ -233,7 +227,7 @@ public final class QueryPanel {
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.showOpenDialog(frame);
     if (chooser.getSelectedFile() != null)
-      manager.setBackup(chooser.getSelectedFile().getAbsolutePath());
+      manager.setBackupFolder(chooser.getSelectedFile().getAbsolutePath());
   }
 
   private void initialize() {
@@ -332,7 +326,6 @@ public final class QueryPanel {
               Guice.createInjector(new CountdownTerminatorModule(
                   AUTO_SHUTDOWN_TIME));
           QueryPanel window = injector.getInstance(QueryPanel.class);
-          // QueryPanel window = new QueryPanel();
           window.frame.setVisible(true);
         } catch (Exception e) {
           log.error(e.getMessage());
@@ -347,7 +340,7 @@ public final class QueryPanel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-      return column >= 2;
+      return manager.isColumnEditableAt(column);
     }
 
     @Override
@@ -358,7 +351,7 @@ public final class QueryPanel {
             : this.getValueAt(row, i).toString());
       }
       record.put(this.getColumnName(column), value.toString());
-      Piis.update(record);
+      manager.update(record);
       super.setValueAt(value, row, column);
     }
   }

@@ -49,7 +49,7 @@ public final class Authentications {
    *          to be searched
    * @return an Authentication if found, null otherwise
    */
-  public static Authentication findByRoleAndPassword(RoleType role,
+  public static Authentication findByRoleAndPassword(String role,
       String password) {
     List<Authentication> auths = emptyList();
 
@@ -59,7 +59,7 @@ public final class Authentications {
           sqlSession.getMapper(AuthenticationMapper.class);
 
       AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role.toString()).andPasswordEqualTo(password);
+      authEx.or().andRoleEqualTo(role).andPasswordEqualTo(password);
       auths = authMap.selectByExample(authEx);
     } finally {
       sqlSession.close();
@@ -76,7 +76,7 @@ public final class Authentications {
    * @param newPassword
    *          to set
    */
-  public static void setAdminPassword(RoleType role, String oldPassword,
+  public static void setPassword(String role, String oldPassword,
       String newPassword) {
     Authentication auth = new Authentication();
     auth.setRole(role.toString());
@@ -88,8 +88,7 @@ public final class Authentications {
           sqlSession.getMapper(AuthenticationMapper.class);
 
       AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role.toString())
-          .andPasswordEqualTo(oldPassword);
+      authEx.or().andRoleEqualTo(role).andPasswordEqualTo(oldPassword);
       authMap.updateByExample(auth, authEx);
 
       sqlSession.commit();

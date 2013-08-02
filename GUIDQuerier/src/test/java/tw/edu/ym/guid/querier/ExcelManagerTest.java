@@ -30,7 +30,7 @@ public class ExcelManagerTest {
     db_props.load(ExcelManagerTest.class.getClassLoader().getResourceAsStream(
         "test_database.properties"));
     manager = newExcelManager("test_excel_manager.properties");
-    manager.importExcelsInFolder("src/test/resources/example");
+    manager.importExcels("src/test/resources/example");
   }
 
   @AfterClass
@@ -54,38 +54,38 @@ public class ExcelManagerTest {
 
   @Test
   public void testAuthenticate() {
-    assertTrue(manager.authenticate(ADMIN,
+    assertTrue(manager.authenticate(ADMIN.toString(),
         manager_props.getProperty("default_password_1")));
-    assertTrue(manager.authenticate(ADMIN,
+    assertTrue(manager.authenticate(ADMIN.toString(),
         manager_props.getProperty("default_password_2")));
-    assertFalse(manager.authenticate(ADMIN, "haha"));
+    assertFalse(manager.authenticate(ADMIN.toString(), "haha"));
   }
 
   @Test
   public void testSetAdminPassword() {
-    manager.setAdminPassword(ADMIN,
+    manager.setPassword(ADMIN.toString(),
         manager_props.getProperty("default_password_1"), "yaya");
-    assertTrue(manager.authenticate(ADMIN, "yaya"));
-    manager.setAdminPassword(ADMIN,
+    assertTrue(manager.authenticate(ADMIN.toString(), "yaya"));
+    manager.setPassword(ADMIN.toString(),
         manager_props.getProperty("default_password_2"), "ohoh");
-    assertFalse(manager.authenticate(ADMIN,
+    assertFalse(manager.authenticate(ADMIN.toString(),
         manager_props.getProperty("default_password_1")));
-    assertTrue(manager.authenticate(ADMIN, "ohoh"));
+    assertTrue(manager.authenticate(ADMIN.toString(), "ohoh"));
   }
 
   @Test
   public void testImportExcelsInFolder() {
-    assertEquals(5009, manager.total());
+    assertEquals(5009, manager.totalRecord());
   }
 
   @Test
   public void testGetAll() {
-    assertEquals(manager.total(), manager.getAll().size());
+    assertEquals(manager.totalRecord(), manager.getAll().size());
   }
 
   @Test
   public void testSelectAll() {
-    assertEquals(manager.total(), manager.selectAll().size());
+    assertEquals(manager.totalRecord(), manager.selectAll().size());
   }
 
   @Test
@@ -105,7 +105,7 @@ public class ExcelManagerTest {
     List<File> oldFiles = retrieveAllFiles("src/test/resources/backup", "zip");
     for (File file : oldFiles)
       file.delete();
-    manager.setBackup("src/test/resources/backup");
+    manager.setBackupFolder("src/test/resources/backup");
     List<File> backupFiles =
         retrieveAllFiles("src/test/resources/backup", "zip");
     assertEquals(1, backupFiles.size());

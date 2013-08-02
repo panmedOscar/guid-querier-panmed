@@ -10,14 +10,18 @@ package tw.edu.ym.guid.querier;
  * 
  */
 public enum ExcelField {
-  編碼日期(false), GUID(false), MRN(false), SUBJECTID(false), 身份證字號(false), 姓氏(
-      false), 名字(false), 出生月(false), 出生日(false), 出生年(false), 性別(false), 聯絡電話(
-      false), 地址(false), 收案醫師(false), 收案醫院名稱(false);
+
+  編碼日期(false, false), GUID(false, false), MRN(false, true), SUBJECTID(false,
+      false), 身份證字號(false, false), 姓氏(false, false), 名字(false, false), 出生月(
+      false, false), 出生日(false, false), 出生年(false, false), 性別(false, false),
+  聯絡電話(false, true), 地址(false, true), 收案醫師(false, true), 收案醫院名稱(false, true);
 
   private final boolean unique;
+  private final boolean editable;
 
-  private ExcelField(Boolean unique) {
+  private ExcelField(boolean unique, boolean editable) {
     this.unique = unique;
+    this.editable = editable;
   }
 
   /**
@@ -27,6 +31,15 @@ public enum ExcelField {
    */
   public boolean isUnique() {
     return unique;
+  }
+
+  /**
+   * Check if this field is editable.
+   * 
+   * @return true if this field is editable, false otherwise
+   */
+  public boolean isEditable() {
+    return editable;
   }
 
   public static String orderBy() {
