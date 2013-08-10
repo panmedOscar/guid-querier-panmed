@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.mybatis.generator.exception.InvalidConfigurationException;
+import org.mybatis.generator.exception.XMLParserException;
 
 import tw.edu.ym.guid.querier.QueryPanel;
 
@@ -23,7 +25,8 @@ import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 public final class ExceldbGenerator {
 
   public static void main(String[] args) throws SQLException,
-      ClassNotFoundException, FileNotFoundException, IOException {
+      ClassNotFoundException, FileNotFoundException, IOException,
+      XMLParserException, InvalidConfigurationException, InterruptedException {
     Properties props = new Properties();
     props.load(ExceldbGenerator.class.getClassLoader().getResourceAsStream(
         QueryPanel.PROPS_PATH));
