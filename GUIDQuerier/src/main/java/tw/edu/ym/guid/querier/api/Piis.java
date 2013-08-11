@@ -12,15 +12,16 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
 import tw.edu.ym.guid.querier.ExcelField;
+import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
+import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
 import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
 import exceldb.model.PiiExample;
 import exceldb.model.PiiExample.Criteria;
+
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.emptyList;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -29,15 +30,14 @@ import static java.util.Collections.emptyList;
  * @author Wei-Ming Wu
  * 
  */
-public final class Piis {
+public enum Piis implements MybatisCRUD<Pii, PiiExample> {
+  INSTANCE;
 
   private static final Logger log = LoggerFactory.getLogger(Piis.class);
 
-  private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
-      .build(EXCELDB.getResource());
-  private static SqlSession sqlSession;
-
-  private Piis() {}
+  private static SqlSessionFactory sessionFactory =
+      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
+  private static SqlSession session;
 
   /**
    * Returns the number of total records in Pii table.
@@ -45,19 +45,12 @@ public final class Piis {
    * @return the number of total records in Pii table
    */
   public static int count() {
-    int count = 0;
+    return INSTANCE.count(new MybatisBlock<PiiExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
+      @Override
+      public void yield(PiiExample example) {}
 
-      PiiExample piiEx = new PiiExample();
-      count = piiMap.countByExample(piiEx);
-    } finally {
-      sqlSession.close();
-    }
-
-    return count;
+    });
   }
 
   /**
@@ -66,25 +59,17 @@ public final class Piis {
    * @return a List of Pii
    */
   public static List<Pii> all() {
-    List<Pii> piis = emptyList();
+    return INSTANCE.select(new MybatisBlock<PiiExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
+      @Override
+      public void yield(PiiExample example) {}
 
-      PiiExample piiEx = new PiiExample();
-      piis = piiMap.selectByExample(piiEx);
-    } finally {
-      sqlSession.close();
-    }
-
-    return piis;
+    });
   }
 
   public static Pii update(Map<String, String> record) {
-    List<Pii> piis = emptyList();
     List<String> columns = newArrayList();
-    Pii pii = new Pii();
+    final Pii pii = new Pii();
     for (ExcelField field : ExcelField.values())
       columns.add(field.toString().toLowerCase());
     for (String key : record.keySet()) {
@@ -95,20 +80,17 @@ public final class Piis {
     if (pii.get編碼日期() == null || pii.getGuid() == null)
       return null;
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
+    INSTANCE.update(pii, new MybatisBlock<PiiExample>() {
 
-      PiiExample piiEx = new PiiExample();
-      piiEx.or().and編碼日期EqualTo(pii.get編碼日期()).andGuidEqualTo(pii.getGuid());
-      piiMap.updateByExample(pii, piiEx);
-      sqlSession.commit();
-      piis = piiMap.selectByExample(piiEx);
-    } finally {
-      sqlSession.close();
-    }
+      @Override
+      public void yield(PiiExample example) {
+        example.or().and編碼日期EqualTo(pii.get編碼日期())
+            .andGuidEqualTo(pii.getGuid());
+      }
 
-    return piis.isEmpty() ? null : piis.get(0);
+    });
+
+    return pii;
   }
 
   private static void setPiiProperty(Pii pii, String key, String value) {
@@ -141,30 +123,22 @@ public final class Piis {
    *          used to query
    * @return a List of Pii
    */
-  public static List<Pii> globalSearch(List<String> keywords) {
-    List<Pii> piis = emptyList();
+  public static List<Pii> globalSearch(final List<String> keywords) {
+    return INSTANCE.select(new MybatisBlock<PiiExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      PiiMapper piiMap = sqlSession.getMapper(PiiMapper.class);
-
-      PiiExample piiEx = new PiiExample();
-      for (String keyword : keywords) {
-        keyword = keyword.trim();
-        if (keyword.getBytes(Charset.forName("UTF-8")).length < 3) {
-          buildEqualToQuery(piiEx, keyword);
-        } else {
-          buildLikeQuery(piiEx, keyword);
+      @Override
+      public void yield(PiiExample example) {
+        for (String keyword : keywords) {
+          keyword = keyword.trim();
+          if (keyword.getBytes(Charset.forName("UTF-8")).length < 3)
+            buildEqualToQuery(example, keyword);
+          else
+            buildLikeQuery(example, keyword);
         }
+        example.setOrderByClause(ExcelField.orderBy());
       }
 
-      piiEx.setOrderByClause(ExcelField.orderBy());
-      piis = piiMap.selectByExample(piiEx);
-    } finally {
-      sqlSession.close();
-    }
-
-    return piis;
+    });
   }
 
   private static void buildEqualToQuery(PiiExample piiEx, String value) {
@@ -207,6 +181,82 @@ public final class Piis {
     String capitalize =
         field.toUpperCase().charAt(0) + field.toLowerCase().substring(1);
     return "and" + capitalize + "Like";
+  }
+
+  @Override
+  public void insert(Pii record) {
+    try {
+      session = sessionFactory.openSession();
+      PiiMapper mapper = session.getMapper(PiiMapper.class);
+      mapper.insert(record);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public List<Pii> select(MybatisBlock<PiiExample> block) {
+    List<Pii> records = newArrayList();
+    try {
+      session = sessionFactory.openSession();
+      PiiMapper mapper = session.getMapper(PiiMapper.class);
+      PiiExample example = new PiiExample();
+      block.yield(example);
+      records = mapper.selectByExample(example);
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return records;
+  }
+
+  @Override
+  public void update(Pii record, MybatisBlock<PiiExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      PiiMapper mapper = session.getMapper(PiiMapper.class);
+      PiiExample example = new PiiExample();
+      block.yield(example);
+      mapper.updateByExample(record, example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public void delete(MybatisBlock<PiiExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      PiiMapper mapper = session.getMapper(PiiMapper.class);
+      PiiExample example = new PiiExample();
+      block.yield(example);
+      mapper.deleteByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public int count(MybatisBlock<PiiExample> block) {
+    int count;
+    try {
+      session = sessionFactory.openSession();
+      PiiMapper mapper = session.getMapper(PiiMapper.class);
+      PiiExample example = new PiiExample();
+      block.yield(example);
+      count = mapper.countByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return count;
   }
 
 }

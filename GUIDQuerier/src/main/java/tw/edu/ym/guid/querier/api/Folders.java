@@ -6,12 +6,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
+import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
+import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
-import static java.util.Collections.emptyList;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -20,7 +22,8 @@ import static java.util.Collections.emptyList;
  * @author Wei-Ming Wu
  * 
  */
-public final class Folders {
+public enum Folders implements MybatisCRUD<Folder, FolderExample> {
+  INSTANCE;
 
   /**
    * 
@@ -33,28 +36,17 @@ public final class Folders {
     IMPORT, BACKUP;
   }
 
-  private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
-      .build(EXCELDB.getResource());
-  private static SqlSession sqlSession;
-
-  private Folders() {}
+  private static SqlSessionFactory sessionFactory =
+      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
+  private static SqlSession session;
 
   public static List<Folder> all() {
-    List<Folder> folders = emptyList();
+    return INSTANCE.select(new MybatisBlock<FolderExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
+      @Override
+      public void yield(FolderExample example) {}
 
-      FolderExample folderEx = new FolderExample();
-      folderEx.or().andUsageIsNotNull();
-      folderEx.or().andPathIsNotNull();
-      folders = folderMap.selectByExample(folderEx);
-    } finally {
-      sqlSession.close();
-    }
-
-    return folders;
+    });
   }
 
   /**
@@ -64,19 +56,15 @@ public final class Folders {
    *          of the folder
    * @return a Folder
    */
-  public static Folder findFirst(FolderType usage) {
-    List<Folder> folders = emptyList();
+  public static Folder findFirst(final FolderType usage) {
+    List<Folder> folders = INSTANCE.select(new MybatisBlock<FolderExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
+      @Override
+      public void yield(FolderExample example) {
+        example.or().andUsageEqualTo(usage.toString());
+      }
 
-      FolderExample folderEx = new FolderExample();
-      folderEx.or().andUsageEqualTo(usage.toString());
-      folders = folderMap.selectByExample(folderEx);
-    } finally {
-      sqlSession.close();
-    }
+    });
 
     return folders.isEmpty() ? null : folders.get(0);
   }
@@ -89,26 +77,23 @@ public final class Folders {
    * @param path
    *          of the folder
    */
-  public static void setFolderPath(FolderType usage, String path) {
+  public static void setFolderPath(final FolderType usage, String path) {
     boolean isPathExisted = findFirst(usage) != null;
     Folder folder = new Folder();
     folder.setUsage(usage.toString());
     folder.setPath(path);
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
+    if (isPathExisted) {
+      INSTANCE.update(folder, new MybatisBlock<FolderExample>() {
 
-      FolderExample folderEx = new FolderExample();
-      folderEx.or().andUsageEqualTo(usage.toString());
-      if (isPathExisted)
-        folderMap.updateByExample(folder, folderEx);
-      else
-        folderMap.insert(folder);
+        @Override
+        public void yield(FolderExample example) {
+          example.or().andUsageEqualTo(usage.toString());
+        }
 
-      sqlSession.commit();
-    } finally {
-      sqlSession.close();
+      });
+    } else {
+      INSTANCE.insert(folder);
     }
   }
 
@@ -118,19 +103,91 @@ public final class Folders {
    * @param usage
    *          of the folder
    */
-  public static void removeFolderPath(FolderType usage) {
+  public static void removeFolderPath(final FolderType usage) {
+    INSTANCE.delete(new MybatisBlock<FolderExample>() {
+
+      @Override
+      public void yield(FolderExample example) {
+        example.or().andUsageEqualTo(usage.toString());
+      }
+
+    });
+  }
+
+  @Override
+  public void insert(Folder record) {
     try {
-      sqlSession = sqlMapper.openSession();
-      FolderMapper folderMap = sqlSession.getMapper(FolderMapper.class);
-
-      FolderExample folderEx = new FolderExample();
-      folderEx.or().andUsageEqualTo(usage.toString());
-      folderMap.deleteByExample(folderEx);
-
-      sqlSession.commit();
+      session = sessionFactory.openSession();
+      FolderMapper mapper = session.getMapper(FolderMapper.class);
+      mapper.insert(record);
+      session.commit();
     } finally {
-      sqlSession.close();
+      if (session != null)
+        session.close();
     }
+  }
+
+  @Override
+  public List<Folder> select(MybatisBlock<FolderExample> block) {
+    List<Folder> records = newArrayList();
+    try {
+      session = sessionFactory.openSession();
+      FolderMapper mapper = session.getMapper(FolderMapper.class);
+      FolderExample example = new FolderExample();
+      block.yield(example);
+      records = mapper.selectByExample(example);
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return records;
+  }
+
+  @Override
+  public void update(Folder record, MybatisBlock<FolderExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      FolderMapper mapper = session.getMapper(FolderMapper.class);
+      FolderExample example = new FolderExample();
+      block.yield(example);
+      mapper.updateByExample(record, example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public void delete(MybatisBlock<FolderExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      FolderMapper mapper = session.getMapper(FolderMapper.class);
+      FolderExample example = new FolderExample();
+      block.yield(example);
+      mapper.deleteByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public int count(MybatisBlock<FolderExample> block) {
+    int count;
+    try {
+      session = sessionFactory.openSession();
+      FolderMapper mapper = session.getMapper(FolderMapper.class);
+      FolderExample example = new FolderExample();
+      block.yield(example);
+      count = mapper.countByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return count;
   }
 
 }

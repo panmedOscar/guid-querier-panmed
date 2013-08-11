@@ -7,13 +7,15 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
+import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
+import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Collections.emptyList;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -22,13 +24,12 @@ import static java.util.Collections.emptyList;
  * @author Wei-Ming Wu
  * 
  */
-public final class Histories {
+public enum Histories implements MybatisCRUD<History, HistoryExample> {
+  INSTANCE;
 
-  private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
-      .build(EXCELDB.getResource());
-  private static SqlSession sqlSession;
-
-  private Histories() {}
+  private static SqlSessionFactory sessionFactory =
+      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
+  private static SqlSession session;
 
   /**
    * Returns all History records.
@@ -36,20 +37,12 @@ public final class Histories {
    * @return a List of History
    */
   public static List<History> all() {
-    List<History> histories = emptyList();
+    return INSTANCE.select(new MybatisBlock<HistoryExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      HistoryMapper historyMap = sqlSession.getMapper(HistoryMapper.class);
+      @Override
+      public void yield(HistoryExample example) {}
 
-      HistoryExample historyEx = new HistoryExample();
-      historyEx.or().andFileNameIsNotNull();
-      histories = historyMap.selectByExample(historyEx);
-    } finally {
-      sqlSession.close();
-    }
-
-    return histories;
+    });
   }
 
   /**
@@ -62,14 +55,7 @@ public final class Histories {
     History record = new History();
     record.setFileName(fileName);
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      HistoryMapper historyMap = sqlSession.getMapper(HistoryMapper.class);
-      historyMap.insert(record);
-      sqlSession.commit();
-    } finally {
-      sqlSession.close();
-    }
+    INSTANCE.insert(record);
   }
 
   /**
@@ -81,23 +67,95 @@ public final class Histories {
    * @return a Set of unprocessed file names
    */
   public static Set<String> filterUnprocessedFiles(List<String> files) {
+    List<History> histories =
+        INSTANCE.select(new MybatisBlock<HistoryExample>() {
+
+          @Override
+          public void yield(HistoryExample example) {}
+
+        });
+
     Set<String> unprocessedFiles = newHashSet(files);
-
-    try {
-      sqlSession = sqlMapper.openSession();
-      HistoryMapper historyMap = sqlSession.getMapper(HistoryMapper.class);
-
-      HistoryExample historyEx = new HistoryExample();
-      historyEx.or().andFileNameIsNotNull();
-      List<History> histories = historyMap.selectByExample(historyEx);
-
-      for (History history : histories)
-        unprocessedFiles.remove(history.getFileName());
-    } finally {
-      sqlSession.close();
-    }
+    for (History history : histories)
+      unprocessedFiles.remove(history.getFileName());
 
     return unprocessedFiles;
+  }
+
+  @Override
+  public void insert(History record) {
+    try {
+      session = sessionFactory.openSession();
+      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
+      mapper.insert(record);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public List<History> select(MybatisBlock<HistoryExample> block) {
+    List<History> records = newArrayList();
+    try {
+      session = sessionFactory.openSession();
+      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
+      HistoryExample example = new HistoryExample();
+      block.yield(example);
+      records = mapper.selectByExample(example);
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return records;
+  }
+
+  @Override
+  public void update(History record, MybatisBlock<HistoryExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
+      HistoryExample example = new HistoryExample();
+      block.yield(example);
+      mapper.updateByExample(record, example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public void delete(MybatisBlock<HistoryExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
+      HistoryExample example = new HistoryExample();
+      block.yield(example);
+      mapper.deleteByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public int count(MybatisBlock<HistoryExample> block) {
+    int count;
+    try {
+      session = sessionFactory.openSession();
+      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
+      HistoryExample example = new HistoryExample();
+      block.yield(example);
+      count = mapper.countByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return count;
   }
 
 }

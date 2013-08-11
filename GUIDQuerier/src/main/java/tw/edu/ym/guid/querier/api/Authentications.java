@@ -6,12 +6,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
-
+import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
+import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
 import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
-import static java.util.Collections.emptyList;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -21,7 +23,9 @@ import static java.util.Collections.emptyList;
  * @author Wei-Ming Wu
  * 
  */
-public final class Authentications {
+public enum Authentications implements
+    MybatisCRUD<Authentication, AuthenticationExample> {
+  INSTANCE;
 
   /**
    * 
@@ -34,11 +38,9 @@ public final class Authentications {
     ADMIN;
   }
 
-  private static SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder()
-      .build(EXCELDB.getResource());
-  private static SqlSession sqlSession;
-
-  private Authentications() {}
+  private static SqlSessionFactory sessionFactory =
+      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
+  private static SqlSession session;
 
   /**
    * Finds an Authentication record by given role and password.
@@ -49,21 +51,17 @@ public final class Authentications {
    *          to be searched
    * @return an Authentication if found, null otherwise
    */
-  public static Authentication findByRoleAndPassword(String role,
-      String password) {
-    List<Authentication> auths = emptyList();
+  public static Authentication findByRoleAndPassword(final String role,
+      final String password) {
+    List<Authentication> auths =
+        INSTANCE.select(new MybatisBlock<AuthenticationExample>() {
 
-    try {
-      sqlSession = sqlMapper.openSession();
-      AuthenticationMapper authMap =
-          sqlSession.getMapper(AuthenticationMapper.class);
+          @Override
+          public void yield(AuthenticationExample example) {
+            example.or().andRoleEqualTo(role).andPasswordEqualTo(password);
+          }
 
-      AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role).andPasswordEqualTo(password);
-      auths = authMap.selectByExample(authEx);
-    } finally {
-      sqlSession.close();
-    }
+        });
 
     return auths.isEmpty() ? null : auths.get(0);
   }
@@ -76,25 +74,102 @@ public final class Authentications {
    * @param newPassword
    *          to set
    */
-  public static void setPassword(String role, String oldPassword,
+  public static void setPassword(final String role, final String oldPassword,
       String newPassword) {
     Authentication auth = new Authentication();
     auth.setRole(role.toString());
     auth.setPassword(newPassword);
 
+    INSTANCE.update(auth, new MybatisBlock<AuthenticationExample>() {
+
+      @Override
+      public void yield(AuthenticationExample example) {
+        example.or().andRoleEqualTo(role).andPasswordEqualTo(oldPassword);
+      }
+
+    });
+  }
+
+  @Override
+  public void insert(Authentication record) {
     try {
-      sqlSession = sqlMapper.openSession();
-      AuthenticationMapper authMap =
-          sqlSession.getMapper(AuthenticationMapper.class);
-
-      AuthenticationExample authEx = new AuthenticationExample();
-      authEx.or().andRoleEqualTo(role).andPasswordEqualTo(oldPassword);
-      authMap.updateByExample(auth, authEx);
-
-      sqlSession.commit();
+      session = sessionFactory.openSession();
+      AuthenticationMapper mapper =
+          session.getMapper(AuthenticationMapper.class);
+      mapper.insert(record);
+      session.commit();
     } finally {
-      sqlSession.close();
+      if (session != null)
+        session.close();
     }
+  }
+
+  @Override
+  public List<Authentication> select(MybatisBlock<AuthenticationExample> block) {
+    List<Authentication> records = newArrayList();
+    try {
+      session = sessionFactory.openSession();
+      AuthenticationMapper mapper =
+          session.getMapper(AuthenticationMapper.class);
+      AuthenticationExample example = new AuthenticationExample();
+      block.yield(example);
+      records = mapper.selectByExample(example);
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return records;
+  }
+
+  @Override
+  public void update(Authentication record,
+      MybatisBlock<AuthenticationExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      AuthenticationMapper mapper =
+          session.getMapper(AuthenticationMapper.class);
+      AuthenticationExample example = new AuthenticationExample();
+      block.yield(example);
+      mapper.updateByExample(record, example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public void delete(MybatisBlock<AuthenticationExample> block) {
+    try {
+      session = sessionFactory.openSession();
+      AuthenticationMapper mapper =
+          session.getMapper(AuthenticationMapper.class);
+      AuthenticationExample example = new AuthenticationExample();
+      block.yield(example);
+      mapper.deleteByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+  }
+
+  @Override
+  public int count(MybatisBlock<AuthenticationExample> block) {
+    int count;
+    try {
+      session = sessionFactory.openSession();
+      AuthenticationMapper mapper =
+          session.getMapper(AuthenticationMapper.class);
+      AuthenticationExample example = new AuthenticationExample();
+      block.yield(example);
+      count = mapper.countByExample(example);
+      session.commit();
+    } finally {
+      if (session != null)
+        session.close();
+    }
+    return count;
   }
 
 }
