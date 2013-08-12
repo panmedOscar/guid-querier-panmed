@@ -3,17 +3,14 @@ package tw.edu.ym.guid.querier.api;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
-import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
+import wmw.mybatis.MybatisBase;
+import wmw.mybatis.MybatisBlock;
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
@@ -24,12 +21,16 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * @author Wei-Ming Wu
  * 
  */
-public enum Histories implements MybatisCRUD<History, HistoryExample> {
-  INSTANCE;
+public final class Histories extends
+    MybatisBase<History, HistoryExample, HistoryMapper> {
 
-  private static SqlSessionFactory sessionFactory =
-      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
-  private static SqlSession session;
+  private static final Histories INSTANCE = new Histories();
+
+  private Histories() {}
+
+  public Histories getInstance() {
+    return INSTANCE;
+  }
 
   /**
    * Returns all History records.
@@ -83,79 +84,18 @@ public enum Histories implements MybatisCRUD<History, HistoryExample> {
   }
 
   @Override
-  public void insert(History record) {
-    try {
-      session = sessionFactory.openSession();
-      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
-      mapper.insert(record);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
+  protected SqlSessionFactory getSessionFactory() {
+    return EXCELDB.getSessionFactory();
   }
 
   @Override
-  public List<History> select(MybatisBlock<HistoryExample> block) {
-    List<History> records = newArrayList();
-    try {
-      session = sessionFactory.openSession();
-      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
-      HistoryExample example = new HistoryExample();
-      block.yield(example);
-      records = mapper.selectByExample(example);
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return records;
+  protected Class<HistoryExample> getExampleClass() {
+    return HistoryExample.class;
   }
 
   @Override
-  public void update(History record, MybatisBlock<HistoryExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
-      HistoryExample example = new HistoryExample();
-      block.yield(example);
-      mapper.updateByExample(record, example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public void delete(MybatisBlock<HistoryExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
-      HistoryExample example = new HistoryExample();
-      block.yield(example);
-      mapper.deleteByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public int count(MybatisBlock<HistoryExample> block) {
-    int count;
-    try {
-      session = sessionFactory.openSession();
-      HistoryMapper mapper = session.getMapper(HistoryMapper.class);
-      HistoryExample example = new HistoryExample();
-      block.yield(example);
-      count = mapper.countByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return count;
+  protected Class<HistoryMapper> getMapperClass() {
+    return HistoryMapper.class;
   }
 
 }

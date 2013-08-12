@@ -1,4 +1,4 @@
-package tw.edu.ym.guid.querier.mybatis;
+package wmw.mybatis;
 
 public interface MybatisBlock<E> {
 

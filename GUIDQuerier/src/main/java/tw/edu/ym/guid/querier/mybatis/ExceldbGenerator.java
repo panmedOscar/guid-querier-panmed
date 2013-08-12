@@ -11,7 +11,7 @@ import org.mybatis.generator.exception.InvalidConfigurationException;
 import org.mybatis.generator.exception.XMLParserException;
 
 import tw.edu.ym.guid.querier.QueryPanel;
-
+import wmw.mybatis.MybatisGenerator;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
 /**

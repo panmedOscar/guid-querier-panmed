@@ -2,17 +2,14 @@ package tw.edu.ym.guid.querier.api;
 
 import java.util.List;
 
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
-import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
+import wmw.mybatis.MybatisBase;
+import wmw.mybatis.MybatisBlock;
 import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
@@ -23,9 +20,16 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * @author Wei-Ming Wu
  * 
  */
-public enum Authentications implements
-    MybatisCRUD<Authentication, AuthenticationExample> {
-  INSTANCE;
+public final class Authentications extends
+    MybatisBase<Authentication, AuthenticationExample, AuthenticationMapper> {
+
+  private static final Authentications INSTANCE = new Authentications();
+
+  private Authentications() {}
+
+  public Authentications getInstance() {
+    return INSTANCE;
+  }
 
   /**
    * 
@@ -37,10 +41,6 @@ public enum Authentications implements
   public enum RoleType {
     ADMIN;
   }
-
-  private static SqlSessionFactory sessionFactory =
-      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
-  private static SqlSession session;
 
   /**
    * Finds an Authentication record by given role and password.
@@ -91,85 +91,18 @@ public enum Authentications implements
   }
 
   @Override
-  public void insert(Authentication record) {
-    try {
-      session = sessionFactory.openSession();
-      AuthenticationMapper mapper =
-          session.getMapper(AuthenticationMapper.class);
-      mapper.insert(record);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
+  protected SqlSessionFactory getSessionFactory() {
+    return EXCELDB.getSessionFactory();
   }
 
   @Override
-  public List<Authentication> select(MybatisBlock<AuthenticationExample> block) {
-    List<Authentication> records = newArrayList();
-    try {
-      session = sessionFactory.openSession();
-      AuthenticationMapper mapper =
-          session.getMapper(AuthenticationMapper.class);
-      AuthenticationExample example = new AuthenticationExample();
-      block.yield(example);
-      records = mapper.selectByExample(example);
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return records;
+  protected Class<AuthenticationExample> getExampleClass() {
+    return AuthenticationExample.class;
   }
 
   @Override
-  public void update(Authentication record,
-      MybatisBlock<AuthenticationExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      AuthenticationMapper mapper =
-          session.getMapper(AuthenticationMapper.class);
-      AuthenticationExample example = new AuthenticationExample();
-      block.yield(example);
-      mapper.updateByExample(record, example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public void delete(MybatisBlock<AuthenticationExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      AuthenticationMapper mapper =
-          session.getMapper(AuthenticationMapper.class);
-      AuthenticationExample example = new AuthenticationExample();
-      block.yield(example);
-      mapper.deleteByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public int count(MybatisBlock<AuthenticationExample> block) {
-    int count;
-    try {
-      session = sessionFactory.openSession();
-      AuthenticationMapper mapper =
-          session.getMapper(AuthenticationMapper.class);
-      AuthenticationExample example = new AuthenticationExample();
-      block.yield(example);
-      count = mapper.countByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return count;
+  protected Class<AuthenticationMapper> getMapperClass() {
+    return AuthenticationMapper.class;
   }
 
 }

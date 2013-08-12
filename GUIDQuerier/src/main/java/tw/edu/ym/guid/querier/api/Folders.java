@@ -2,17 +2,14 @@ package tw.edu.ym.guid.querier.api;
 
 import java.util.List;
 
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import tw.edu.ym.guid.querier.mybatis.MybatisBlock;
-import tw.edu.ym.guid.querier.mybatis.MybatisCRUD;
+import wmw.mybatis.MybatisBase;
+import wmw.mybatis.MybatisBlock;
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
@@ -22,8 +19,16 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * @author Wei-Ming Wu
  * 
  */
-public enum Folders implements MybatisCRUD<Folder, FolderExample> {
-  INSTANCE;
+public final class Folders extends
+    MybatisBase<Folder, FolderExample, FolderMapper> {
+
+  private static final Folders INSTANCE = new Folders();
+
+  private Folders() {}
+
+  public Folders getInstance() {
+    return INSTANCE;
+  }
 
   /**
    * 
@@ -35,10 +40,6 @@ public enum Folders implements MybatisCRUD<Folder, FolderExample> {
   public enum FolderType {
     IMPORT, BACKUP;
   }
-
-  private static SqlSessionFactory sessionFactory =
-      new SqlSessionFactoryBuilder().build(EXCELDB.getResource());
-  private static SqlSession session;
 
   public static List<Folder> all() {
     return INSTANCE.select(new MybatisBlock<FolderExample>() {
@@ -115,79 +116,18 @@ public enum Folders implements MybatisCRUD<Folder, FolderExample> {
   }
 
   @Override
-  public void insert(Folder record) {
-    try {
-      session = sessionFactory.openSession();
-      FolderMapper mapper = session.getMapper(FolderMapper.class);
-      mapper.insert(record);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
+  protected SqlSessionFactory getSessionFactory() {
+    return EXCELDB.getSessionFactory();
   }
 
   @Override
-  public List<Folder> select(MybatisBlock<FolderExample> block) {
-    List<Folder> records = newArrayList();
-    try {
-      session = sessionFactory.openSession();
-      FolderMapper mapper = session.getMapper(FolderMapper.class);
-      FolderExample example = new FolderExample();
-      block.yield(example);
-      records = mapper.selectByExample(example);
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return records;
+  protected Class<FolderExample> getExampleClass() {
+    return FolderExample.class;
   }
 
   @Override
-  public void update(Folder record, MybatisBlock<FolderExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      FolderMapper mapper = session.getMapper(FolderMapper.class);
-      FolderExample example = new FolderExample();
-      block.yield(example);
-      mapper.updateByExample(record, example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public void delete(MybatisBlock<FolderExample> block) {
-    try {
-      session = sessionFactory.openSession();
-      FolderMapper mapper = session.getMapper(FolderMapper.class);
-      FolderExample example = new FolderExample();
-      block.yield(example);
-      mapper.deleteByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-  }
-
-  @Override
-  public int count(MybatisBlock<FolderExample> block) {
-    int count;
-    try {
-      session = sessionFactory.openSession();
-      FolderMapper mapper = session.getMapper(FolderMapper.class);
-      FolderExample example = new FolderExample();
-      block.yield(example);
-      count = mapper.countByExample(example);
-      session.commit();
-    } finally {
-      if (session != null)
-        session.close();
-    }
-    return count;
+  protected Class<FolderMapper> getMapperClass() {
+    return FolderMapper.class;
   }
 
 }
