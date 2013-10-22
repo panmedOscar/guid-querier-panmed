@@ -11,7 +11,7 @@ import org.mybatis.generator.exception.InvalidConfigurationException;
 import org.mybatis.generator.exception.XMLParserException;
 
 import tw.edu.ym.guid.querier.QueryPanel;
-import wmw.mybatis.MybatisGenerator;
+import wmw.mybatis.MyBatisGenerator;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
 /**
@@ -38,7 +38,7 @@ public final class ExceldbGenerator {
 
     new File(dbFile).delete();
     newExcelManager(QueryPanel.PROPS_PATH);
-    MybatisGenerator.generate(ExceldbGenerator.class.getClassLoader()
+    MyBatisGenerator.generate(ExceldbGenerator.class.getClassLoader()
         .getResourceAsStream("generatorConfig.xml"));
     FileUtils.copyDirectory(new File("src/main/resources/exceldb"), new File(
         "src/test/resources/exceldb"));

@@ -20,8 +20,20 @@
  */
 package wmw.mybatis;
 
-public interface MybatisBlock<E> {
+import java.util.List;
 
-  void yield(E example);
+public interface MyBatisCRUD<T, E> {
+
+  void insert(T record);
+
+  List<T> select(Example<E> block);
+
+  T selectOne(Example<E> block);
+
+  void update(T record, Example<E> block);
+
+  void delete(Example<E> block);
+
+  int count(Example<E> block);
 
 }

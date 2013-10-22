@@ -1,18 +1,18 @@
 package tw.edu.ym.guid.querier.api;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 import java.util.List;
 import java.util.Set;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.MybatisBase;
-import wmw.mybatis.MybatisBlock;
+import wmw.mybatis.Example;
+import wmw.mybatis.MyBatisBase;
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
-
-import static com.google.common.collect.Sets.newHashSet;
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -22,15 +22,7 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * 
  */
 public final class Histories extends
-    MybatisBase<History, HistoryExample, HistoryMapper> {
-
-  private static final Histories INSTANCE = new Histories();
-
-  private Histories() {}
-
-  public Histories getInstance() {
-    return INSTANCE;
-  }
+    MyBatisBase<History, HistoryExample, HistoryMapper> {
 
   /**
    * Returns all History records.
@@ -38,10 +30,10 @@ public final class Histories extends
    * @return a List of History
    */
   public static List<History> all() {
-    return INSTANCE.select(new MybatisBlock<HistoryExample>() {
+    return new Histories().select(new Example<HistoryExample>() {
 
       @Override
-      public void yield(HistoryExample example) {}
+      public void build(HistoryExample example) {}
 
     });
   }
@@ -56,7 +48,7 @@ public final class Histories extends
     History record = new History();
     record.setFileName(fileName);
 
-    INSTANCE.insert(record);
+    new Histories().insert(record);
   }
 
   /**
@@ -69,10 +61,10 @@ public final class Histories extends
    */
   public static Set<String> filterUnprocessedFiles(List<String> files) {
     List<History> histories =
-        INSTANCE.select(new MybatisBlock<HistoryExample>() {
+        new Histories().select(new Example<HistoryExample>() {
 
           @Override
-          public void yield(HistoryExample example) {}
+          public void build(HistoryExample example) {}
 
         });
 

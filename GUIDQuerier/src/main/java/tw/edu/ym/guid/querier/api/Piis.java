@@ -1,5 +1,8 @@
 package tw.edu.ym.guid.querier.api;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -11,15 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.ExcelField;
-import wmw.mybatis.MybatisBase;
-import wmw.mybatis.MybatisBlock;
+import wmw.mybatis.Example;
+import wmw.mybatis.MyBatisBase;
 import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
 import exceldb.model.PiiExample;
 import exceldb.model.PiiExample.Criteria;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -28,17 +28,9 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * @author Wei-Ming Wu
  * 
  */
-public final class Piis extends MybatisBase<Pii, PiiExample, PiiMapper> {
+public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
 
   private static final Logger log = LoggerFactory.getLogger(Piis.class);
-
-  private static final Piis INSTANCE = new Piis();
-
-  private Piis() {}
-
-  public Piis getInstance() {
-    return INSTANCE;
-  }
 
   /**
    * Returns the number of total records in Pii table.
@@ -46,10 +38,10 @@ public final class Piis extends MybatisBase<Pii, PiiExample, PiiMapper> {
    * @return the number of total records in Pii table
    */
   public static int count() {
-    return INSTANCE.count(new MybatisBlock<PiiExample>() {
+    return new Piis().count(new Example<PiiExample>() {
 
       @Override
-      public void yield(PiiExample example) {}
+      public void build(PiiExample example) {}
 
     });
   }
@@ -60,10 +52,10 @@ public final class Piis extends MybatisBase<Pii, PiiExample, PiiMapper> {
    * @return a List of Pii
    */
   public static List<Pii> all() {
-    return INSTANCE.select(new MybatisBlock<PiiExample>() {
+    return new Piis().select(new Example<PiiExample>() {
 
       @Override
-      public void yield(PiiExample example) {}
+      public void build(PiiExample example) {}
 
     });
   }
@@ -81,10 +73,10 @@ public final class Piis extends MybatisBase<Pii, PiiExample, PiiMapper> {
     if (pii.get編碼日期() == null || pii.getGuid() == null)
       return null;
 
-    INSTANCE.update(pii, new MybatisBlock<PiiExample>() {
+    new Piis().update(pii, new Example<PiiExample>() {
 
       @Override
-      public void yield(PiiExample example) {
+      public void build(PiiExample example) {
         example.or().and編碼日期EqualTo(pii.get編碼日期())
             .andGuidEqualTo(pii.getGuid());
       }
@@ -125,10 +117,10 @@ public final class Piis extends MybatisBase<Pii, PiiExample, PiiMapper> {
    * @return a List of Pii
    */
   public static List<Pii> globalSearch(final List<String> keywords) {
-    return INSTANCE.select(new MybatisBlock<PiiExample>() {
+    return new Piis().select(new Example<PiiExample>() {
 
       @Override
-      public void yield(PiiExample example) {
+      public void build(PiiExample example) {
         for (String keyword : keywords) {
           keyword = keyword.trim();
           if (keyword.getBytes(Charset.forName("UTF-8")).length < 3)

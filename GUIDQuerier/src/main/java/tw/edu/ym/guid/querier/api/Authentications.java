@@ -1,16 +1,16 @@
 package tw.edu.ym.guid.querier.api;
 
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.MybatisBase;
-import wmw.mybatis.MybatisBlock;
+import wmw.mybatis.Example;
+import wmw.mybatis.MyBatisBase;
 import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
-
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -21,15 +21,7 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * 
  */
 public final class Authentications extends
-    MybatisBase<Authentication, AuthenticationExample, AuthenticationMapper> {
-
-  private static final Authentications INSTANCE = new Authentications();
-
-  private Authentications() {}
-
-  public Authentications getInstance() {
-    return INSTANCE;
-  }
+    MyBatisBase<Authentication, AuthenticationExample, AuthenticationMapper> {
 
   /**
    * 
@@ -54,10 +46,10 @@ public final class Authentications extends
   public static Authentication findByRoleAndPassword(final String role,
       final String password) {
     List<Authentication> auths =
-        INSTANCE.select(new MybatisBlock<AuthenticationExample>() {
+        new Authentications().select(new Example<AuthenticationExample>() {
 
           @Override
-          public void yield(AuthenticationExample example) {
+          public void build(AuthenticationExample example) {
             example.or().andRoleEqualTo(role).andPasswordEqualTo(password);
           }
 
@@ -80,10 +72,10 @@ public final class Authentications extends
     auth.setRole(role.toString());
     auth.setPassword(newPassword);
 
-    INSTANCE.update(auth, new MybatisBlock<AuthenticationExample>() {
+    new Authentications().update(auth, new Example<AuthenticationExample>() {
 
       @Override
-      public void yield(AuthenticationExample example) {
+      public void build(AuthenticationExample example) {
         example.or().andRoleEqualTo(role).andPasswordEqualTo(oldPassword);
       }
 

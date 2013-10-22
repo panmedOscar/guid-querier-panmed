@@ -1,16 +1,16 @@
 package tw.edu.ym.guid.querier.api;
 
+import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
+
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.MybatisBase;
-import wmw.mybatis.MybatisBlock;
+import wmw.mybatis.Example;
+import wmw.mybatis.MyBatisBase;
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
-
-import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
 /**
  * 
@@ -20,15 +20,7 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
  * 
  */
 public final class Folders extends
-    MybatisBase<Folder, FolderExample, FolderMapper> {
-
-  private static final Folders INSTANCE = new Folders();
-
-  private Folders() {}
-
-  public Folders getInstance() {
-    return INSTANCE;
-  }
+    MyBatisBase<Folder, FolderExample, FolderMapper> {
 
   /**
    * 
@@ -42,10 +34,10 @@ public final class Folders extends
   }
 
   public static List<Folder> all() {
-    return INSTANCE.select(new MybatisBlock<FolderExample>() {
+    return new Folders().select(new Example<FolderExample>() {
 
       @Override
-      public void yield(FolderExample example) {}
+      public void build(FolderExample example) {}
 
     });
   }
@@ -58,10 +50,10 @@ public final class Folders extends
    * @return a Folder
    */
   public static Folder findFirst(final FolderType usage) {
-    List<Folder> folders = INSTANCE.select(new MybatisBlock<FolderExample>() {
+    List<Folder> folders = new Folders().select(new Example<FolderExample>() {
 
       @Override
-      public void yield(FolderExample example) {
+      public void build(FolderExample example) {
         example.or().andUsageEqualTo(usage.toString());
       }
 
@@ -85,16 +77,16 @@ public final class Folders extends
     folder.setPath(path);
 
     if (isPathExisted) {
-      INSTANCE.update(folder, new MybatisBlock<FolderExample>() {
+      new Folders().update(folder, new Example<FolderExample>() {
 
         @Override
-        public void yield(FolderExample example) {
+        public void build(FolderExample example) {
           example.or().andUsageEqualTo(usage.toString());
         }
 
       });
     } else {
-      INSTANCE.insert(folder);
+      new Folders().insert(folder);
     }
   }
 
@@ -105,10 +97,10 @@ public final class Folders extends
    *          of the folder
    */
   public static void removeFolderPath(final FolderType usage) {
-    INSTANCE.delete(new MybatisBlock<FolderExample>() {
+    new Folders().delete(new Example<FolderExample>() {
 
       @Override
-      public void yield(FolderExample example) {
+      public void build(FolderExample example) {
         example.or().andUsageEqualTo(usage.toString());
       }
 

@@ -20,6 +20,8 @@
  */
 package wmw.mybatis;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Level;
@@ -28,9 +30,7 @@ import java.util.logging.Logger;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
-
-abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
+abstract public class MyBatisBase<T, E, M> implements MyBatisCRUD<T, E> {
 
   abstract protected SqlSessionFactory getSessionFactory();
 
@@ -44,14 +44,12 @@ abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
     try {
       session = getSessionFactory().openSession();
       M mapper = session.getMapper(getMapperClass());
-      Method[] methods = getMapperClass().getDeclaredMethods();
-      for (Method method : methods) {
-        if (method.getName().equals("insert"))
-          method.invoke(mapper, record);
-      }
+      Method method =
+          getMapperClass().getDeclaredMethod("insert", record.getClass());
+      method.invoke(mapper, record);
       session.commit();
     } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
     } finally {
       if (session != null)
         session.close();
@@ -60,21 +58,20 @@ abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public List<T> select(MybatisBlock<E> block) {
+  public List<T> select(Example<E> block) {
     List<T> records = newArrayList();
     SqlSession session = null;
     try {
       session = getSessionFactory().openSession();
       M mapper = session.getMapper(getMapperClass());
       E example = getExampleClass().newInstance();
-      block.yield(example);
-      Method[] methods = getMapperClass().getDeclaredMethods();
-      for (Method method : methods) {
-        if (method.getName().equals("selectByExample"))
-          records = (List<T>) method.invoke(mapper, example);
-      }
+      block.build(example);
+      Method method =
+          getMapperClass().getDeclaredMethod("selectByExample",
+              getExampleClass());
+      records = (List<T>) method.invoke(mapper, example);
     } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
     } finally {
       if (session != null)
         session.close();
@@ -83,21 +80,26 @@ abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
   }
 
   @Override
-  public void update(T record, MybatisBlock<E> block) {
+  public T selectOne(Example<E> block) {
+    List<T> records = select(block);
+    return records.isEmpty() ? null : records.get(0);
+  }
+
+  @Override
+  public void update(T record, Example<E> block) {
     SqlSession session = null;
     try {
       session = getSessionFactory().openSession();
       M mapper = session.getMapper(getMapperClass());
       E example = getExampleClass().newInstance();
-      block.yield(example);
-      Method[] methods = getMapperClass().getDeclaredMethods();
-      for (Method method : methods) {
-        if (method.getName().equals("updateByExample"))
-          method.invoke(mapper, record, example);
-      }
+      block.build(example);
+      Method method =
+          getMapperClass().getDeclaredMethod("updateByExample",
+              record.getClass(), getExampleClass());
+      method.invoke(mapper, record, example);
       session.commit();
     } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
     } finally {
       if (session != null)
         session.close();
@@ -105,21 +107,20 @@ abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
   }
 
   @Override
-  public void delete(MybatisBlock<E> block) {
+  public void delete(Example<E> block) {
     SqlSession session = null;
     try {
       session = getSessionFactory().openSession();
       M mapper = session.getMapper(getMapperClass());
       E example = getExampleClass().newInstance();
-      block.yield(example);
-      Method[] methods = getMapperClass().getDeclaredMethods();
-      for (Method method : methods) {
-        if (method.getName().equals("deleteByExample"))
-          method.invoke(mapper, example);
-      }
+      block.build(example);
+      Method method =
+          getMapperClass().getDeclaredMethod("deleteByExample",
+              getExampleClass());
+      method.invoke(mapper, example);
       session.commit();
     } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
     } finally {
       if (session != null)
         session.close();
@@ -127,21 +128,20 @@ abstract public class MybatisBase<T, E, M> implements MybatisCRUD<T, E> {
   }
 
   @Override
-  public int count(MybatisBlock<E> block) {
+  public int count(Example<E> block) {
     int count = -1;
     SqlSession session = null;
     try {
       session = getSessionFactory().openSession();
       M mapper = session.getMapper(getMapperClass());
       E example = getExampleClass().newInstance();
-      block.yield(example);
-      Method[] methods = getMapperClass().getDeclaredMethods();
-      for (Method method : methods) {
-        if (method.getName().equals("countByExample"))
-          count = (Integer) method.invoke(mapper, example);
-      }
+      block.build(example);
+      Method method =
+          getMapperClass().getDeclaredMethod("countByExample",
+              getExampleClass());
+      count = (Integer) method.invoke(mapper, example);
     } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
     } finally {
       if (session != null)
         session.close();

@@ -118,6 +118,7 @@ public final class QueryPanel {
 
   private void autoBackup() {
     Timer timer = new Timer(600000, new ActionListener() {
+
       public void actionPerformed(ActionEvent e) {
         manager.backup();
       }
@@ -245,6 +246,7 @@ public final class QueryPanel {
     JMenu menu = new JMenu("Import Excels");
     JMenuItem item = new JMenuItem("Select a folder...");
     item.addActionListener(new ActionListener() {
+
       public void actionPerformed(ActionEvent arg0) {
         importExcels();
       }
@@ -255,6 +257,7 @@ public final class QueryPanel {
     JMenu auth = new JMenu("Authentication");
     JMenuItem password = new JMenuItem("Change password");
     password.addActionListener(new ActionListener() {
+
       public void actionPerformed(ActionEvent arg0) {
         setPassword();
       }
@@ -265,6 +268,7 @@ public final class QueryPanel {
     JMenu backup = new JMenu("Backup");
     JMenuItem backupPath = new JMenuItem("Select a backup folder...");
     backupPath.addActionListener(new ActionListener() {
+
       public void actionPerformed(ActionEvent arg0) {
         backup();
       }
@@ -288,6 +292,7 @@ public final class QueryPanel {
 
     textField = new JTextField();
     textField.getDocument().addDocumentListener(new DocumentListener() {
+
       @Override
       public void changedUpdate(DocumentEvent arg0) {
         querying();
@@ -320,6 +325,7 @@ public final class QueryPanel {
 
   public static void main(String[] args) {
     EventQueue.invokeLater(new Runnable() {
+
       public void run() {
         try {
           Injector injector =

@@ -1,5 +1,15 @@
 package tw.edu.ym.guid.querier;
 
+import static com.google.common.collect.ImmutableMap.of;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.util.FolderTraverser.retrieveAllFiles;
+import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
+import static wmw.util.db.TableField.Varchar;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,16 +45,6 @@ import com.google.common.collect.Multimap;
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
 import exceldb.model.Pii;
-
-import static com.google.common.collect.ImmutableMap.of;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-import static wmw.util.FolderTraverser.retrieveAllFiles;
-import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
-import static wmw.util.db.TableField.Varchar;
 
 /**
  * 
