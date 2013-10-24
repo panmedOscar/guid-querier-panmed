@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.ExcelField;
-import wmw.mybatis.Example;
-import wmw.mybatis.MyBatisBase;
+import wmw.db.mybatis.Example;
+import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.PiiMapper;
 import exceldb.model.Pii;
 import exceldb.model.PiiExample;
@@ -31,34 +31,6 @@ import exceldb.model.PiiExample.Criteria;
 public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
 
   private static final Logger log = LoggerFactory.getLogger(Piis.class);
-
-  /**
-   * Returns the number of total records in Pii table.
-   * 
-   * @return the number of total records in Pii table
-   */
-  public static int count() {
-    return new Piis().count(new Example<PiiExample>() {
-
-      @Override
-      public void build(PiiExample example) {}
-
-    });
-  }
-
-  /**
-   * Returns all Piis.
-   * 
-   * @return a List of Pii
-   */
-  public static List<Pii> all() {
-    return new Piis().select(new Example<PiiExample>() {
-
-      @Override
-      public void build(PiiExample example) {}
-
-    });
-  }
 
   public static Pii update(Map<String, String> record) {
     List<String> columns = newArrayList();
@@ -76,7 +48,7 @@ public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
     new Piis().update(pii, new Example<PiiExample>() {
 
       @Override
-      public void build(PiiExample example) {
+      public void set(PiiExample example) {
         example.or().and編碼日期EqualTo(pii.get編碼日期())
             .andGuidEqualTo(pii.getGuid());
       }
@@ -120,7 +92,7 @@ public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
     return new Piis().select(new Example<PiiExample>() {
 
       @Override
-      public void build(PiiExample example) {
+      public void set(PiiExample example) {
         for (String keyword : keywords) {
           keyword = keyword.trim();
           if (keyword.getBytes(Charset.forName("UTF-8")).length < 3)

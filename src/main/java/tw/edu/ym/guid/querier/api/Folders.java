@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.Example;
-import wmw.mybatis.MyBatisBase;
+import wmw.db.mybatis.Example;
+import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.FolderMapper;
 import exceldb.model.Folder;
 import exceldb.model.FolderExample;
@@ -33,15 +33,6 @@ public final class Folders extends
     IMPORT, BACKUP;
   }
 
-  public static List<Folder> all() {
-    return new Folders().select(new Example<FolderExample>() {
-
-      @Override
-      public void build(FolderExample example) {}
-
-    });
-  }
-
   /**
    * Returns the first record of the specified usage.
    * 
@@ -53,7 +44,7 @@ public final class Folders extends
     List<Folder> folders = new Folders().select(new Example<FolderExample>() {
 
       @Override
-      public void build(FolderExample example) {
+      public void set(FolderExample example) {
         example.or().andUsageEqualTo(usage.toString());
       }
 
@@ -80,7 +71,7 @@ public final class Folders extends
       new Folders().update(folder, new Example<FolderExample>() {
 
         @Override
-        public void build(FolderExample example) {
+        public void set(FolderExample example) {
           example.or().andUsageEqualTo(usage.toString());
         }
 
@@ -100,7 +91,7 @@ public final class Folders extends
     new Folders().delete(new Example<FolderExample>() {
 
       @Override
-      public void build(FolderExample example) {
+      public void set(FolderExample example) {
         example.or().andUsageEqualTo(usage.toString());
       }
 

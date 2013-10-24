@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.Example;
-import wmw.mybatis.MyBatisBase;
+import wmw.db.mybatis.Example;
+import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
 import exceldb.model.HistoryExample;
@@ -23,20 +23,6 @@ import exceldb.model.HistoryExample;
  */
 public final class Histories extends
     MyBatisBase<History, HistoryExample, HistoryMapper> {
-
-  /**
-   * Returns all History records.
-   * 
-   * @return a List of History
-   */
-  public static List<History> all() {
-    return new Histories().select(new Example<HistoryExample>() {
-
-      @Override
-      public void build(HistoryExample example) {}
-
-    });
-  }
 
   /**
    * Adds a file name to the History.
@@ -64,7 +50,7 @@ public final class Histories extends
         new Histories().select(new Example<HistoryExample>() {
 
           @Override
-          public void build(HistoryExample example) {}
+          public void set(HistoryExample example) {}
 
         });
 

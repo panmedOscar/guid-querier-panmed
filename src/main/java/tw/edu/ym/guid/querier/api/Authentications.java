@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.mybatis.Example;
-import wmw.mybatis.MyBatisBase;
+import wmw.db.mybatis.Example;
+import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.AuthenticationMapper;
 import exceldb.model.Authentication;
 import exceldb.model.AuthenticationExample;
@@ -49,7 +49,7 @@ public final class Authentications extends
         new Authentications().select(new Example<AuthenticationExample>() {
 
           @Override
-          public void build(AuthenticationExample example) {
+          public void set(AuthenticationExample example) {
             example.or().andRoleEqualTo(role).andPasswordEqualTo(password);
           }
 
@@ -75,7 +75,7 @@ public final class Authentications extends
     new Authentications().update(auth, new Example<AuthenticationExample>() {
 
       @Override
-      public void build(AuthenticationExample example) {
+      public void set(AuthenticationExample example) {
         example.or().andRoleEqualTo(role).andPasswordEqualTo(oldPassword);
       }
 

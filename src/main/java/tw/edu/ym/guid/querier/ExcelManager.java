@@ -118,7 +118,7 @@ public final class ExcelManager implements RecordManager {
    */
   @Override
   public int totalRecord() {
-    return Piis.count();
+    return new Piis().countAll();
   }
 
   private void updateExcels() {
@@ -161,7 +161,7 @@ public final class ExcelManager implements RecordManager {
    * @return a List of Pii
    */
   public List<Pii> getAll() {
-    return Piis.all();
+    return new Piis().selectAll();
   }
 
   /**

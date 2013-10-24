@@ -1,5 +1,7 @@
 package tw.edu.ym.guid.querier.mybatis;
 
+import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,8 +13,7 @@ import org.mybatis.generator.exception.InvalidConfigurationException;
 import org.mybatis.generator.exception.XMLParserException;
 
 import tw.edu.ym.guid.querier.QueryPanel;
-import wmw.mybatis.MyBatisGenerator;
-import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+import wmw.db.mybatis.MyBatisGeneratorRunner;
 
 /**
  * 
@@ -38,8 +39,8 @@ public final class ExceldbGenerator {
 
     new File(dbFile).delete();
     newExcelManager(QueryPanel.PROPS_PATH);
-    MyBatisGenerator.generate(ExceldbGenerator.class.getClassLoader()
-        .getResourceAsStream("generatorConfig.xml"));
+    MyBatisGeneratorRunner.run(ExceldbGenerator.class.getClassLoader()
+        .getResourceAsStream("generatorConfig.xml"), true);
     FileUtils.copyDirectory(new File("src/main/resources/exceldb"), new File(
         "src/test/resources/exceldb"));
     new File(dbFile).delete();
