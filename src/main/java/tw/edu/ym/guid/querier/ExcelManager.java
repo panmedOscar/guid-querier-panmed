@@ -124,8 +124,12 @@ public final class ExcelManager implements RecordManager {
   private void updateExcels() {
     Folder folder = Folders.findFirst(FolderType.IMPORT);
 
-    if (folder != null)
-      importExcels(folder.getPath());
+    if (folder != null) {
+      if (new File(folder.getPath()).exists())
+        importExcels(folder.getPath());
+      else
+        Folders.removeFolderPath(FolderType.IMPORT);
+    }
   }
 
   /**
