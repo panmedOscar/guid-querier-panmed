@@ -1,1 +1,10 @@
+.project
+.classpath
+/.settings
+/bin
+/target
+*.h2.db
+*.trace.db
+*.log
+
 .DS_Store
