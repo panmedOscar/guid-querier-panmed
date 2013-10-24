@@ -47,8 +47,8 @@
 
 	<repositories>
 		<repository>
-			<id>excel-accessor-mvn-repo</id>
-			<url>https://raw.github.com/wnameless/excel-accessor/mvn-repo/</url>
+			<id>mybatis-generator-extension-mvn-repo</id>
+			<url>https://raw.github.com/wnameless/mybatis-generator-extension/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
