@@ -16,42 +16,35 @@
 
 <GridPane id="gridPane" fx:id="mainPane" alignment="CENTER"
 	maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-	prefWidth="670.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+	prefHeight="670.0" prefWidth="870.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
 	fx:controller="tw.edu.ym.guid.querier.FXMLController">
 	<children>
-		<GridPane hgap="5.0" GridPane.columnIndex="0"
-			GridPane.rowIndex="0">
-			<children>
-				<Label text="使用者帳號" prefWidth="80.0" maxWidth="80.0"
-					GridPane.columnIndex="0" GridPane.rowIndex="0" />
-				<TextField fx:id="username" maxWidth="1.7976931348623157E308"
-					GridPane.columnIndex="1" GridPane.rowIndex="0" />
-				<Label text="登入密碼" prefWidth="80.0" maxWidth="80.0"
-					GridPane.columnIndex="2" GridPane.rowIndex="0" />
-				<PasswordField fx:id="password" maxWidth="1.7976931348623157E308"
-					GridPane.columnIndex="3" GridPane.rowIndex="0" />
-				<Button fx:id="loginBtn" text="登入" mnemonicParsing="false"
-					prefWidth="100.0" maxWidth="100.0" GridPane.columnIndex="4"
-					GridPane.rowIndex="0" />
-			</children>
-			<columnConstraints>
-				<ColumnConstraints hgrow="NEVER" />
-				<ColumnConstraints hgrow="SOMETIMES" />
-				<ColumnConstraints hgrow="NEVER" />
-				<ColumnConstraints hgrow="SOMETIMES" />
-				<ColumnConstraints hgrow="NEVER" />
-			</columnConstraints>
-			<rowConstraints>
-				<RowConstraints vgrow="NEVER" />
-			</rowConstraints>
-		</GridPane>
+		<MenuBar GridPane.columnIndex="0" GridPane.rowIndex="0">
+			<menus>
+				<Menu mnemonicParsing="false" text="匯入試算表">
+					<items>
+						<MenuItem mnemonicParsing="false" text="選擇資料夾..." />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="安全性">
+					<items>
+						<MenuItem mnemonicParsing="false" text="修改密碼" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="備份">
+					<items>
+						<MenuItem mnemonicParsing="false" text="選擇備份路徑..." />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
 		<GridPane hgap="5.0" GridPane.columnIndex="0"
 			GridPane.rowIndex="1">
 			<children>
 				<TextField fx:id="searchField" maxWidth="1.7976931348623157E308"
 					GridPane.columnIndex="0" GridPane.rowIndex="0" />
-				<Button fx:id="searchBtn" mnemonicParsing="false" prefWidth="100.0"
-					maxWidth="100.0" text="搜尋" GridPane.columnIndex="1"
+				<Button fx:id="searchBtn" maxWidth="100.0" mnemonicParsing="false"
+					prefWidth="100.0" text="搜尋" GridPane.columnIndex="1"
 					GridPane.rowIndex="0" />
 			</children>
 			<columnConstraints>
@@ -146,7 +139,7 @@
 		<ColumnConstraints hgrow="SOMETIMES" />
 	</columnConstraints>
 	<padding>
-		<Insets bottom="4.0" left="4.0" right="4.0" top="2.0" />
+		<Insets bottom="4.0" left="4.0" right="4.0" />
 	</padding>
 	<rowConstraints>
 		<RowConstraints vgrow="NEVER" />
