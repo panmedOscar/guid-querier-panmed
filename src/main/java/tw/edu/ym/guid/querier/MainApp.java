@@ -1,10 +1,15 @@
 package tw.edu.ym.guid.querier;
 
+import static tw.edu.ym.guid.querier.FXMLController.AUTO_SHUTDOWN_TIME;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import wmw.aop.terminator.CountdownTerminatorModule;
+import wmw.util.javafx.GuiceFXMLLoader;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class MainApp extends Application {
 
@@ -21,9 +26,13 @@ public class MainApp extends Application {
     launch(args);
   }
 
+  private final Injector injector = Guice
+      .createInjector(new CountdownTerminatorModule(AUTO_SHUTDOWN_TIME));
+
   @Override
   public void start(final Stage stage) throws Exception {
-    Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
+    GuiceFXMLLoader loader = new GuiceFXMLLoader(injector);
+    Parent root = (Parent) loader.load("/fxml/Scene.fxml", getClass());
 
     Scene scene = new Scene(root);
     scene.getStylesheets().add("/styles/Styles.css");

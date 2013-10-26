@@ -75,10 +75,10 @@ public final class MessageDialog {
     vbox.getChildren().addAll(messages, okButton);
     vbox.setAlignment(Pos.CENTER);
     vbox.setPadding(new Insets(10));
-    Scene myDialogScene = new Scene(vbox);
-    myDialogScene.getStylesheets().add("/styles/Styles.css");
+    Scene dialogScene = new Scene(vbox);
+    // myDialogScene.getStylesheets().add("/styles/Styles.css");
 
-    dialog.setScene(myDialogScene);
+    dialog.setScene(dialogScene);
     dialog.show();
   }
 

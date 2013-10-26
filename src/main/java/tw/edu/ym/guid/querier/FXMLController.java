@@ -39,6 +39,7 @@ import net.sf.rubycollect4j.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import wmw.aop.terminator.ResetTerminator;
 import wmw.util.javafx.JavaFXHelper;
 import wmw.util.javafx.MessageDialog;
 import wmw.util.javafx.PasswordDialog;
@@ -56,6 +57,7 @@ public class FXMLController implements Initializable {
 
   public static final boolean DEV = true;
   public static final String PROPS_PATH = "excel_manager.properties";
+  public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
 
   private RecordManager<Pii> manager;
 
@@ -76,6 +78,7 @@ public class FXMLController implements Initializable {
 
   private ObservableList<Pii> piis;
 
+  @ResetTerminator
   @FXML
   private void backup(ActionEvent event) {
     File folder = JavaFXHelper.FolderSelector();
@@ -84,6 +87,7 @@ public class FXMLController implements Initializable {
     manager.backup();
   }
 
+  @ResetTerminator
   @FXML
   private void setPassword(ActionEvent event) {
     String oldPassword = null;
@@ -105,6 +109,7 @@ public class FXMLController implements Initializable {
     manager.setPassword(ADMIN.toString(), oldPassword, newPassword);
   }
 
+  @ResetTerminator
   @FXML
   private void importExcels(ActionEvent event) {
     File folder = JavaFXHelper.FolderSelector();
@@ -114,6 +119,7 @@ public class FXMLController implements Initializable {
     }
   }
 
+  @ResetTerminator
   @FXML
   public void queryAction(ActionEvent event) {
     String query = searchTF.getText().trim();
@@ -161,6 +167,7 @@ public class FXMLController implements Initializable {
             convertedTc
                 .setOnEditCommit(new EventHandler<CellEditEvent<Pii, String>>() {
 
+                  @ResetTerminator
                   @Override
                   public void handle(CellEditEvent<Pii, String> t) {
                     Pii pii = (Pii) piis.get(t.getTablePosition().getRow());
