@@ -117,7 +117,7 @@ public final class ExcelManager implements RecordManager<Pii> {
    * @return the total of records
    */
   @Override
-  public int totalRecord() {
+  public int getNumberOfRecords() {
     return new Piis().countAll();
   }
 

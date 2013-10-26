@@ -18,7 +18,7 @@ public interface RecordManager<E> {
 
   List<E> query(String... keywords);
 
-  int totalRecord();
+  int getNumberOfRecords();
 
   void importExcels(String path);
 

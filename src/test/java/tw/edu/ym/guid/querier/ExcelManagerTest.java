@@ -75,12 +75,12 @@ public class ExcelManagerTest {
 
   @Test
   public void testImportExcelsInFolder() {
-    assertEquals(5009, manager.totalRecord());
+    assertEquals(5009, manager.getNumberOfRecords());
   }
 
   @Test
   public void testGetAll() {
-    assertEquals(manager.totalRecord(), manager.findAll().size());
+    assertEquals(manager.getNumberOfRecords(), manager.findAll().size());
   }
 
   @Test
