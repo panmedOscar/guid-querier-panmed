@@ -5,6 +5,8 @@ import static net.sf.rubycollect4j.RubyCollections.ra;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -29,11 +31,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
+
+import javax.swing.Timer;
+
 import net.sf.rubycollect4j.block.Block;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import wmw.util.javafx.JavaFXHelper;
+import wmw.util.javafx.MessageDialog;
 import wmw.util.javafx.PasswordDialog;
 import exceldb.model.Pii;
 
@@ -70,6 +77,44 @@ public class FXMLController implements Initializable {
   private ObservableList<Pii> piis;
 
   @FXML
+  private void backup(ActionEvent event) {
+    File folder = JavaFXHelper.FolderSelector();
+    if (folder != null)
+      manager.setBackupFolder(folder.getAbsolutePath());
+    manager.backup();
+  }
+
+  @FXML
+  private void setPassword(ActionEvent event) {
+    String oldPassword = null;
+    String newPassword = null;
+    do {
+      oldPassword = getPassword("請輸入舊密碼:");
+    } while (oldPassword != null
+        && !manager.authenticate(ADMIN.toString(), oldPassword));
+
+    if (oldPassword == null) {
+      new MessageDialog().showMessages("認證失敗");
+      return;
+    }
+
+    do {
+      newPassword = getPassword("請輸入新密碼(最少四個字元):");
+    } while (newPassword != null && newPassword.length() < 4);
+
+    manager.setPassword(ADMIN.toString(), oldPassword, newPassword);
+  }
+
+  @FXML
+  private void importExcels(ActionEvent event) {
+    File folder = JavaFXHelper.FolderSelector();
+    if (folder != null) {
+      manager.importExcels(folder.getAbsolutePath());
+      resetTable();
+    }
+  }
+
+  @FXML
   public void queryAction(ActionEvent event) {
     String query = searchTF.getText().trim();
     if (query.isEmpty()) {
@@ -77,8 +122,9 @@ public class FXMLController implements Initializable {
     } else {
       piis.clear();
       String[] keywords = query.trim().split("\\s+");
-      for (Pii pii : manager.query(Arrays.asList(keywords)))
+      for (Pii pii : manager.query(Arrays.asList(keywords))) {
         piis.add(pii);
+      }
     }
   }
 
@@ -160,6 +206,18 @@ public class FXMLController implements Initializable {
     return password.getValue();
   }
 
+  private void autoBackup() {
+    Timer timer = new Timer(600000, new ActionListener() {
+
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent e) {
+        manager.backup();
+      }
+
+    });
+    timer.start();
+  }
+
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     try {
@@ -170,6 +228,7 @@ public class FXMLController implements Initializable {
     piis = (ObservableList<Pii>) piiTable.getItems();
     authenticate();
     initTable();
+    autoBackup();
   }
 
 }

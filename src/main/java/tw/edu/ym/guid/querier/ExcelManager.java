@@ -278,6 +278,9 @@ public final class ExcelManager implements RecordManager<Pii> {
    */
   @Override
   public boolean authenticate(String role, String password) {
+    if (password == null)
+      return false;
+
     Authentication auth = Authentications.findByRoleAndPassword(role, password);
     return auth != null;
   }

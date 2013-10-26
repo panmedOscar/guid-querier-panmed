@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import javafx.scene.control.DatePicker;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -52,10 +53,17 @@ public final class JavaFXHelper {
   public static File FileSelector(String msg, ExtensionFilter filter) {
     Stage stage = new Stage();
     stage.initModality(Modality.WINDOW_MODAL);
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle(msg);
-    fileChooser.getExtensionFilters().add(filter);
-    return fileChooser.showOpenDialog(stage);
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle(msg);
+    chooser.getExtensionFilters().add(filter);
+    return chooser.showOpenDialog(stage);
+  }
+
+  public static File FolderSelector() {
+    Stage stage = new Stage();
+    stage.initModality(Modality.WINDOW_MODAL);
+    DirectoryChooser chooser = new DirectoryChooser();
+    return chooser.showDialog(stage);
   }
 
   /**

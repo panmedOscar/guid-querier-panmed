@@ -23,18 +23,20 @@
 			<menus>
 				<Menu mnemonicParsing="false" text="匯入試算表">
 					<items>
-						<MenuItem fx:id="importMI" mnemonicParsing="false" text="選擇資料夾..." />
+						<MenuItem fx:id="importMI" mnemonicParsing="false" text="選擇資料夾..."
+							onAction="#importExcels" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="安全性">
 					<items>
 						<MenuItem fx:id="securityMI" mnemonicParsing="false"
-							text="修改密碼" />
+							text="修改密碼" onAction="#setPassword" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="備份">
 					<items>
-						<MenuItem fx:id="backupMI" mnemonicParsing="false" text="選擇備份路徑..." />
+						<MenuItem fx:id="backupMI" mnemonicParsing="false" text="選擇備份路徑..."
+							onAction="#backup" />
 					</items>
 				</Menu>
 			</menus>
