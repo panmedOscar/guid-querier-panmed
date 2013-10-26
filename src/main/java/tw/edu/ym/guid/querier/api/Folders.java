@@ -2,8 +2,6 @@ package tw.edu.ym.guid.querier.api;
 
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
-import java.util.List;
-
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import wmw.db.mybatis.Example;
@@ -41,7 +39,7 @@ public final class Folders extends
    * @return a Folder
    */
   public static Folder findFirst(final FolderType usage) {
-    List<Folder> folders = new Folders().select(new Example<FolderExample>() {
+    return new Folders().selectOne(new Example<FolderExample>() {
 
       @Override
       public void set(FolderExample example) {
@@ -49,8 +47,6 @@ public final class Folders extends
       }
 
     });
-
-    return folders.isEmpty() ? null : folders.get(0);
   }
 
   /**

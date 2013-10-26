@@ -1,5 +1,12 @@
 package tw.edu.ym.guid.querier;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.util.FolderTraverser.retrieveAllFiles;
+
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
@@ -7,13 +14,6 @@ import java.util.Properties;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 public class ExcelManagerTest {
 
@@ -47,9 +47,9 @@ public class ExcelManagerTest {
 
   @Test
   public void testGetHeader() {
-    String[] header = manager.getHeader();
-    for (int i = 0; i < header.length; i++)
-      assertEquals(ExcelField.values()[i].toString(), header[i]);
+    List<String> header = manager.getHeader();
+    for (int i = 0; i < header.size(); i++)
+      assertEquals(ExcelField.values()[i].toString(), header.get(i));
   }
 
   @Test
@@ -80,17 +80,12 @@ public class ExcelManagerTest {
 
   @Test
   public void testGetAll() {
-    assertEquals(manager.totalRecord(), manager.getAll().size());
-  }
-
-  @Test
-  public void testSelectAll() {
-    assertEquals(manager.totalRecord(), manager.selectAll().size());
+    assertEquals(manager.totalRecord(), manager.findAll().size());
   }
 
   @Test
   public void testSelectAllWithLimit() {
-    assertEquals(100, manager.selectAll(100).size());
+    assertEquals(100, manager.findAll(100).size());
   }
 
   @Test

@@ -2,8 +2,6 @@ package tw.edu.ym.guid.querier.api;
 
 import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 
-import java.util.List;
-
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import wmw.db.mybatis.Example;
@@ -45,8 +43,8 @@ public final class Authentications extends
    */
   public static Authentication findByRoleAndPassword(final String role,
       final String password) {
-    List<Authentication> auths =
-        new Authentications().select(new Example<AuthenticationExample>() {
+    return new Authentications()
+        .selectOne(new Example<AuthenticationExample>() {
 
           @Override
           public void set(AuthenticationExample example) {
@@ -54,8 +52,6 @@ public final class Authentications extends
           }
 
         });
-
-    return auths.isEmpty() ? null : auths.get(0);
   }
 
   /**

@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import wmw.db.mybatis.Example;
 import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.HistoryMapper;
 import exceldb.model.History;
@@ -33,7 +32,6 @@ public final class Histories extends
   public static void create(String fileName) {
     History record = new History();
     record.setFileName(fileName);
-
     new Histories().insert(record);
   }
 
@@ -46,18 +44,11 @@ public final class Histories extends
    * @return a Set of unprocessed file names
    */
   public static Set<String> filterUnprocessedFiles(List<String> files) {
-    List<History> histories =
-        new Histories().select(new Example<HistoryExample>() {
-
-          @Override
-          public void set(HistoryExample example) {}
-
-        });
-
+    List<History> histories = new Histories().selectAll();
     Set<String> unprocessedFiles = newHashSet(files);
-    for (History history : histories)
+    for (History history : histories) {
       unprocessedFiles.remove(history.getFileName());
-
+    }
     return unprocessedFiles;
   }
 

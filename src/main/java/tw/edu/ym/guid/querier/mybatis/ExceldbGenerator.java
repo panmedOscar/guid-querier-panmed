@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.mybatis.generator.exception.InvalidConfigurationException;
 import org.mybatis.generator.exception.XMLParserException;
 
-import tw.edu.ym.guid.querier.QueryPanel;
+import tw.edu.ym.guid.querier.FXMLController;
 import wmw.db.mybatis.MyBatisGeneratorRunner;
 
 /**
@@ -30,7 +30,7 @@ public final class ExceldbGenerator {
       XMLParserException, InvalidConfigurationException, InterruptedException {
     Properties props = new Properties();
     props.load(ExceldbGenerator.class.getClassLoader().getResourceAsStream(
-        QueryPanel.PROPS_PATH));
+        FXMLController.PROPS_PATH));
     props.load(ExceldbGenerator.class.getClassLoader().getResourceAsStream(
         props.getProperty("db_props")));
 
@@ -38,7 +38,7 @@ public final class ExceldbGenerator {
     String dbFile = dbURL[dbURL.length - 1] + ".h2.db";
 
     new File(dbFile).delete();
-    newExcelManager(QueryPanel.PROPS_PATH);
+    newExcelManager(FXMLController.PROPS_PATH);
     MyBatisGeneratorRunner.run(ExceldbGenerator.class.getClassLoader()
         .getResourceAsStream("generatorConfig.xml"), true);
     FileUtils.copyDirectory(new File("src/main/resources/exceldb"), new File(

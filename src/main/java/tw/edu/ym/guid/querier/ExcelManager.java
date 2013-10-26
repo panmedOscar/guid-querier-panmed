@@ -3,7 +3,6 @@ package tw.edu.ym.guid.querier;
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 import static wmw.util.FolderTraverser.retrieveAllFiles;
@@ -34,7 +33,6 @@ import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
 import wmw.db.mybatis.Example;
 import wmw.util.BackupUtil;
-import wmw.util.BeanConverter;
 import wmw.util.EncryptedZip;
 import wmw.util.Excel2Map;
 import wmw.util.db.EmbeddedStorage;
@@ -140,15 +138,16 @@ public final class ExcelManager implements RecordManager<Pii> {
    * @return the header of the excel
    */
   @Override
-  public String[] getHeader() {
+  public List<String> getHeader() {
     List<String> header = newArrayList();
     try {
-      for (String field : es.getColumns(sheet))
+      for (String field : es.getColumns(sheet)) {
         header.add(field.toUpperCase());
+      }
     } catch (SQLException e) {
       log.error(e.getMessage());
     }
-    return header.toArray(new String[header.size()]);
+    return header;
   }
 
   /**
@@ -157,17 +156,14 @@ public final class ExcelManager implements RecordManager<Pii> {
    * @return true if the column editable, false otherwise
    */
   @Override
-  public boolean isColumnEditableAt(int index) {
-    return ExcelField.values()[index].isEditable();
-  }
-
-  /**
-   * Returns all Piis.
-   * 
-   * @return a List of Pii
-   */
-  public List<Pii> getAll() {
-    return new Piis().selectAll();
+  public boolean isColumnEditable(String column) {
+    ExcelField ef = null;
+    try {
+      ef = ExcelField.valueOf(column.toUpperCase());
+    } catch (Exception e) {
+      return false;
+    }
+    return ef.isEditable();
   }
 
   @Override
@@ -175,6 +171,7 @@ public final class ExcelManager implements RecordManager<Pii> {
     return new Piis().selectAll();
   }
 
+  @Override
   public List<Pii> findAll(final int limit) {
     return new Piis().select(new Example<PiiExample>() {
 
@@ -184,60 +181,6 @@ public final class ExcelManager implements RecordManager<Pii> {
       }
 
     });
-  }
-
-  /**
-   * Returns all Piis by storing the properties of each Pii in an Object Array.
-   * 
-   * @return a List of Object Array which contains the properties of each Pii
-   */
-  public List<Object[]> selectAll() {
-    try {
-      return es.selectAll(sheet, ExcelField.orderBy());
-    } catch (SQLException e) {
-      log.error(e.getMessage());
-    }
-    return emptyList();
-  }
-
-  /**
-   * Returns all Piis by storing the properties of each Pii in an Object Array.
-   * 
-   * @param limit
-   *          the maximum records to return
-   * @return a List of Object Array which contains the properties of each Pii
-   */
-  public List<Object[]> selectAll(int limit) {
-    try {
-      return es.selectAll(sheet, limit, ExcelField.orderBy());
-    } catch (SQLException e) {
-      log.error(e.getMessage());
-    }
-    return emptyList();
-  }
-
-  /**
-   * Updates a row of record in database.
-   * 
-   * @param record
-   *          a row of record in database
-   */
-  public void update(Map<String, String> record) {
-    Piis.update(record);
-  }
-
-  /**
-   * Searches Piis by given keywords.
-   * 
-   * @param keywords
-   *          used to query
-   * @return a List of Object[]
-   */
-  public List<Object[]> query(String... keywords) {
-    List<Object[]> results = newArrayList();
-    for (Pii pii : Piis.globalSearch(keywords))
-      results.add(BeanConverter.toObjectArray(pii));
-    return results;
   }
 
   /**
@@ -298,6 +241,16 @@ public final class ExcelManager implements RecordManager<Pii> {
   @Override
   public void setPassword(String role, String oldPassword, String newPassword) {
     Authentications.setPassword(role, oldPassword, newPassword);
+  }
+
+  @Override
+  public void update(final Pii record) {
+    Piis.update(record);
+  }
+
+  @Override
+  public List<Pii> query(String... keywords) {
+    return Piis.globalSearch(keywords);
   }
 
   /**
@@ -439,24 +392,6 @@ public final class ExcelManager implements RecordManager<Pii> {
   public String toString() {
     return Objects.toStringHelper(this.getClass()).add("Sheet", sheet)
         .toString();
-  }
-
-  @Override
-  public void update(final Pii record) {
-    new Piis().update(record, new Example<PiiExample>() {
-
-      @Override
-      public void set(PiiExample example) {
-        example.or().andGuidEqualTo(record.getGuid())
-            .and編碼日期EqualTo(record.get編碼日期());
-      }
-
-    });
-  }
-
-  @Override
-  public List<Pii> query(Iterable<String> keywords) {
-    return Piis.globalSearch(keywords);
   }
 
 }

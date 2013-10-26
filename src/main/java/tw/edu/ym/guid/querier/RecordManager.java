@@ -8,7 +8,7 @@ public interface RecordManager<E> {
 
   void setPassword(String role, String oldPassword, String newPassword);
 
-  String[] getHeader();
+  List<String> getHeader();
 
   List<E> findAll();
 
@@ -16,7 +16,7 @@ public interface RecordManager<E> {
 
   void update(E record);
 
-  List<E> query(Iterable<String> keywords);
+  List<E> query(String... keywords);
 
   int totalRecord();
 
@@ -26,6 +26,6 @@ public interface RecordManager<E> {
 
   void backup();
 
-  boolean isColumnEditableAt(int index);
+  boolean isColumnEditable(String column);
 
 }

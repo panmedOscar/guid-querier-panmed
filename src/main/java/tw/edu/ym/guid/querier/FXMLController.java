@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -84,7 +83,6 @@ public class FXMLController implements Initializable {
     File folder = JavaFXHelper.FolderSelector();
     if (folder != null)
       manager.setBackupFolder(folder.getAbsolutePath());
-    manager.backup();
   }
 
   @ResetTerminator
@@ -128,7 +126,7 @@ public class FXMLController implements Initializable {
     } else {
       piis.clear();
       String[] keywords = query.trim().split("\\s+");
-      for (Pii pii : manager.query(Arrays.asList(keywords))) {
+      for (Pii pii : manager.query(keywords)) {
         piis.add(pii);
       }
     }
@@ -156,8 +154,7 @@ public class FXMLController implements Initializable {
         @SuppressWarnings("rawtypes")
         final String property = ((PropertyValueFactory) o).getProperty();
         try {
-          ExcelField ef = ExcelField.valueOf(property.toUpperCase());
-          if (ef.isEditable()) {
+          if (manager.isColumnEditable(property)) {
             Callback<TableColumn<Pii, String>, TableCell<Pii, String>> callback =
                 TextFieldTableCell.forTableColumn();
             @SuppressWarnings("unchecked")
