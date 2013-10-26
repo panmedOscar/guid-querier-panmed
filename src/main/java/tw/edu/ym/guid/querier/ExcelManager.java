@@ -453,8 +453,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public List<Pii> query(Iterable<String> keywords) {
-    // TODO Auto-generated method stub
-    return null;
+    return Piis.globalSearch(keywords);
   }
 
 }

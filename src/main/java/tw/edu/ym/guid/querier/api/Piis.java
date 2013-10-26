@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tw.edu.ym.guid.querier.ExcelField;
+import tw.edu.ym.guid.querier.RubyObject;
 import wmw.db.mybatis.Example;
 import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.PiiMapper;
@@ -88,7 +89,7 @@ public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
    *          used to query
    * @return a List of Pii
    */
-  public static List<Pii> globalSearch(final List<String> keywords) {
+  public static List<Pii> globalSearch(final Iterable<String> keywords) {
     return new Piis().select(new Example<PiiExample>() {
 
       @Override
@@ -109,14 +110,7 @@ public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
   private static void buildEqualToQuery(PiiExample piiEx, String value) {
     for (ExcelField ef : ExcelField.values()) {
       Criteria c = piiEx.createCriteria();
-      try {
-        Method method =
-            Criteria.class.getDeclaredMethod(equalToMethod(ef.toString()),
-                String.class);
-        method.invoke(c, value);
-      } catch (Exception e) {
-        log.error(e.getMessage());
-      }
+      RubyObject.send(c, "and" + capitalize(ef.toString()) + "EqualTo", value);
       piiEx.or(c);
     }
   }
@@ -124,28 +118,14 @@ public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
   private static void buildLikeQuery(PiiExample piiEx, String value) {
     for (ExcelField ef : ExcelField.values()) {
       Criteria c = piiEx.createCriteria();
-      try {
-        Method method =
-            Criteria.class.getDeclaredMethod(likeMethod(ef.toString()),
-                String.class);
-        method.invoke(c, "%" + value + "%");
-      } catch (Exception e) {
-        log.error(e.getMessage());
-      }
+      RubyObject.send(c, "and" + capitalize(ef.toString()) + "Like", "%"
+          + value + "%");
       piiEx.or(c);
     }
   }
 
-  private static String equalToMethod(String field) {
-    String capitalize =
-        field.toUpperCase().charAt(0) + field.toLowerCase().substring(1);
-    return "and" + capitalize + "EqualTo";
-  }
-
-  private static String likeMethod(String field) {
-    String capitalize =
-        field.toUpperCase().charAt(0) + field.toLowerCase().substring(1);
-    return "and" + capitalize + "Like";
+  private static String capitalize(String word) {
+    return word.toUpperCase().charAt(0) + word.toLowerCase().substring(1);
   }
 
   @Override

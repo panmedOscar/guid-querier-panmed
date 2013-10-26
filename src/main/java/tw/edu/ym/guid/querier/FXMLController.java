@@ -8,11 +8,13 @@ import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -67,10 +69,28 @@ public class FXMLController implements Initializable {
 
   private ObservableList<Pii> piis;
 
-  private void initTable() {
+  @FXML
+  public void queryAction(ActionEvent event) {
+    String query = searchTF.getText().trim();
+    if (query.isEmpty()) {
+      resetTable();
+    } else {
+      piis.clear();
+      String[] keywords = query.trim().split("\\s+");
+      for (Pii pii : manager.query(Arrays.asList(keywords)))
+        piis.add(pii);
+    }
+  }
+
+  private void resetTable() {
+    piis.clear();
     for (Pii p : manager.findAll(500)) {
       piis.add(p);
     }
+  }
+
+  private void initTable() {
+    resetTable();
     piiTable.setEditable(true);
     List<TableColumn<Pii, ?>> tcs = newArrayList();
     for (TableColumn<Pii, ?> tc : piiTable.getColumns()) {
