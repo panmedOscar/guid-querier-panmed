@@ -33,6 +33,7 @@ import javafx.util.Callback;
 
 import javax.swing.Timer;
 
+import net.sf.rubycollect4j.RubyObject;
 import net.sf.rubycollect4j.block.Block;
 
 import org.slf4j.Logger;

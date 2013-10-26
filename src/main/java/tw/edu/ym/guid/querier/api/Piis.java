@@ -5,10 +5,11 @@ import static tw.edu.ym.guid.querier.db.QuerierResource.EXCELDB;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import net.sf.rubycollect4j.RubyObject;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import tw.edu.ym.guid.querier.ExcelField;
-import tw.edu.ym.guid.querier.RubyObject;
 import wmw.db.mybatis.Example;
 import wmw.db.mybatis.MyBatisBase;
 import exceldb.dao.PiiMapper;
