@@ -1,5 +1,9 @@
 package tw.edu.ym.guid.querier;
 
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
+import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -44,10 +48,6 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-
 /**
  * 
  * QueryPanel is the GUI of ExcelManager.
@@ -66,7 +66,7 @@ public final class QueryPanel {
   private JScrollPane scrollPane;
   private JTable table;
   private JMenuBar menuBar;
-  private final RecordManager manager;
+  private final ExcelManager manager;
   private DefaultTableModel dataModel;
   // private JPanel statusPanel;
   private JMenu totalRecords;

@@ -39,8 +39,7 @@
 				</Menu>
 			</menus>
 		</MenuBar>
-		<GridPane hgap="5.0" GridPane.columnIndex="0"
-			GridPane.rowIndex="1">
+		<GridPane GridPane.columnIndex="0" GridPane.rowIndex="1">
 			<children>
 				<TextField fx:id="searchTF" maxWidth="1.7976931348623157E308"
 					GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -56,7 +55,7 @@
 				<RowConstraints vgrow="NEVER" />
 			</rowConstraints>
 		</GridPane>
-		<TableView fx:id="guidList" maxHeight="1.7976931348623157E308"
+		<TableView fx:id="piiTable" maxHeight="1.7976931348623157E308"
 			maxWidth="1.7976931348623157E308" GridPane.columnIndex="0"
 			GridPane.rowIndex="2">
 			<columnResizePolicy>
@@ -65,72 +64,76 @@
 			<columns>
 				<TableColumn text="編碼日期">
 					<cellValueFactory>
-						<PropertyValueFactory property="date" />
+						<PropertyValueFactory property="編碼日期" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="GUID">
+				<TableColumn text="Guid">
 					<cellValueFactory>
-						<PropertyValueFactory property="guid" />
+						<PropertyValueFactory property="Guid" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="MRN">
+				<TableColumn fx:id="mrnCol" text="Mrn">
 					<cellValueFactory>
-						<PropertyValueFactory property="mrn" />
+						<PropertyValueFactory property="Mrn" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="身份證字號">
 					<cellValueFactory>
-						<PropertyValueFactory property="nationalId" />
+						<PropertyValueFactory property="身份證字號" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="姓氏">
 					<cellValueFactory>
-						<PropertyValueFactory property="lastName" />
+						<PropertyValueFactory property="姓氏" />
 					</cellValueFactory>
 				</TableColumn>
 				<TableColumn text="名字">
 					<cellValueFactory>
-						<PropertyValueFactory property="firstName" />
+						<PropertyValueFactory property="名字" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="出生月">
-					<cellValueFactory>
-						<PropertyValueFactory property="mob" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="出生日">
-					<cellValueFactory>
-						<PropertyValueFactory property="dob" />
-					</cellValueFactory>
-				</TableColumn>
-				<TableColumn text="出生年">
-					<cellValueFactory>
-						<PropertyValueFactory property="yob" />
-					</cellValueFactory>
+				<TableColumn text="生日">
+					<columns>
+						<TableColumn text="月">
+							<cellValueFactory>
+								<PropertyValueFactory property="出生月" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn text="日">
+							<cellValueFactory>
+								<PropertyValueFactory property="出生日" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn text="年">
+							<cellValueFactory>
+								<PropertyValueFactory property="出生年" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
 				</TableColumn>
 				<TableColumn text="性別">
 					<cellValueFactory>
-						<PropertyValueFactory property="sex" />
+						<PropertyValueFactory property="性別" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="聯絡電話">
+				<TableColumn fx:id="telCol" text="聯絡電話">
 					<cellValueFactory>
-						<PropertyValueFactory property="tel" />
+						<PropertyValueFactory property="聯絡電話" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="地址">
+				<TableColumn fx:id="addrCol" text="地址">
 					<cellValueFactory>
-						<PropertyValueFactory property="address" />
+						<PropertyValueFactory property="地址" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="收案醫師">
+				<TableColumn fx:id="drCol" text="收案醫師">
 					<cellValueFactory>
-						<PropertyValueFactory property="doctor" />
+						<PropertyValueFactory property="收案醫師" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="收案醫院名稱">
+				<TableColumn fx:id="hospitalCol" text="收案醫院名稱">
 					<cellValueFactory>
-						<PropertyValueFactory property="hospital" />
+						<PropertyValueFactory property="收案醫院名稱" />
 					</cellValueFactory>
 				</TableColumn>
 			</columns>

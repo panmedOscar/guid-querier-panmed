@@ -1,9 +1,8 @@
 package tw.edu.ym.guid.querier;
 
 import java.util.List;
-import java.util.Map;
 
-public interface RecordManager {
+public interface RecordManager<E> {
 
   boolean authenticate(String role, String password);
 
@@ -11,13 +10,13 @@ public interface RecordManager {
 
   String[] getHeader();
 
-  List<Object[]> selectAll();
+  List<E> findAll();
 
-  List<Object[]> selectAll(int limit);
+  List<E> findAll(int limit);
 
-  void update(Map<String, String> record);
+  void update(E record);
 
-  List<Object[]> query(String... keywords);
+  List<E> query(Iterable<String> keywords);
 
   int totalRecord();
 

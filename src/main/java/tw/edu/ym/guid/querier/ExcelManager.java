@@ -32,6 +32,7 @@ import tw.edu.ym.guid.querier.api.Folders;
 import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
+import wmw.db.mybatis.Example;
 import wmw.util.BackupUtil;
 import wmw.util.BeanConverter;
 import wmw.util.EncryptedZip;
@@ -45,6 +46,7 @@ import com.google.common.collect.Multimap;
 import exceldb.model.Authentication;
 import exceldb.model.Folder;
 import exceldb.model.Pii;
+import exceldb.model.PiiExample;
 
 /**
  * 
@@ -53,7 +55,7 @@ import exceldb.model.Pii;
  * @author Wei-Ming Wu
  * 
  */
-public final class ExcelManager implements RecordManager {
+public final class ExcelManager implements RecordManager<Pii> {
 
   private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
@@ -168,12 +170,27 @@ public final class ExcelManager implements RecordManager {
     return new Piis().selectAll();
   }
 
+  @Override
+  public List<Pii> findAll() {
+    return new Piis().selectAll();
+  }
+
+  public List<Pii> findAll(final int limit) {
+    return new Piis().select(new Example<PiiExample>() {
+
+      @Override
+      public void set(PiiExample example) {
+        example.setOrderByClause(ExcelField.orderBy() + " LIMIT " + limit);
+      }
+
+    });
+  }
+
   /**
    * Returns all Piis by storing the properties of each Pii in an Object Array.
    * 
    * @return a List of Object Array which contains the properties of each Pii
    */
-  @Override
   public List<Object[]> selectAll() {
     try {
       return es.selectAll(sheet, ExcelField.orderBy());
@@ -190,7 +207,6 @@ public final class ExcelManager implements RecordManager {
    *          the maximum records to return
    * @return a List of Object Array which contains the properties of each Pii
    */
-  @Override
   public List<Object[]> selectAll(int limit) {
     try {
       return es.selectAll(sheet, limit, ExcelField.orderBy());
@@ -206,7 +222,6 @@ public final class ExcelManager implements RecordManager {
    * @param record
    *          a row of record in database
    */
-  @Override
   public void update(Map<String, String> record) {
     Piis.update(record);
   }
@@ -218,7 +233,6 @@ public final class ExcelManager implements RecordManager {
    *          used to query
    * @return a List of Object[]
    */
-  @Override
   public List<Object[]> query(String... keywords) {
     List<Object[]> results = newArrayList();
     for (Pii pii : Piis.globalSearch(keywords))
@@ -422,6 +436,25 @@ public final class ExcelManager implements RecordManager {
   public String toString() {
     return Objects.toStringHelper(this.getClass()).add("Sheet", sheet)
         .toString();
+  }
+
+  @Override
+  public void update(final Pii record) {
+    new Piis().update(record, new Example<PiiExample>() {
+
+      @Override
+      public void set(PiiExample example) {
+        example.or().andGuidEqualTo(record.getGuid())
+            .and編碼日期EqualTo(record.get編碼日期());
+      }
+
+    });
+  }
+
+  @Override
+  public List<Pii> query(Iterable<String> keywords) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
