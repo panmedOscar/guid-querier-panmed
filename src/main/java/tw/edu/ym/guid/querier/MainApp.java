@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import wmw.aop.terminator.CountdownTerminatorModule;
-import wmw.util.javafx.GuiceFXMLLoader;
+import wmw.javafx.GuiceFXMLLoader;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

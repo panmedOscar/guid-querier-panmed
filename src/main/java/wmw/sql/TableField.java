@@ -18,21 +18,21 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.db;
+package wmw.sql;
 
 import com.google.common.base.Strings;
 
-import static wmw.util.db.DataType.BINARY;
-import static wmw.util.db.DataType.BOOLEAN;
-import static wmw.util.db.DataType.DATE;
-import static wmw.util.db.DataType.DATETIME;
-import static wmw.util.db.DataType.DECIMAL;
-import static wmw.util.db.DataType.FLOAT;
-import static wmw.util.db.DataType.INTEGER;
-import static wmw.util.db.DataType.TEXT;
-import static wmw.util.db.DataType.TIME;
-import static wmw.util.db.DataType.TIMESTAMP;
-import static wmw.util.db.DataType.VARCHAR;
+import static wmw.sql.DataType.BINARY;
+import static wmw.sql.DataType.BOOLEAN;
+import static wmw.sql.DataType.DATE;
+import static wmw.sql.DataType.DATETIME;
+import static wmw.sql.DataType.DECIMAL;
+import static wmw.sql.DataType.FLOAT;
+import static wmw.sql.DataType.INTEGER;
+import static wmw.sql.DataType.TEXT;
+import static wmw.sql.DataType.TIME;
+import static wmw.sql.DataType.TIMESTAMP;
+import static wmw.sql.DataType.VARCHAR;
 
 public final class TableField {
 

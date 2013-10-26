@@ -1,4 +1,4 @@
-package wmw.util.javafx;
+package wmw.javafx;
 
 import java.io.InputStream;
 import java.net.URL;

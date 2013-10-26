@@ -39,9 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import wmw.aop.terminator.ResetTerminator;
-import wmw.util.javafx.JavaFXHelper;
-import wmw.util.javafx.MessageDialog;
-import wmw.util.javafx.PasswordDialog;
+import wmw.javafx.JavaFXHelper;
+import wmw.javafx.MessageDialog;
+import wmw.javafx.PasswordDialog;
 import exceldb.model.Pii;
 
 /**

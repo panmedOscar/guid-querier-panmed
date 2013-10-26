@@ -18,35 +18,40 @@
  * the License.
  *
  */
-package wmw.util.javafx;
+package wmw.javafx;
 
+import static net.sf.rubycollect4j.RubyCollections.ra;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import net.sf.rubycollect4j.block.Block;
 
 /**
  * 
- * PasswordDialog is designed for JavaFX application to pop up a password input
- * dialogue.
+ * MessageDialog is designed for JavaFX application to pop up a dialogue.
  * 
  */
-public final class PasswordDialog {
+public final class MessageDialog {
 
-  public PasswordDialog(String message, final Block<String> block) {
+  /**
+   * Pops up a dialogue and displays the messages.
+   * 
+   * @param msgs
+   *          an String array of message
+   */
+  public void showMessages(String... msgs) {
     final Stage dialog = new Stage();
-    dialog.initStyle(StageStyle.UTILITY);
-    dialog.setResizable(false);
+    dialog.initModality(Modality.WINDOW_MODAL);
+
+    Button okButton = new Button("關閉");
     dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
       public void handle(final WindowEvent event) {
@@ -54,32 +59,27 @@ public final class PasswordDialog {
       }
 
     });
-
-    final PasswordField password = new PasswordField();
-    Text msg = new Text(message);
-    msg.setFont(Font.font("Verdana", 16));
-    Button btn = new Button("確認");
-    btn.setOnAction(new EventHandler<ActionEvent>() {
+    okButton.setOnAction(new EventHandler<ActionEvent>() {
 
       @Override
       public void handle(ActionEvent arg0) {
-        block.yield(password.getText());
         dialog.close();
       }
 
     });
 
-    HBox hbox = new HBox();
-    hbox.getChildren().addAll(msg, password, btn);
-    hbox.setAlignment(Pos.CENTER);
-    hbox.setPadding(new Insets(10));
-    hbox.setSpacing(5.0);
-
-    Scene dialogScene = new Scene(hbox);
-    dialogScene.getStylesheets().add("/styles/Styles.css");
+    VBox vbox = new VBox();
+    Text messages = new Text(ra(msgs).join("\n"));
+    messages.setFont(Font.font("Verdana", 16));
+    // messages.setId("message-dialog");
+    vbox.getChildren().addAll(messages, okButton);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setPadding(new Insets(10));
+    Scene dialogScene = new Scene(vbox);
+    // myDialogScene.getStylesheets().add("/styles/Styles.css");
 
     dialog.setScene(dialogScene);
-    dialog.showAndWait();
+    dialog.show();
   }
 
 }

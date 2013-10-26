@@ -5,9 +5,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
+import static wmw.sql.TableField.Varchar;
+import static wmw.util.EmbeddedStorage.newEmbeddedStorage;
 import static wmw.util.FolderTraverser.retrieveAllFiles;
-import static wmw.util.db.EmbeddedStorage.newEmbeddedStorage;
-import static wmw.util.db.TableField.Varchar;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +32,11 @@ import tw.edu.ym.guid.querier.api.Folders.FolderType;
 import tw.edu.ym.guid.querier.api.Histories;
 import tw.edu.ym.guid.querier.api.Piis;
 import wmw.db.mybatis.Example;
+import wmw.sql.TableField;
 import wmw.util.BackupUtil;
+import wmw.util.EmbeddedStorage;
 import wmw.util.EncryptedZip;
 import wmw.util.Excel2Map;
-import wmw.util.db.EmbeddedStorage;
-import wmw.util.db.TableField;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;

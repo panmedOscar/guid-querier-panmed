@@ -18,7 +18,7 @@
  * the License.
  *
  */
-package wmw.util.javafx;
+package wmw.javafx;
 
 import java.io.File;
 import java.time.LocalDate;

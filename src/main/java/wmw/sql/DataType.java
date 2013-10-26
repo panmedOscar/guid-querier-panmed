@@ -18,7 +18,7 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.db;
+package wmw.sql;
 
 public enum DataType {
   BINARY, BOOLEAN, DATE, DATETIME, DECIMAL, FLOAT, INTEGER, TEXT, TIME,

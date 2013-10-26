@@ -18,7 +18,10 @@
  *         permissions and limitations under the License.
  * 
  */
-package wmw.util.db;
+package wmw.sql;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -35,9 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
 
 public final class JDBCHelper {
 
@@ -83,7 +83,8 @@ public final class JDBCHelper {
   }
 
   public static void insertRecords(Connection c, String table,
-      Map<String, String>... records) throws SQLException {
+      @SuppressWarnings("unchecked") Map<String, String>... records)
+      throws SQLException {
     insertRecords(c, table, Arrays.asList(records));
   }
 
