@@ -20,6 +20,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -63,6 +64,8 @@ public class FXMLController implements Initializable {
 
   @FXML
   private GridPane mainPane;
+  @FXML
+  private Label totalLbl;
   @FXML
   private MenuItem importMI;
   @FXML
@@ -134,6 +137,7 @@ public class FXMLController implements Initializable {
   private void resetTable() {
     piis.clear();
     piis.addAll(manager.findAll(500));
+    totalLbl.setText("Total: " + manager.getNumberOfRecords());
   }
 
   private void initTable() {
