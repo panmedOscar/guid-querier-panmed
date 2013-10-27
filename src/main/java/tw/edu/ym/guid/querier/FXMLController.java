@@ -93,23 +93,17 @@ public class FXMLController implements Initializable {
 
   private ObservableList<Pii> piis;
 
+  @SuppressWarnings("unchecked")
   @ResetTerminator
   @FXML
-  private void modeAction(ActionEvent event) {
+  private void modeAction(ActionEvent event) throws NoSuchMethodException,
+      SecurityException {
     if (modeBtn.getText().equals("精簡模式")) {
       modeBtn.setText("完整模式");
-      dateCol.setVisible(false);
-      telCol.setVisible(false);
-      addrCol.setVisible(false);
-      hospitalCol.setVisible(false);
-      drCol.setVisible(false);
+      ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", false);
     } else {
       modeBtn.setText("精簡模式");
-      dateCol.setVisible(true);
-      telCol.setVisible(true);
-      addrCol.setVisible(true);
-      hospitalCol.setVisible(true);
-      drCol.setVisible(true);
+      ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", true);
     }
   }
 
