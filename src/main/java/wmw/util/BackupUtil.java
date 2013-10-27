@@ -20,14 +20,14 @@
  */
 package wmw.util;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-
-import static com.google.common.collect.Maps.newHashMap;
 
 public final class BackupUtil {
 
@@ -37,8 +37,9 @@ public final class BackupUtil {
       throws IOException {
     if (destFolder.isDirectory()) {
       Map<String, File> backupFiles = newHashMap();
-      for (File file : destFolder.listFiles())
+      for (File file : destFolder.listFiles()) {
         backupFiles.put(file.getName(), file);
+      }
 
       for (File file : srcFiles) {
         File backup = backupFiles.get(file.getName());

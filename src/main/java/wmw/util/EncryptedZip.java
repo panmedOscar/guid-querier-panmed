@@ -20,6 +20,8 @@
  */
 package wmw.util;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -27,8 +29,6 @@ import java.util.List;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public final class EncryptedZip {
 
@@ -62,16 +62,18 @@ public final class EncryptedZip {
 
   public List<String> getAllFileNames() throws ZipException {
     List<String> fileNames = newArrayList();
-    for (FileHeader fh : fileHeaders)
+    for (FileHeader fh : fileHeaders) {
       fileNames.add(fh.getFileName());
+    }
     return fileNames;
   }
 
   public InputStream getInputStreamByFileName(String fileName)
       throws ZipException {
-    for (FileHeader fh : fileHeaders)
+    for (FileHeader fh : fileHeaders) {
       if (fileName.equals(fh.getFileName()))
         return zipFile.getInputStream(fh);
+    }
     return null;
   }
 

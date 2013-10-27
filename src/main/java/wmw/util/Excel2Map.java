@@ -20,6 +20,8 @@
  */
 package wmw.util;
 
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -30,8 +32,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
-import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
  * 
@@ -63,8 +63,9 @@ public final class Excel2Map {
       while (rows.hasNext()) {
         Row row = rows.next();
         Map<String, String> record = newLinkedHashMap();
-        for (int j = 0; j < header.getLastCellNum(); j++)
+        for (int j = 0; j < header.getLastCellNum(); j++) {
           record.put(cell2Str(header.getCell(j)), cell2Str(row.getCell(j)));
+        }
         map.put(sheet.getSheetName(), record);
       }
     }

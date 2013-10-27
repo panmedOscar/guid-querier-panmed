@@ -43,6 +43,14 @@ import net.sf.rubycollect4j.block.Block;
  */
 public final class PasswordDialog {
 
+  /**
+   * Creates a PasswordDialog.
+   * 
+   * @param message
+   *          to display
+   * @param block
+   *          to process password
+   */
   public PasswordDialog(String message, final Block<String> block) {
     final Stage dialog = new Stage();
     dialog.initStyle(StageStyle.UTILITY);
@@ -58,7 +66,7 @@ public final class PasswordDialog {
     final PasswordField password = new PasswordField();
     Text msg = new Text(message);
     msg.setFont(Font.font("Verdana", 16));
-    Button btn = new Button("確認");
+    Button btn = new Button("Confirm");
     btn.setOnAction(new EventHandler<ActionEvent>() {
 
       @Override
@@ -76,8 +84,6 @@ public final class PasswordDialog {
     hbox.setSpacing(5.0);
 
     Scene dialogScene = new Scene(hbox);
-    dialogScene.getStylesheets().add("/styles/Styles.css");
-
     dialog.setScene(dialogScene);
     dialog.showAndWait();
   }

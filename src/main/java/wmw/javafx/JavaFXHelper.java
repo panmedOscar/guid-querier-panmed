@@ -46,16 +46,16 @@ public final class JavaFXHelper {
    * 
    * @param msg
    *          of the FileChooser
-   * @param filter
-   *          an ExtensionFilter
+   * @param filters
+   *          an array of ExtensionFilter
    * @return the selected File
    */
-  public static File FileSelector(String msg, ExtensionFilter filter) {
+  public static File FileSelector(String msg, ExtensionFilter... filters) {
     Stage stage = new Stage();
     stage.initModality(Modality.WINDOW_MODAL);
     FileChooser chooser = new FileChooser();
     chooser.setTitle(msg);
-    chooser.getExtensionFilters().add(filter);
+    chooser.getExtensionFilters().addAll(filters);
     return chooser.showOpenDialog(stage);
   }
 

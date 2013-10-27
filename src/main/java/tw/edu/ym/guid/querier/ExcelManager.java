@@ -176,8 +176,9 @@ public final class ExcelManager implements RecordManager<Pii> {
     try {
       excels = filterUnprocessedExcels(encryptedZips);
       List<Workbook> wbs = newArrayList();
-      for (InputStream is : excels.values())
+      for (InputStream is : excels.values()) {
         wbs.add(WorkbookFactory.create(is));
+      }
       insertExcelRecords(wbs);
       recordProcessedFiles(excels.keySet());
     } catch (Exception e) {
@@ -241,32 +242,36 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private List<File> filterEncryptedFiles(List<File> files) {
     List<File> encryptedFiles = newArrayList();
-    for (File file : files)
-      if (file.getName().matches("^.*\\.zip$"))
+    for (File file : files) {
+      if (file.getName().matches("^.*\\.zip$")) {
         try {
           new EncryptedZip(file.getAbsolutePath(), zipPassword);
           encryptedFiles.add(file);
         } catch (Exception e) {
           log.warn(e.getMessage());
         }
+      }
+    }
     return encryptedFiles;
   }
 
   private void recordProcessedFiles(Collection<String> fileNames) {
-    for (String fileName : fileNames)
+    for (String fileName : fileNames) {
       Histories.create(fileName);
+    }
   }
 
   private void insertExcelRecords(List<Workbook> wbs) {
     for (Workbook wb : wbs) {
       Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
       for (String sheet : maps.keySet()) {
-        if (sheet.trim().matches("(?i)" + sheet + ".*"))
+        if (sheet.trim().matches("(?i)" + sheet + ".*")) {
           try {
             es.safeInsertRecords(this.sheet, maps.get(sheet));
           } catch (SQLException e) {
             log.error(e.getMessage());
           }
+        }
       }
     }
   }
@@ -274,30 +279,36 @@ public final class ExcelManager implements RecordManager<Pii> {
   private Map<String, InputStream> filterUnprocessedExcels(
       List<EncryptedZip> encryptedZips) throws ZipException {
     List<String> allFiles = newArrayList();
-    for (EncryptedZip ez : encryptedZips)
-      for (String fileName : ez.getAllFileNames())
+    for (EncryptedZip ez : encryptedZips) {
+      for (String fileName : ez.getAllFileNames()) {
         if (fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
           allFiles.add(fileName);
+      }
+    }
 
     Set<String> unprocessedFiles = Histories.filterUnprocessedFiles(allFiles);
     Map<String, InputStream> excels = newHashMap();
-    for (EncryptedZip ez : encryptedZips)
-      for (String fileName : ez.getAllFileNames())
+    for (EncryptedZip ez : encryptedZips) {
+      for (String fileName : ez.getAllFileNames()) {
         if (unprocessedFiles.contains(fileName))
           excels.put(fileName, ez.getInputStreamByFileName(fileName));
+      }
+    }
     return excels;
   }
 
   private List<EncryptedZip> filterEncryptedZips(List<File> files) {
     List<EncryptedZip> encryptedZips = newArrayList();
-    for (File file : files)
-      if (file.getName().matches("^.*\\.zip$"))
+    for (File file : files) {
+      if (file.getName().matches("^.*\\.zip$")) {
         try {
           encryptedZips.add(new EncryptedZip(file.getAbsolutePath(),
               zipPassword));
         } catch (Exception e) {
           log.warn(e.getMessage());
         }
+      }
+    }
     return encryptedZips;
   }
 

@@ -51,7 +51,7 @@ public final class MessageDialog {
     final Stage dialog = new Stage();
     dialog.initModality(Modality.WINDOW_MODAL);
 
-    Button okButton = new Button("關閉");
+    Button okButton = new Button("Close");
     dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
       public void handle(final WindowEvent event) {
@@ -71,13 +71,11 @@ public final class MessageDialog {
     VBox vbox = new VBox();
     Text messages = new Text(ra(msgs).join("\n"));
     messages.setFont(Font.font("Verdana", 16));
-    // messages.setId("message-dialog");
     vbox.getChildren().addAll(messages, okButton);
     vbox.setAlignment(Pos.CENTER);
     vbox.setPadding(new Insets(10));
-    Scene dialogScene = new Scene(vbox);
-    // myDialogScene.getStylesheets().add("/styles/Styles.css");
 
+    Scene dialogScene = new Scene(vbox);
     dialog.setScene(dialogScene);
     dialog.show();
   }

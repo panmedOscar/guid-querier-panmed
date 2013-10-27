@@ -49,8 +49,9 @@ public final class JDBCHelper {
     List<String> tables = newArrayList();
     DatabaseMetaData meta = c.getMetaData();
     ResultSet rs = meta.getTables(null, null, null, new String[] { "TABLE" });
-    while (rs.next())
+    while (rs.next()) {
       tables.add(rs.getString("TABLE_NAME"));
+    }
     return tables;
   }
 
@@ -61,8 +62,9 @@ public final class JDBCHelper {
     String sql = "SELECT * FROM " + table + " LIMIT 1";
     ResultSet rs = stmt.executeQuery(sql);
     ResultSetMetaData md = rs.getMetaData();
-    for (int i = 1; i <= md.getColumnCount(); i++)
+    for (int i = 1; i <= md.getColumnCount(); i++) {
       columns.add(md.getColumnName(i).toLowerCase());
+    }
     stmt.close();
     return columns;
   }
