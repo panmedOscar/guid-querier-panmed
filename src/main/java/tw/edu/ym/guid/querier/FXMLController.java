@@ -65,6 +65,8 @@ public class FXMLController implements Initializable {
   @FXML
   private GridPane mainPane;
   @FXML
+  private Button modeBtn;
+  @FXML
   private Label totalLbl;
   @FXML
   private MenuItem importMI;
@@ -78,8 +80,38 @@ public class FXMLController implements Initializable {
   private Button searchBtn;
   @FXML
   private TableView<Pii> piiTable;
+  @FXML
+  private TableColumn<Pii, String> dateCol;
+  @FXML
+  private TableColumn<Pii, String> telCol;
+  @FXML
+  private TableColumn<Pii, String> addrCol;
+  @FXML
+  private TableColumn<Pii, String> drCol;
+  @FXML
+  private TableColumn<Pii, String> hospitalCol;
 
   private ObservableList<Pii> piis;
+
+  @ResetTerminator
+  @FXML
+  private void modeAction(ActionEvent event) {
+    if (modeBtn.getText().equals("精簡模式")) {
+      modeBtn.setText("完整模式");
+      dateCol.setVisible(false);
+      telCol.setVisible(false);
+      addrCol.setVisible(false);
+      hospitalCol.setVisible(false);
+      drCol.setVisible(false);
+    } else {
+      modeBtn.setText("精簡模式");
+      dateCol.setVisible(true);
+      telCol.setVisible(true);
+      addrCol.setVisible(true);
+      hospitalCol.setVisible(true);
+      drCol.setVisible(true);
+    }
+  }
 
   @ResetTerminator
   @FXML
