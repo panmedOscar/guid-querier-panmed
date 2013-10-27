@@ -26,6 +26,12 @@ import exceldb.model.PiiExample.Criteria;
  */
 public final class Piis extends MyBatisBase<Pii, PiiExample, PiiMapper> {
 
+  /**
+   * Updates a Pii record.
+   * 
+   * @param record
+   *          a Pii
+   */
   public static void update(final Pii record) {
     new Piis().update(record, new Example<PiiExample>() {
 

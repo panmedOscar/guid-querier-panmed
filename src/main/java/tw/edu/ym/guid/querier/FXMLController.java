@@ -127,57 +127,50 @@ public class FXMLController implements Initializable {
     } else {
       piis.clear();
       String[] keywords = query.trim().split("\\s+");
-      for (Pii pii : manager.query(keywords)) {
-        piis.add(pii);
-      }
+      piis.addAll(manager.query(keywords));
     }
   }
 
   private void resetTable() {
     piis.clear();
-    for (Pii p : manager.findAll(500)) {
-      piis.add(p);
-    }
+    piis.addAll(manager.findAll(500));
   }
 
   private void initTable() {
-    resetTable();
     piiTable.setEditable(true);
-    List<TableColumn<Pii, ?>> tcs = newArrayList();
+    List<TableColumn<Pii, ?>> columns = newArrayList();
     for (TableColumn<Pii, ?> tc : piiTable.getColumns()) {
-      tcs.add(tc);
-      tcs.addAll(tc.getColumns());
+      columns.add(tc);
+      columns.addAll(tc.getColumns());
     }
-    ra(tcs).uniqǃ();
-    for (TableColumn<Pii, ?> tc : tcs) {
-      Object o = tc.cellValueFactoryProperty().getValue();
+
+    for (TableColumn<Pii, ?> tc : ra(columns).uniq()) {
+      Callback<?, ?> o = tc.cellValueFactoryProperty().getValue();
       if (o != null) {
-        @SuppressWarnings("rawtypes")
-        final String property = ((PropertyValueFactory) o).getProperty();
-        try {
-          if (manager.isColumnEditable(property)) {
-            Callback<TableColumn<Pii, String>, TableCell<Pii, String>> callback =
-                TextFieldTableCell.forTableColumn();
-            @SuppressWarnings("unchecked")
-            TableColumn<Pii, String> convertedTc =
-                (TableColumn<Pii, String>) tc;
-            convertedTc.setCellFactory(callback);
-            convertedTc
-                .setOnEditCommit(new EventHandler<CellEditEvent<Pii, String>>() {
-
-                  @ResetTerminator
-                  @Override
-                  public void handle(CellEditEvent<Pii, String> t) {
-                    Pii pii = (Pii) piis.get(t.getTablePosition().getRow());
-                    RubyObject.send(pii, "set" + property, t.getNewValue());
-                    manager.update(pii);
-                  }
-
-                });
-          }
-        } catch (Exception e) {}
+        String property = ((PropertyValueFactory<?, ?>) o).getProperty();
+        if (manager.isColumnEditable(property))
+          setEditableColumn(tc, property);
       }
     }
+  }
+
+  private void setEditableColumn(TableColumn<Pii, ?> tc, final String name) {
+    Callback<TableColumn<Pii, String>, TableCell<Pii, String>> callback =
+        TextFieldTableCell.forTableColumn();
+    @SuppressWarnings("unchecked")
+    TableColumn<Pii, String> convertedTc = (TableColumn<Pii, String>) tc;
+    convertedTc.setCellFactory(callback);
+    convertedTc.setOnEditCommit(new EventHandler<CellEditEvent<Pii, String>>() {
+
+      @ResetTerminator
+      @Override
+      public void handle(CellEditEvent<Pii, String> t) {
+        Pii pii = (Pii) piis.get(t.getTablePosition().getRow());
+        RubyObject.send(pii, "set" + name, t.getNewValue());
+        manager.update(pii);
+      }
+
+    });
   }
 
   private void authenticate() {
@@ -212,15 +205,14 @@ public class FXMLController implements Initializable {
   }
 
   private void autoBackup() {
-    Timer timer = new Timer(600000, new ActionListener() {
+    new Timer(600000, new ActionListener() {
 
       @Override
       public void actionPerformed(java.awt.event.ActionEvent e) {
         manager.backup();
       }
 
-    });
-    timer.start();
+    }).start();
   }
 
   @Override
@@ -233,6 +225,7 @@ public class FXMLController implements Initializable {
     piis = (ObservableList<Pii>) piiTable.getItems();
     authenticate();
     initTable();
+    resetTable();
     autoBackup();
   }
 

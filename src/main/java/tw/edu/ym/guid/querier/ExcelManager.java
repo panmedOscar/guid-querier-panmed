@@ -1,9 +1,9 @@
 package tw.edu.ym.guid.querier;
 
-import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
+import static net.sf.rubycollect4j.RubyCollections.rh;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 import static wmw.sql.TableField.Varchar;
 import static wmw.util.EmbeddedStorage.newEmbeddedStorage;
@@ -111,11 +111,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     updateExcels();
   }
 
-  /**
-   * Returns the total of records.
-   * 
-   * @return the total of records
-   */
   @Override
   public int getNumberOfRecords() {
     return new Piis().countAll();
@@ -132,11 +127,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     }
   }
 
-  /**
-   * Returns the header of the excel.
-   * 
-   * @return the header of the excel
-   */
   @Override
   public List<String> getHeader() {
     List<String> header = newArrayList();
@@ -150,11 +140,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     return header;
   }
 
-  /**
-   * Check if a column editable.
-   * 
-   * @return true if the column editable, false otherwise
-   */
   @Override
   public boolean isColumnEditable(String column) {
     ExcelField ef = null;
@@ -183,12 +168,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     });
   }
 
-  /**
-   * Imports all excels in encrypted zips within a folder.
-   * 
-   * @param folderPath
-   *          where encrypted zips located
-   */
   @Override
   public void importExcels(final String folderPath) {
     List<File> files = retrieveAllFiles(folderPath, "zip");
@@ -210,15 +189,6 @@ public final class ExcelManager implements RecordManager<Pii> {
       Folders.setFolderPath(FolderType.IMPORT, folderPath);
   }
 
-  /**
-   * Authenticates the password of a role.
-   * 
-   * @param role
-   *          to be authenticated
-   * @param password
-   *          to be verified
-   * @return true if authentication passed, false otherwise
-   */
   @Override
   public boolean authenticate(String role, String password) {
     if (password == null)
@@ -228,16 +198,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     return auth != null;
   }
 
-  /**
-   * Sets a new password of the role.
-   * 
-   * @param role
-   *          to be reset
-   * @param oldPassword
-   *          the old password
-   * @param newPassword
-   *          the new password
-   */
   @Override
   public void setPassword(String role, String oldPassword, String newPassword) {
     Authentications.setPassword(role, oldPassword, newPassword);
@@ -253,12 +213,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     return Piis.globalSearch(keywords);
   }
 
-  /**
-   * Sets backup folder.
-   * 
-   * @param backupFolder
-   *          used to backup encrypted zips
-   */
   @Override
   public void setBackupFolder(String backupFolder) {
     Folders.setFolderPath(FolderType.BACKUP,
@@ -266,9 +220,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     backup();
   }
 
-  /**
-   * Backups all encrypted zips from import folder to backup folder.
-   */
   @Override
   public void backup() {
     Folder src = Folders.findFirst(FolderType.IMPORT);
@@ -353,8 +304,9 @@ public final class ExcelManager implements RecordManager<Pii> {
   private void initDatabase() throws SQLException {
     if (!(es.hasTable(sheet))) {
       TableField[] fields = new TableField[ExcelField.values().length];
-      for (int i = 0; i < ExcelField.values().length; i++)
+      for (int i = 0; i < ExcelField.values().length; i++) {
         fields[i] = Varchar(ExcelField.values()[i].toString());
+      }
       es.createTable(sheet, fields);
 
       for (ExcelField ef : ExcelField.values()) {
@@ -384,8 +336,8 @@ public final class ExcelManager implements RecordManager<Pii> {
   private void createAuthenticationTable() throws SQLException {
     es.createTable("authentication", Varchar("role"), Varchar("password"));
     es.insertRecords("authentication",
-        of("role", ADMIN.toString(), "password", defaultPassword1),
-        of("role", ADMIN.toString(), "password", defaultPassword2));
+        rh("role", ADMIN.toString(), "password", defaultPassword1),
+        rh("role", ADMIN.toString(), "password", defaultPassword2));
   }
 
   @Override
