@@ -5,7 +5,6 @@ import static net.sf.rubycollect4j.RubyCollections.ra;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -13,6 +12,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -31,9 +32,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
-
-import javax.swing.Timer;
-
+import javafx.util.Duration;
 import net.sf.rubycollect4j.RubyObject;
 import net.sf.rubycollect4j.block.Block;
 
@@ -92,17 +91,17 @@ public class FXMLController implements Initializable {
   private TableColumn<Pii, String> hospitalCol;
 
   private ObservableList<Pii> piis;
+  private ResourceBundle rb;
 
-  @SuppressWarnings("unchecked")
   @ResetTerminator
   @FXML
   private void modeAction(ActionEvent event) throws NoSuchMethodException,
       SecurityException {
-    if (modeBtn.getText().equals("精簡模式")) {
-      modeBtn.setText("完整模式");
+    if (modeBtn.getText().equals(rb.getString("simple-mode"))) {
+      modeBtn.setText(rb.getString("complete-mode"));
       ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", false);
     } else {
-      modeBtn.setText("精簡模式");
+      modeBtn.setText(rb.getString("simple-mode"));
       ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", true);
     }
   }
@@ -121,17 +120,17 @@ public class FXMLController implements Initializable {
     String oldPassword = null;
     String newPassword = null;
     do {
-      oldPassword = getPassword("請輸入舊密碼:");
+      oldPassword = getPassword(rb.getString("oldpwd-prompt"));
     } while (oldPassword != null
         && !manager.authenticate(ADMIN.toString(), oldPassword));
 
     if (oldPassword == null) {
-      new MessageDialog().showMessages("認證失敗");
+      new MessageDialog().showMessages(rb.getString("auth-fail"));
       return;
     }
 
     do {
-      newPassword = getPassword("請輸入新密碼(最少四個字元):");
+      newPassword = getPassword(rb.getString("newpwd-prompt"));
     } while (newPassword != null && newPassword.length() < 4);
 
     manager.setPassword(ADMIN.toString(), oldPassword, newPassword);
@@ -211,8 +210,8 @@ public class FXMLController implements Initializable {
     do {
       if (retry >= 3)
         System.exit(0);
-      password1 = getPassword("請輸入第一組密碼：");
-      password2 = getPassword("請輸入第二組密碼：");
+      password1 = getPassword(rb.getString("pwd1-prompt"));
+      password2 = getPassword(rb.getString("pwd2-prompt"));
       retry++;
       if (DEV)
         break;
@@ -235,18 +234,23 @@ public class FXMLController implements Initializable {
   }
 
   private void autoBackup() {
-    new Timer(600000, new ActionListener() {
+    Timeline backuper =
+        new Timeline(new KeyFrame(Duration.seconds(300),
+            new EventHandler<ActionEvent>() {
 
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent e) {
-        manager.backup();
-      }
+              @Override
+              public void handle(ActionEvent event) {
+                manager.backup();
+              }
 
-    }).start();
+            }));
+    backuper.setCycleCount(Timeline.INDEFINITE);
+    backuper.play();
   }
 
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+    this.rb = rb;
     try {
       manager = newExcelManager(PROPS_PATH);
     } catch (ClassNotFoundException | IOException | SQLException e) {

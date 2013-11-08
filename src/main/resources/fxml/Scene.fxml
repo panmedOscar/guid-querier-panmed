@@ -26,36 +26,36 @@
 			GridPane.rowIndex="0">
 			<MenuBar>
 				<menus>
-					<Menu mnemonicParsing="false" text="匯入試算表">
+					<Menu mnemonicParsing="false" text="%import-excels">
 						<items>
-							<MenuItem fx:id="importMI" mnemonicParsing="false" text="選擇資料夾..."
-								onAction="#importExcels" />
+							<MenuItem fx:id="importMI" mnemonicParsing="false"
+								text="%select-folder" onAction="#importExcels" />
 						</items>
 					</Menu>
-					<Menu mnemonicParsing="false" text="安全性">
+					<Menu mnemonicParsing="false" text="%security">
 						<items>
 							<MenuItem fx:id="securityMI" mnemonicParsing="false"
-								text="修改密碼" onAction="#setPassword" />
+								text="%change-pwd" onAction="#setPassword" />
 						</items>
 					</Menu>
-					<Menu mnemonicParsing="false" text="備份">
+					<Menu mnemonicParsing="false" text="%backup">
 						<items>
-							<MenuItem fx:id="backupMI" mnemonicParsing="false" text="選擇備份路徑..."
-								onAction="#backup" />
+							<MenuItem fx:id="backupMI" mnemonicParsing="false"
+								text="%select-path" onAction="#backup" />
 						</items>
 					</Menu>
 				</menus>
 			</MenuBar>
 			<Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"></Label>
 			<Label fx:id="totalLbl">Total: 1000</Label>
-			<Button fx:id="modeBtn" onAction="#modeAction">精簡模式</Button>
+			<Button fx:id="modeBtn" onAction="#modeAction" text="%simple-mode" />
 		</HBox>
 		<GridPane GridPane.columnIndex="0" GridPane.rowIndex="1">
 			<children>
 				<TextField fx:id="searchTF" onAction="#queryAction"
 					maxWidth="1.7976931348623157E308" GridPane.columnIndex="0"
 					GridPane.rowIndex="0" />
-				<Button fx:id="searchBtn" text="搜尋" onAction="#queryAction"
+				<Button fx:id="searchBtn" text="%search" onAction="#queryAction"
 					maxWidth="100.0" mnemonicParsing="false" prefWidth="100.0"
 					GridPane.columnIndex="1" GridPane.rowIndex="0" />
 			</children>
@@ -74,7 +74,7 @@
 				<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 			</columnResizePolicy>
 			<columns>
-				<TableColumn fx:id="dateCol" text="編碼日期">
+				<TableColumn fx:id="dateCol" text="%coding-date">
 					<cellValueFactory>
 						<PropertyValueFactory property="編碼日期" />
 					</cellValueFactory>
@@ -89,61 +89,61 @@
 						<PropertyValueFactory property="Mrn" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="身份證字號">
+				<TableColumn text="%national-id">
 					<cellValueFactory>
 						<PropertyValueFactory property="身份證字號" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="姓氏">
+				<TableColumn text="%last-name">
 					<cellValueFactory>
 						<PropertyValueFactory property="姓氏" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="名字">
+				<TableColumn text="%first-name">
 					<cellValueFactory>
 						<PropertyValueFactory property="名字" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn text="生日">
+				<TableColumn text="%birthday">
 					<columns>
-						<TableColumn text="月">
+						<TableColumn text="%month">
 							<cellValueFactory>
 								<PropertyValueFactory property="出生月" />
 							</cellValueFactory>
 						</TableColumn>
-						<TableColumn text="日">
+						<TableColumn text="%day">
 							<cellValueFactory>
 								<PropertyValueFactory property="出生日" />
 							</cellValueFactory>
 						</TableColumn>
-						<TableColumn text="年">
+						<TableColumn text="%year">
 							<cellValueFactory>
 								<PropertyValueFactory property="出生年" />
 							</cellValueFactory>
 						</TableColumn>
 					</columns>
 				</TableColumn>
-				<TableColumn text="性別">
+				<TableColumn text="%gender">
 					<cellValueFactory>
 						<PropertyValueFactory property="性別" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn fx:id="telCol" text="聯絡電話">
+				<TableColumn fx:id="telCol" text="%phone">
 					<cellValueFactory>
 						<PropertyValueFactory property="聯絡電話" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn fx:id="addrCol" text="地址">
+				<TableColumn fx:id="addrCol" text="%address">
 					<cellValueFactory>
 						<PropertyValueFactory property="地址" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn fx:id="drCol" text="收案醫師">
+				<TableColumn fx:id="drCol" text="%doctor">
 					<cellValueFactory>
 						<PropertyValueFactory property="收案醫師" />
 					</cellValueFactory>
 				</TableColumn>
-				<TableColumn fx:id="hospitalCol" text="收案醫院名稱">
+				<TableColumn fx:id="hospitalCol" text="%hospital">
 					<cellValueFactory>
 						<PropertyValueFactory property="收案醫院名稱" />
 					</cellValueFactory>

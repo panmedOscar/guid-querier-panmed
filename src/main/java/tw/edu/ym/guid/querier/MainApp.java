@@ -1,7 +1,12 @@
 package tw.edu.ym.guid.querier;
 
 import static tw.edu.ym.guid.querier.FXMLController.AUTO_SHUTDOWN_TIME;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -32,7 +37,11 @@ public class MainApp extends Application {
   @Override
   public void start(final Stage stage) throws Exception {
     GuiceFXMLLoader loader = new GuiceFXMLLoader(injector);
-    Parent root = (Parent) loader.load("/fxml/Scene.fxml", getClass());
+    FXMLLoader fxmlLoader = new FXMLLoader();
+    fxmlLoader.setResources(ResourceBundle.getBundle("GuidQuerier", new Locale(
+        "zh-tw")));
+    Parent root =
+        (Parent) loader.load("/fxml/Scene.fxml", getClass(), fxmlLoader);
 
     Scene scene = new Scene(root);
     scene.getStylesheets().add("/styles/Styles.css");

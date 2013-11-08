@@ -27,9 +27,9 @@ public class GuiceFXMLLoader {
   // Load some FXML file, using the supplied Controller, and return the
   // instance of the initialized controller...?
   @SuppressWarnings("resource")
-  public Object load(String url, Class<?> controller) {
+  public Object load(String url, Class<?> controller, FXMLLoader loader) {
     Object instance = injector.getInstance(controller);
-    FXMLLoader loader = new FXMLLoader();
+    // FXMLLoader loader = new FXMLLoader();
     loader.getNamespace().put("controller", instance);
     InputStream in = null;
     try {
