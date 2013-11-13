@@ -91,19 +91,19 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 	<properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <mainClass>tw.edu.ym.guid.querier.MainApp</mainClass>
-    <mybatis.generator.extension.version>0.0.1</mybatis.generator.extension.version>
-  </properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<mainClass>tw.edu.ym.guid.querier.MainApp</mainClass>
+		<mybatis.generator.extension.version>0.0.1</mybatis.generator.extension.version>
+	</properties>
 
 	<dependencies>
-    <dependency>
-      <groupId>wmw.db.mybatis</groupId>
-      <artifactId>mybatis-generator-extension</artifactId>
-      <version>${mybatis.generator.extension.version}</version>
-    </dependency>
+		<dependency>
+			<groupId>wmw.db.mybatis</groupId>
+			<artifactId>mybatis-generator-extension</artifactId>
+			<version>${mybatis.generator.extension.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.rubycollect4j</groupId>
 			<artifactId>rubycollect4j</artifactId>
