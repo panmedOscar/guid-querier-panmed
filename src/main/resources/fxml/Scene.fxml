@@ -22,9 +22,9 @@
 	prefHeight="670.0" prefWidth="870.0" xmlns:fx="http://javafx.com/fxml/1"
 	xmlns="http://javafx.com/javafx/2.2" fx:controller="tw.edu.ym.guid.querier.FXMLController">
 	<children>
-		<HBox spacing="5" alignment="CENTER" GridPane.columnIndex="0"
+		<HBox alignment="CENTER" GridPane.columnIndex="0"
 			GridPane.rowIndex="0">
-			<MenuBar>
+			<MenuBar HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
 				<menus>
 					<Menu mnemonicParsing="false" text="%import-excels">
 						<items>
@@ -44,10 +44,14 @@
 								text="%select-path" onAction="#backup" />
 						</items>
 					</Menu>
+					<Menu />
 				</menus>
 			</MenuBar>
-			<Label HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"></Label>
-			<Label fx:id="totalLbl">Total: 1000</Label>
+			<MenuBar>
+			  <menus>
+			    <Menu fx:id="totalLbl" mnemonicParsing="false" text="%backup" />
+			  </menus>
+			</MenuBar>
 			<Button fx:id="modeBtn" onAction="#modeAction" text="%simple-mode" />
 		</HBox>
 		<GridPane GridPane.columnIndex="0" GridPane.rowIndex="1">

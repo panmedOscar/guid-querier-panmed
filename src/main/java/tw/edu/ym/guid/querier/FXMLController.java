@@ -21,7 +21,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -66,7 +66,7 @@ public class FXMLController implements Initializable {
   @FXML
   private Button modeBtn;
   @FXML
-  private Label totalLbl;
+  private Menu totalLbl;
   @FXML
   private MenuItem importMI;
   @FXML
