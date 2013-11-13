@@ -21,16 +21,12 @@
 package wmw.javafx;
 
 import java.io.File;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-import javafx.scene.control.DatePicker;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 /**
  * 
@@ -64,40 +60,6 @@ public final class JavaFXHelper {
     stage.initModality(Modality.WINDOW_MODAL);
     DirectoryChooser chooser = new DirectoryChooser();
     return chooser.showDialog(stage);
-  }
-
-  /**
-   * Sets up the format of a JavaFX DatePicker.
-   * 
-   * @param datePicker
-   *          a DatePicker
-   * @param pattern
-   *          the date format
-   */
-  public static void setDatePickerFormat(final DatePicker datePicker,
-      final String pattern) {
-    datePicker.setConverter(new StringConverter<LocalDate>() {
-
-      DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
-
-      {
-        datePicker.setPromptText(pattern.toLowerCase());
-      }
-
-      @Override
-      public String toString(LocalDate date) {
-        return date == null ? "" : dateFormatter.format(date);
-      }
-
-      @Override
-      public LocalDate fromString(String string) {
-        if (string != null && !string.trim().isEmpty())
-          return LocalDate.parse(string.trim(), dateFormatter);
-        else
-          return null;
-      }
-
-    });
   }
 
 }
