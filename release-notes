@@ -60,3 +60,6 @@ Version 1.5.1
 
 Version 1.5.2
 * Avoided the bug while the previous import folder can't be found
+
+Version 1.6.0
+- Remove JavaFX 8 dependency
