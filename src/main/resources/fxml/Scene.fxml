@@ -93,6 +93,11 @@
 						<PropertyValueFactory property="Mrn" />
 					</cellValueFactory>
 				</TableColumn>
+				<TableColumn fx:id="subjectIdCol" text="SubjectID">
+          <cellValueFactory>
+            <PropertyValueFactory property="subjectid" />
+          </cellValueFactory>
+        </TableColumn>
 				<TableColumn text="%national-id">
 					<cellValueFactory>
 						<PropertyValueFactory property="身份證字號" />

@@ -55,7 +55,7 @@ public class FXMLController implements Initializable {
   private static final Logger log = LoggerFactory
       .getLogger(FXMLController.class);
 
-  public static final boolean DEV = false;
+  public static final boolean DEV = true;
   public static final String PROPS_PATH = "excel_manager.properties";
   public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
 
