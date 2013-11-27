@@ -88,7 +88,7 @@
 							<options>
 								<option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
 								<option>-keepclassmembernames class * { @javafx.fxml.FXML *; }</option>
-								<option>-keep public class * { *; }</option>
+								<option>-keep public class * { public *; }</option>
 								<option>-dontshrink</option>
 								<option>-dontoptimize</option>
 								<option>-dontwarn</option>
@@ -212,11 +212,6 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.9</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jgoodies</groupId>
-			<artifactId>jgoodies-forms</artifactId>
-			<version>1.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
