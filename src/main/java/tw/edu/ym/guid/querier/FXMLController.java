@@ -93,7 +93,6 @@ public class FXMLController implements Initializable {
   private ObservableList<Pii> piis;
   private ResourceBundle rb;
 
-  @SuppressWarnings("unchecked")
   @ResetTerminator
   @FXML
   private void modeAction(ActionEvent event) throws NoSuchMethodException,
