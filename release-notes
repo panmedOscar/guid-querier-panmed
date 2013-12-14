@@ -62,4 +62,7 @@ Version 1.5.2
 * Avoided the bug while the previous import folder can't be found
 
 Version 1.6.0
-- Remove JavaFX 8 dependency
+- Removed JavaFX 8 dependency
+
+Version 1.7.0
++ Added obfuscation
