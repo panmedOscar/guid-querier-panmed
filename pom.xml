@@ -3,10 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>tw.edu.ym.guid</groupId>
 	<artifactId>guid-querier</artifactId>
-	<version>1.7.0</version>
+	<version>1.8.0-SNAPSHOT</version>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<useSystemClassLoader>false</useSystemClassLoader>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -86,7 +93,8 @@
 							</libs>
 							<obfuscate>true</obfuscate>
 							<options>
-								<option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
+								<option>-keepattributes
+									Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
 								<option>-keepclassmembernames class * { @javafx.fxml.FXML *; }</option>
 								<option>-keep public class * { public *; }</option>
 								<option>-dontshrink</option>
@@ -173,6 +181,16 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.avaje</groupId>
+			<artifactId>ebean</artifactId>
+			<version>2.7.1</version>
+		</dependency>
 		<dependency>
 			<groupId>wmw.db.mybatis</groupId>
 			<artifactId>mybatis-generator-extension</artifactId>
