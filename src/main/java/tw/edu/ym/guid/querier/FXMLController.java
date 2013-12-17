@@ -56,6 +56,7 @@ public class FXMLController implements Initializable {
   public static final boolean DEV = true;
   public static final String PROPS_PATH = "excel_manager.properties";
   public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
+  public static final String ADMIN = "ADMIN";
 
   private RecordManager<Pii> manager;
 
@@ -119,7 +120,7 @@ public class FXMLController implements Initializable {
     String newPassword = null;
     do {
       oldPassword = getPassword(rb.getString("oldpwd-prompt"));
-    } while (oldPassword != null && !manager.authenticate("admin", oldPassword));
+    } while (oldPassword != null && !manager.authenticate(ADMIN, oldPassword));
 
     if (oldPassword == null) {
       new MessageDialog().showMessages(rb.getString("auth-fail"));
@@ -130,7 +131,7 @@ public class FXMLController implements Initializable {
       newPassword = getPassword(rb.getString("newpwd-prompt"));
     } while (newPassword != null && newPassword.length() < 4);
 
-    manager.setPassword("admin", oldPassword, newPassword);
+    manager.setPassword(ADMIN, oldPassword, newPassword);
   }
 
   @ResetTerminator

@@ -52,6 +52,9 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
+  public static final String IMPORT = "IMPORT";
+  public static final String BACKUP = "BACKUP";
+
   private final String sheet;
   private final String zipPassword;
   private final String defaultPassword1;
@@ -110,7 +113,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private void updateExcels() {
     List<Folder> folders =
-        Ebean.find(Folder.class).where().eq("usage", "import").findList();
+        Ebean.find(Folder.class).where().eq("usage", IMPORT).findList();
     Folder folder = folders.isEmpty() ? null : folders.get(0);
 
     if (folder != null) {
@@ -169,7 +172,7 @@ public final class ExcelManager implements RecordManager<Pii> {
     }
 
     Folder folder =
-        Ebean.find(Folder.class).where().eq("usage", "import").findUnique();
+        Ebean.find(Folder.class).where().eq("usage", IMPORT).findUnique();
     if (files.isEmpty()) {
       if (folder != null)
         Ebean.delete(folder);
@@ -232,7 +235,7 @@ public final class ExcelManager implements RecordManager<Pii> {
   @Override
   public void setBackupFolder(String backupFolder) {
     Folder folder =
-        Ebean.find(Folder.class).where().eq("usage", "backup").findUnique();
+        Ebean.find(Folder.class).where().eq("usage", BACKUP).findUnique();
     if (folder == null)
       folder = new Folder();
     folder.setUsage("backup");
@@ -244,9 +247,9 @@ public final class ExcelManager implements RecordManager<Pii> {
   @Override
   public void backup() {
     Folder src =
-        Ebean.find(Folder.class).where().eq("usage", "import").findUnique();
+        Ebean.find(Folder.class).where().eq("usage", IMPORT).findUnique();
     Folder dest =
-        Ebean.find(Folder.class).where().eq("usage", "backup").findUnique();
+        Ebean.find(Folder.class).where().eq("usage", BACKUP).findUnique();
     if (src != null && dest != null) {
       File srcFolder = new File(src.getPath());
       File destFolder = new File(dest.getPath());
@@ -256,7 +259,7 @@ public final class ExcelManager implements RecordManager<Pii> {
         try {
           BackupUtil.backup(encryptedFiles, destFolder);
         } catch (IOException e) {
-          log.warn(e.getMessage());
+          log.warn(e.getMessage(), e);
         }
       }
     }
@@ -270,7 +273,7 @@ public final class ExcelManager implements RecordManager<Pii> {
           new EncryptedZip(file.getAbsolutePath(), zipPassword);
           encryptedFiles.add(file);
         } catch (Exception e) {
-          log.warn(e.getMessage());
+          log.warn(e.getMessage(), e);
         }
       }
     }
@@ -302,8 +305,7 @@ public final class ExcelManager implements RecordManager<Pii> {
     }
   }
 
-  private static boolean
-      set(Object object, String fieldName, Object fieldValue) {
+  private boolean set(Object object, String fieldName, Object fieldValue) {
     Class<?> clazz = object.getClass();
     while (clazz != null) {
       try {
