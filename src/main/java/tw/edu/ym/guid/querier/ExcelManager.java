@@ -3,48 +3,40 @@ package tw.edu.ym.guid.querier;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
-import static net.sf.rubycollect4j.RubyCollections.rh;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-import static wmw.sql.TableField.Varchar;
-import static wmw.util.EmbeddedStorage.newEmbeddedStorage;
+import static net.sf.rubycollect4j.RubyCollections.ra;
 import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import net.lingala.zip4j.exception.ZipException;
+import net.sf.rubycollect4j.RubyArray;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.edu.ym.guid.querier.api.Authentications;
-import tw.edu.ym.guid.querier.api.Folders;
-import tw.edu.ym.guid.querier.api.Folders.FolderType;
-import tw.edu.ym.guid.querier.api.Histories;
-import tw.edu.ym.guid.querier.api.Piis;
-import wmw.db.mybatis.Example;
-import wmw.sql.TableField;
 import wmw.util.BackupUtil;
-import wmw.util.EmbeddedStorage;
 import wmw.util.EncryptedZip;
 import wmw.util.Excel2Map;
+import app.models.Authentication;
+import app.models.Folder;
+import app.models.History;
+import app.models.Pii;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.ExpressionList;
 import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;
-
-import exceldb.model.Authentication;
-import exceldb.model.Folder;
-import exceldb.model.Pii;
-import exceldb.model.PiiExample;
 
 /**
  * 
@@ -61,7 +53,6 @@ public final class ExcelManager implements RecordManager<Pii> {
   private final String zipPassword;
   private final String defaultPassword1;
   private final String defaultPassword2;
-  private final EmbeddedStorage es;
 
   /**
    * 
@@ -78,7 +69,7 @@ public final class ExcelManager implements RecordManager<Pii> {
    *           if DB creation failed
    */
   public static ExcelManager newExcelManager(String propertiesPath)
-      throws IOException, ClassNotFoundException, SQLException {
+      throws IOException {
     Properties props = new Properties();
     InputStream in =
         ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
@@ -100,42 +91,38 @@ public final class ExcelManager implements RecordManager<Pii> {
    * @throws SQLException
    *           if DB creation failed
    */
-  public ExcelManager(Properties props) throws SQLException,
-      ClassNotFoundException, IOException {
+  public ExcelManager(Properties props) {
     sheet = props.getProperty("sheet");
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
     defaultPassword2 = props.getProperty("default_password_2");
-    es = newEmbeddedStorage(props.getProperty("db_props"));
-    initDatabase();
+    setDefaultPasswords();
     updateExcels();
   }
 
   @Override
   public int getNumberOfRecords() {
-    return new Piis().countAll();
+    return Ebean.find(Pii.class).findRowCount();
   }
 
   private void updateExcels() {
-    Folder folder = Folders.findFirst(FolderType.IMPORT);
+    List<Folder> folders =
+        Ebean.find(Folder.class).where().eq("usage", "import").findList();
+    Folder folder = folders.isEmpty() ? null : folders.get(0);
 
     if (folder != null) {
       if (new File(folder.getPath()).exists())
         importExcels(folder.getPath());
       else
-        Folders.removeFolderPath(FolderType.IMPORT);
+        Ebean.delete(folders);
     }
   }
 
   @Override
   public List<String> getHeader() {
     List<String> header = newArrayList();
-    try {
-      for (String field : es.getColumns(sheet)) {
-        header.add(field.toUpperCase());
-      }
-    } catch (SQLException e) {
-      log.error(e.getMessage());
+    for (ExcelField field : ExcelField.values()) {
+      header.add(field.toString().toUpperCase());
     }
     return header;
   }
@@ -153,19 +140,12 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public List<Pii> findAll() {
-    return new Piis().selectAll();
+    return Ebean.find(Pii.class).findList();
   }
 
   @Override
   public List<Pii> findAll(final int limit) {
-    return new Piis().select(new Example<PiiExample>() {
-
-      @Override
-      public void set(PiiExample example) {
-        example.setOrderByClause(ExcelField.orderBy() + " LIMIT " + limit);
-      }
-
-    });
+    return Ebean.find(Pii.class).setMaxRows(limit).findList();
   }
 
   @Override
@@ -184,10 +164,23 @@ public final class ExcelManager implements RecordManager<Pii> {
     } catch (Exception e) {
       log.error(e.getMessage());
     }
-    if (files.isEmpty())
-      Folders.removeFolderPath(FolderType.IMPORT);
-    else
-      Folders.setFolderPath(FolderType.IMPORT, folderPath);
+
+    Folder folder =
+        Ebean.find(Folder.class).where().eq("usage", "import").findUnique();
+    if (files.isEmpty()) {
+      if (folder != null)
+        Ebean.delete(folder);
+    } else {
+      if (folder == null) {
+        folder = new Folder();
+        folder.setUsage("import");
+        folder.setPath(folderPath);
+        Ebean.save(folder);
+      } else {
+        folder.setPath(folderPath);
+        Ebean.save(folder);
+      }
+    }
   }
 
   @Override
@@ -195,36 +188,57 @@ public final class ExcelManager implements RecordManager<Pii> {
     if (password == null)
       return false;
 
-    Authentication auth = Authentications.findByRoleAndPassword(role, password);
+    Authentication auth =
+        Ebean.find(Authentication.class).where().eq("role", role)
+            .eq("password", password).findUnique();
     return auth != null;
   }
 
   @Override
   public void setPassword(String role, String oldPassword, String newPassword) {
-    Authentications.setPassword(role, oldPassword, newPassword);
+    Authentication auth =
+        Ebean.find(Authentication.class).where().eq("role", role)
+            .eq("password", oldPassword).findUnique();
+    auth.setPassword(newPassword);
+    Ebean.save(auth);
   }
 
   @Override
   public void update(final Pii record) {
-    Piis.update(record);
+    Ebean.save(record);
   }
 
   @Override
   public List<Pii> query(String... keywords) {
-    return Piis.globalSearch(keywords);
+    ExpressionList<Pii> exprList = Ebean.find(Pii.class).where();
+    for (String keyword : keywords) {
+      for (ExcelField f : ExcelField.values()) {
+        exprList =
+            exprList.add(Expr.ilike(f.toString().toLowerCase(), "%" + keyword
+                + "%"));
+      }
+    }
+    return exprList.query().findList();
   }
 
   @Override
   public void setBackupFolder(String backupFolder) {
-    Folders.setFolderPath(FolderType.BACKUP,
-        new File(backupFolder).getAbsolutePath());
+    Folder folder =
+        Ebean.find(Folder.class).where().eq("usage", "backup").findUnique();
+    if (folder == null)
+      folder = new Folder();
+    folder.setUsage("backup");
+    folder.setPath(new File(backupFolder).getAbsolutePath());
+    Ebean.save(folder);
     backup();
   }
 
   @Override
   public void backup() {
-    Folder src = Folders.findFirst(FolderType.IMPORT);
-    Folder dest = Folders.findFirst(FolderType.BACKUP);
+    Folder src =
+        Ebean.find(Folder.class).where().eq("usage", "import").findUnique();
+    Folder dest =
+        Ebean.find(Folder.class).where().eq("usage", "backup").findUnique();
     if (src != null && dest != null) {
       File srcFolder = new File(src.getPath());
       File destFolder = new File(dest.getPath());
@@ -257,7 +271,9 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private void recordProcessedFiles(Collection<String> fileNames) {
     for (String fileName : fileNames) {
-      Histories.create(fileName);
+      History history = new History();
+      history.setFileName(fileName);
+      Ebean.save(history);
     }
   }
 
@@ -266,14 +282,34 @@ public final class ExcelManager implements RecordManager<Pii> {
       Multimap<String, Map<String, String>> maps = Excel2Map.convert(wb);
       for (String sheet : maps.keySet()) {
         if (sheet.trim().matches("(?i)" + sheet + ".*")) {
-          try {
-            es.safeInsertRecords(this.sheet, maps.get(sheet));
-          } catch (SQLException e) {
-            log.error(e.getMessage());
+          for (Map<String, String> row : maps.get(sheet)) {
+            Pii pii = new Pii();
+            for (String field : row.keySet()) {
+              set(pii, field.toLowerCase(), row.get(field));
+            }
+            Ebean.save(pii);
           }
         }
       }
     }
+  }
+
+  private static boolean
+      set(Object object, String fieldName, Object fieldValue) {
+    Class<?> clazz = object.getClass();
+    while (clazz != null) {
+      try {
+        Field field = clazz.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(object, fieldValue);
+        return true;
+      } catch (NoSuchFieldException e) {
+        clazz = clazz.getSuperclass();
+      } catch (Exception e) {
+        return false;
+      }
+    }
+    return false;
   }
 
   private Map<String, InputStream> filterUnprocessedExcels(
@@ -286,7 +322,10 @@ public final class ExcelManager implements RecordManager<Pii> {
       }
     }
 
-    Set<String> unprocessedFiles = Histories.filterUnprocessedFiles(allFiles);
+    RubyArray<String> histories =
+        ra(Ebean.find(History.class).findList()).map("getFileName");
+    List<String> unprocessedFiles =
+        ra(allFiles).minus(histories.intersection(allFiles));
     Map<String, InputStream> excels = newHashMap();
     for (EncryptedZip ez : encryptedZips) {
       for (String fileName : ez.getAllFileNames()) {
@@ -312,49 +351,20 @@ public final class ExcelManager implements RecordManager<Pii> {
     return encryptedZips;
   }
 
-  private void initDatabase() throws SQLException {
-    if (!(es.hasTable(sheet))) {
-      TableField[] fields = new TableField[ExcelField.values().length];
-      for (int i = 0; i < ExcelField.values().length; i++) {
-        fields[i] = Varchar(ExcelField.values()[i].toString());
-      }
-      es.createTable(sheet, fields);
-
-      for (ExcelField ef : ExcelField.values()) {
-        es.index(sheet, ef.toString());
-        if (ef.isUnique())
-          es.unique(sheet, ef.toString());
-      }
-    }
-
-    if (!(es.hasTable("history")))
-      createHistoryTable();
-
-    if (!(es.hasTable("authentication")))
-      createAuthenticationTable();
-
-    if (!(es.hasTable("folder")))
-      es.createTable("folder", Varchar("usage"), Varchar("path"));
-  }
-
-  private void createHistoryTable() throws SQLException {
-    es.createTable("history", Varchar("file_name"));
-    es.unique("history", "file_name");
-    es.index("history", "file_name");
-  }
-
-  @SuppressWarnings("unchecked")
-  private void createAuthenticationTable() throws SQLException {
-    es.createTable("authentication", Varchar("role"), Varchar("password"));
-    es.insertRecords("authentication",
-        rh("role", ADMIN.toString(), "password", defaultPassword1),
-        rh("role", ADMIN.toString(), "password", defaultPassword2));
+  private void setDefaultPasswords() {
+    Authentication auth1 = new Authentication();
+    Authentication auth2 = new Authentication();
+    auth1.setRole("admin");
+    auth2.setRole("admin");
+    auth1.setPassword(defaultPassword1);
+    auth2.setPassword(defaultPassword2);
+    Ebean.save(auth1);
+    Ebean.save(auth2);
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this.getClass()).add("Sheet", sheet)
-        .toString();
+    return Objects.toStringHelper(getClass()).add("Sheet", sheet).toString();
   }
 
 }
