@@ -124,7 +124,7 @@ public final class ExcelManager implements RecordManager<Pii> {
   public List<String> getHeader() {
     List<String> header = newArrayList();
     for (ExcelField field : ExcelField.values()) {
-      header.add(field.toString().toUpperCase());
+      header.add(field.toString());
     }
     return header;
   }

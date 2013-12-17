@@ -18,24 +18,20 @@ public class ExcelManagerTest {
 
   private static ExcelManager manager;
   private static Properties manager_props;
-  private static Properties db_props;
 
   @BeforeClass
   public static void setUp() throws Exception {
     manager_props = new Properties();
     manager_props.load(ExcelManagerTest.class.getClassLoader()
-        .getResourceAsStream("test_excel_manager.properties"));
-    db_props = new Properties();
-    db_props.load(ExcelManagerTest.class.getClassLoader().getResourceAsStream(
-        "test_database.properties"));
-    manager = newExcelManager("test_excel_manager.properties");
+        .getResourceAsStream("excel_manager.properties"));
+    manager = newExcelManager("excel_manager.properties");
     manager.importExcels("src/test/resources/example");
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    new File("testdb.h2.db").delete();
-    new File("testdb.trace.db").delete();
+    new File("h2-create.sql").delete();
+    new File("h2-drop.sql").delete();
     new File("guid_querier.log").delete();
   }
 
@@ -47,8 +43,9 @@ public class ExcelManagerTest {
   @Test
   public void testGetHeader() {
     List<String> header = manager.getHeader();
-    for (int i = 0; i < header.size(); i++)
+    for (int i = 0; i < header.size(); i++) {
       assertEquals(ExcelField.values()[i].toString(), header.get(i));
+    }
   }
 
   @Test
