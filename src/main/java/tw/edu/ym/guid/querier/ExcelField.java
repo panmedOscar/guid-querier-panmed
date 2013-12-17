@@ -11,26 +11,14 @@ package tw.edu.ym.guid.querier;
  */
 public enum ExcelField {
 
-  編碼日期(false, false), GUID(false, false), MRN(false, true),
-  身份證字號(false, false), 姓氏(false, false), 名字(false, false), 出生月(false, false),
-  出生日(false, false), 出生年(false, false), 性別(false, false), 聯絡電話(false, true),
-  地址(false, true), 收案醫師(false, true), 收案醫院名稱(false, true);
+  編碼日期(false), GUID(false), MRN(true), 身份證字號(false), 姓氏(false), 名字(false), 出生月(
+      false), 出生日(false), 出生年(false), 性別(false), 聯絡電話(true), 地址(true), 收案醫師(
+      true), 收案醫院名稱(true);
 
-  private final boolean unique;
   private final boolean editable;
 
-  private ExcelField(boolean unique, boolean editable) {
-    this.unique = unique;
+  private ExcelField(boolean editable) {
     this.editable = editable;
-  }
-
-  /**
-   * Check if this field is unique.
-   * 
-   * @return true if this field is unique, false otherwise
-   */
-  public boolean isUnique() {
-    return unique;
   }
 
   /**
@@ -42,8 +30,9 @@ public enum ExcelField {
     return editable;
   }
 
-  public static String orderBy() {
-    return GUID.toString();
+  @Override
+  public String toString() {
+    return name().toLowerCase();
   }
 
 }

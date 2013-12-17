@@ -1,6 +1,7 @@
 package tw.edu.ym.guid.querier;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
 import static net.sf.rubycollect4j.RubyCollections.ra;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,7 +36,7 @@ import app.models.Pii;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
-import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.Expression;
 import com.google.common.base.Objects;
 import com.google.common.collect.Multimap;
 
@@ -210,15 +212,17 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public List<Pii> query(String... keywords) {
-    ExpressionList<Pii> exprList = Ebean.find(Pii.class).where();
+    LinkedList<Expression> exprs = newLinkedList();
     for (String keyword : keywords) {
       for (ExcelField f : ExcelField.values()) {
-        exprList =
-            exprList.add(Expr.ilike(f.toString().toLowerCase(), "%" + keyword
-                + "%"));
+        exprs.add(Expr.ilike(f.toString(), "%" + keyword + "%"));
       }
     }
-    return exprList.query().findList();
+    Expression ors = exprs.pollFirst();
+    for (Expression expr : exprs) {
+      ors = Expr.or(ors, expr);
+    }
+    return Ebean.find(Pii.class).where(ors).findList();
   }
 
   @Override
@@ -352,6 +356,9 @@ public final class ExcelManager implements RecordManager<Pii> {
   }
 
   private void setDefaultPasswords() {
+    if (Ebean.find(Authentication.class).findRowCount() != 0)
+      return;
+
     Authentication auth1 = new Authentication();
     Authentication auth2 = new Authentication();
     auth1.setRole("admin");

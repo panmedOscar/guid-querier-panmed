@@ -97,8 +97,9 @@ public class ExcelManagerTest {
   @Test
   public void testBackup() {
     List<File> oldFiles = retrieveAllFiles("src/test/resources/backup", "zip");
-    for (File file : oldFiles)
+    for (File file : oldFiles) {
       file.delete();
+    }
     manager.setBackupFolder("src/test/resources/backup");
     List<File> backupFiles =
         retrieveAllFiles("src/test/resources/backup", "zip");
