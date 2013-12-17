@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -215,7 +216,10 @@ public final class ExcelManager implements RecordManager<Pii> {
     LinkedList<Expression> exprs = newLinkedList();
     for (String keyword : keywords) {
       for (ExcelField f : ExcelField.values()) {
-        exprs.add(Expr.ilike(f.toString(), "%" + keyword + "%"));
+        if (keyword.getBytes(Charset.forName("UTF-8")).length < 3)
+          exprs.add(Expr.ieq(f.toString(), keyword));
+        else
+          exprs.add(Expr.ilike(f.toString(), "%" + keyword + "%"));
       }
     }
     Expression ors = exprs.pollFirst();

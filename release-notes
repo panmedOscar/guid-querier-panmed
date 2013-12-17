@@ -66,3 +66,6 @@ Version 1.6.0
 
 Version 1.7.0
 + Added obfuscation
+
+Version 2.0.0
+* Replaced myBatis with Ebean
