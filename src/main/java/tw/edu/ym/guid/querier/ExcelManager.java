@@ -22,6 +22,7 @@ import java.util.Properties;
 import net.lingala.zip4j.exception.ZipException;
 import net.sf.rubycollect4j.RubyArray;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
@@ -81,23 +82,20 @@ public final class ExcelManager implements RecordManager<Pii> {
         ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
     props.load(in);
     in.close();
+
+    File excelDb = new File("exceldb.h2.db");
+    if (!excelDb.exists()) {
+      InputStream defaultDb =
+          ExcelManager.class.getClassLoader().getResourceAsStream(
+              "exceldb.h2.db");
+      FileUtils.copyInputStreamToFile(defaultDb, excelDb);
+      defaultDb.close();
+    }
+
     return new ExcelManager(props);
   }
 
-  /**
-   * Creates a ExcelManager by given Properties.
-   * 
-   * @param props
-   *          a Properties
-   * @return an ExcelManager
-   * @throws IOException
-   *           if properties not found
-   * @throws ClassNotFoundException
-   *           if DB driver not found
-   * @throws SQLException
-   *           if DB creation failed
-   */
-  public ExcelManager(Properties props) {
+  private ExcelManager(Properties props) {
     sheet = props.getProperty("sheet");
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
