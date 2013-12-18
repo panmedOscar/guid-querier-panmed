@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
+
+import net.sf.rubycollect4j.RubyDir;
+import net.sf.rubycollect4j.RubyFile;
+import net.sf.rubycollect4j.block.TransformBlock;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -91,16 +94,27 @@ public class ExcelManagerTest {
 
   @Test
   public void testBackup() {
-    List<File> oldFiles = retrieveAllFiles("src/test/resources/backup", "zip");
+    List<File> oldFiles = retrieveAllZips("src/test/resources/backup");
     for (File file : oldFiles) {
       file.delete();
     }
     manager.setBackupFolder("src/test/resources/backup");
-    List<File> backupFiles =
-        retrieveAllFiles("src/test/resources/backup", "zip");
+    List<File> backupFiles = retrieveAllZips("src/test/resources/backup");
     assertEquals(1, backupFiles.size());
     assertEquals("PII_20130328.zip", backupFiles.get(0).getName());
     backupFiles.get(0).delete();
+  }
+
+  private List<File> retrieveAllZips(final String folderPath) {
+    return RubyDir.glob(RubyFile.join(folderPath, "**", "*.zip")).map(
+        new TransformBlock<String, File>() {
+
+          @Override
+          public File yield(String item) {
+            return new File(RubyFile.join(folderPath, item));
+          }
+
+        });
   }
 
   @Test

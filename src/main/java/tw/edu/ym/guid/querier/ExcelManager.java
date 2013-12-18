@@ -5,7 +5,6 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
 import static net.sf.rubycollect4j.RubyCollections.ra;
-import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +20,9 @@ import java.util.Properties;
 
 import net.lingala.zip4j.exception.ZipException;
 import net.sf.rubycollect4j.RubyArray;
+import net.sf.rubycollect4j.RubyDir;
+import net.sf.rubycollect4j.RubyFile;
+import net.sf.rubycollect4j.block.TransformBlock;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -154,7 +156,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public void importExcels(final String folderPath) {
-    List<File> files = retrieveAllFiles(folderPath, "zip");
+    List<File> files = retrieveAllZips(folderPath);
     List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
     Map<String, InputStream> excels = emptyMap();
     try {
@@ -177,7 +179,7 @@ public final class ExcelManager implements RecordManager<Pii> {
     } else {
       if (folder == null) {
         folder = new Folder();
-        folder.setUsage("import");
+        folder.setUsage(IMPORT);
         folder.setPath(folderPath);
         Ebean.save(folder);
       } else {
@@ -236,7 +238,7 @@ public final class ExcelManager implements RecordManager<Pii> {
         Ebean.find(Folder.class).where().eq("usage", BACKUP).findUnique();
     if (folder == null)
       folder = new Folder();
-    folder.setUsage("backup");
+    folder.setUsage(BACKUP);
     folder.setPath(new File(backupFolder).getAbsolutePath());
     Ebean.save(folder);
     backup();
@@ -252,7 +254,7 @@ public final class ExcelManager implements RecordManager<Pii> {
       File srcFolder = new File(src.getPath());
       File destFolder = new File(dest.getPath());
       if (srcFolder.exists() && destFolder.exists()) {
-        List<File> files = retrieveAllFiles(srcFolder.getAbsolutePath(), "zip");
+        List<File> files = retrieveAllZips(srcFolder.getAbsolutePath());
         List<File> encryptedFiles = filterEncryptedFiles(files);
         try {
           BackupUtil.backup(encryptedFiles, destFolder);
@@ -261,6 +263,18 @@ public final class ExcelManager implements RecordManager<Pii> {
         }
       }
     }
+  }
+
+  private List<File> retrieveAllZips(final String folderPath) {
+    return RubyDir.glob(RubyFile.join(folderPath, "**", "*.zip")).map(
+        new TransformBlock<String, File>() {
+
+          @Override
+          public File yield(String item) {
+            return new File(RubyFile.join(folderPath, item));
+          }
+
+        });
   }
 
   private List<File> filterEncryptedFiles(List<File> files) {
