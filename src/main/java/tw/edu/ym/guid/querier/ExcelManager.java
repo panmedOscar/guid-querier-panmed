@@ -55,6 +55,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
+  public static final String ADMIN = "ADMIN";
   public static final String IMPORT = "IMPORT";
   public static final String BACKUP = "BACKUP";
 
@@ -379,8 +380,8 @@ public final class ExcelManager implements RecordManager<Pii> {
 
     Authentication auth1 = new Authentication();
     Authentication auth2 = new Authentication();
-    auth1.setRole("admin");
-    auth2.setRole("admin");
+    auth1.setRole(ADMIN);
+    auth2.setRole(ADMIN);
     auth1.setPassword(defaultPassword1);
     auth2.setPassword(defaultPassword2);
     Ebean.save(auth1);

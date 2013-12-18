@@ -2,6 +2,7 @@ package tw.edu.ym.guid.querier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static net.sf.rubycollect4j.RubyCollections.ra;
+import static tw.edu.ym.guid.querier.ExcelManager.ADMIN;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 
 import java.io.File;
@@ -56,7 +57,6 @@ public class FXMLController implements Initializable {
   public static final boolean DEV = false;
   public static final String PROPS_PATH = "excel_manager.properties";
   public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
-  public static final String ADMIN = "ADMIN";
 
   private RecordManager<Pii> manager;
 
@@ -213,8 +213,8 @@ public class FXMLController implements Initializable {
       retry++;
       if (DEV)
         break;
-    } while (!manager.authenticate("admin", password1)
-        || !manager.authenticate("admin", password2));
+    } while (!manager.authenticate(ADMIN, password1)
+        || !manager.authenticate(ADMIN, password2));
     mainPane.setDisable(false);
   }
 
