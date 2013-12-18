@@ -30,8 +30,6 @@ public class ExcelManagerTest {
 
   @AfterClass
   public static void tearDown() throws Exception {
-    new File("h2-create.sql").delete();
-    new File("h2-drop.sql").delete();
     new File("guid_querier.log").delete();
   }
 
