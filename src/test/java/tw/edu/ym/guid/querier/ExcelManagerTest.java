@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
-import static wmw.util.FolderTraverser.retrieveAllFiles;
 
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
+
+import net.sf.rubycollect4j.RubyDir;
+import net.sf.rubycollect4j.RubyFile;
+import net.sf.rubycollect4j.block.TransformBlock;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,24 +21,18 @@ public class ExcelManagerTest {
 
   private static ExcelManager manager;
   private static Properties manager_props;
-  private static Properties db_props;
 
   @BeforeClass
   public static void setUp() throws Exception {
     manager_props = new Properties();
     manager_props.load(ExcelManagerTest.class.getClassLoader()
-        .getResourceAsStream("test_excel_manager.properties"));
-    db_props = new Properties();
-    db_props.load(ExcelManagerTest.class.getClassLoader().getResourceAsStream(
-        "test_database.properties"));
-    manager = newExcelManager("test_excel_manager.properties");
+        .getResourceAsStream("excel_manager.properties"));
+    manager = newExcelManager("excel_manager.properties");
     manager.importExcels("src/test/resources/example");
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
-    new File("testdb.h2.db").delete();
-    new File("testdb.trace.db").delete();
     new File("guid_querier.log").delete();
   }
 
@@ -48,29 +44,30 @@ public class ExcelManagerTest {
   @Test
   public void testGetHeader() {
     List<String> header = manager.getHeader();
-    for (int i = 0; i < header.size(); i++)
+    for (int i = 0; i < header.size(); i++) {
       assertEquals(ExcelField.values()[i].toString(), header.get(i));
+    }
   }
 
   @Test
   public void testAuthenticate() {
-    assertTrue(manager.authenticate(ADMIN.toString(),
+    assertTrue(manager.authenticate("admin",
         manager_props.getProperty("default_password_1")));
-    assertTrue(manager.authenticate(ADMIN.toString(),
+    assertTrue(manager.authenticate("admin",
         manager_props.getProperty("default_password_2")));
-    assertFalse(manager.authenticate(ADMIN.toString(), "haha"));
+    assertFalse(manager.authenticate("admin", "haha"));
   }
 
   @Test
   public void testSetAdminPassword() {
-    manager.setPassword(ADMIN.toString(),
+    manager.setPassword("admin",
         manager_props.getProperty("default_password_1"), "yaya");
-    assertTrue(manager.authenticate(ADMIN.toString(), "yaya"));
-    manager.setPassword(ADMIN.toString(),
+    assertTrue(manager.authenticate("admin", "yaya"));
+    manager.setPassword("admin",
         manager_props.getProperty("default_password_2"), "ohoh");
-    assertFalse(manager.authenticate(ADMIN.toString(),
+    assertFalse(manager.authenticate("admin",
         manager_props.getProperty("default_password_1")));
-    assertTrue(manager.authenticate(ADMIN.toString(), "ohoh"));
+    assertTrue(manager.authenticate("admin", "ohoh"));
   }
 
   @Test
@@ -97,15 +94,27 @@ public class ExcelManagerTest {
 
   @Test
   public void testBackup() {
-    List<File> oldFiles = retrieveAllFiles("src/test/resources/backup", "zip");
-    for (File file : oldFiles)
+    List<File> oldFiles = retrieveAllZips("src/test/resources/backup");
+    for (File file : oldFiles) {
       file.delete();
+    }
     manager.setBackupFolder("src/test/resources/backup");
-    List<File> backupFiles =
-        retrieveAllFiles("src/test/resources/backup", "zip");
+    List<File> backupFiles = retrieveAllZips("src/test/resources/backup");
     assertEquals(1, backupFiles.size());
     assertEquals("PII_20130328.zip", backupFiles.get(0).getName());
     backupFiles.get(0).delete();
+  }
+
+  private List<File> retrieveAllZips(final String folderPath) {
+    return RubyDir.glob(RubyFile.join(folderPath, "**", "*.zip")).map(
+        new TransformBlock<String, File>() {
+
+          @Override
+          public File yield(String item) {
+            return new File(RubyFile.join(folderPath, item));
+          }
+
+        });
   }
 
   @Test

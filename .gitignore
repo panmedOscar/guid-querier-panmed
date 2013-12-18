@@ -3,8 +3,9 @@
 /.settings
 /bin
 /target
-*.h2.db
-*.trace.db
+/*.h2.db
+/*.trace.db
 *.log
+/logs
 
 .DS_Store

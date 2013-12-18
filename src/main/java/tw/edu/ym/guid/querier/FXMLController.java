@@ -2,13 +2,12 @@ package tw.edu.ym.guid.querier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static net.sf.rubycollect4j.RubyCollections.ra;
+import static tw.edu.ym.guid.querier.ExcelManager.ADMIN;
 import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
-import static tw.edu.ym.guid.querier.api.Authentications.RoleType.ADMIN;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -43,7 +42,7 @@ import wmw.aop.terminator.ResetTerminator;
 import wmw.javafx.JavaFXHelper;
 import wmw.javafx.MessageDialog;
 import wmw.javafx.PasswordDialog;
-import exceldb.model.Pii;
+import app.models.Pii;
 
 /**
  * 
@@ -55,7 +54,7 @@ public class FXMLController implements Initializable {
   private static final Logger log = LoggerFactory
       .getLogger(FXMLController.class);
 
-  public static final boolean DEV = true;
+  public static final boolean DEV = false;
   public static final String PROPS_PATH = "excel_manager.properties";
   public static final long AUTO_SHUTDOWN_TIME = 300000000000L;
 
@@ -121,8 +120,7 @@ public class FXMLController implements Initializable {
     String newPassword = null;
     do {
       oldPassword = getPassword(rb.getString("oldpwd-prompt"));
-    } while (oldPassword != null
-        && !manager.authenticate(ADMIN.toString(), oldPassword));
+    } while (oldPassword != null && !manager.authenticate(ADMIN, oldPassword));
 
     if (oldPassword == null) {
       new MessageDialog().showMessages(rb.getString("auth-fail"));
@@ -133,7 +131,7 @@ public class FXMLController implements Initializable {
       newPassword = getPassword(rb.getString("newpwd-prompt"));
     } while (newPassword != null && newPassword.length() < 4);
 
-    manager.setPassword(ADMIN.toString(), oldPassword, newPassword);
+    manager.setPassword(ADMIN, oldPassword, newPassword);
   }
 
   @ResetTerminator
@@ -215,8 +213,8 @@ public class FXMLController implements Initializable {
       retry++;
       if (DEV)
         break;
-    } while (!manager.authenticate(ADMIN.toString(), password1)
-        || !manager.authenticate(ADMIN.toString(), password2));
+    } while (!manager.authenticate(ADMIN, password1)
+        || !manager.authenticate(ADMIN, password2));
     mainPane.setDisable(false);
   }
 
@@ -253,7 +251,7 @@ public class FXMLController implements Initializable {
     this.rb = rb;
     try {
       manager = newExcelManager(PROPS_PATH);
-    } catch (ClassNotFoundException | IOException | SQLException e) {
+    } catch (IOException e) {
       log.error(e.getMessage(), e);
     }
     piis = (ObservableList<Pii>) piiTable.getItems();
