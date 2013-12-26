@@ -24,7 +24,6 @@ import net.sf.rubycollect4j.RubyDir;
 import net.sf.rubycollect4j.RubyFile;
 import net.sf.rubycollect4j.block.TransformBlock;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
@@ -85,16 +84,6 @@ public final class ExcelManager implements RecordManager<Pii> {
         ExcelManager.class.getClassLoader().getResourceAsStream(propertiesPath);
     props.load(in);
     in.close();
-
-    File excelDb = new File("exceldb.h2.db");
-    if (!excelDb.exists()) {
-      InputStream defaultDb =
-          ExcelManager.class.getClassLoader().getResourceAsStream(
-              "exceldb.h2.db");
-      FileUtils.copyInputStreamToFile(defaultDb, excelDb);
-      defaultDb.close();
-    }
-
     return new ExcelManager(props);
   }
 
