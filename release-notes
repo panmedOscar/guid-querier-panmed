@@ -69,3 +69,6 @@ Version 1.7.0
 
 Version 2.0.0
 * Replaced MyBatis with Ebean
+
+Version 2.0.1
+- Removed useless dependencies
