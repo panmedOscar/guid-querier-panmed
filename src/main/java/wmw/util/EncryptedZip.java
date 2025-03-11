@@ -20,13 +20,12 @@
  */
 package wmw.util;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 
@@ -38,16 +37,16 @@ public final class EncryptedZip {
   @SuppressWarnings("unchecked")
   public EncryptedZip(String path, String password) throws ZipException,
       IOException {
-    zipFile = new ZipFile(path);
+    zipFile = new ZipFile(path, password.toCharArray());
+
     fileHeaders = zipFile.getFileHeaders();
 
     if (zipFile.isEncrypted()) {
-      zipFile.setPassword(password);
-      if (!(isPasswordValid(zipFile)))
-        throw new IllegalArgumentException("Zip password is wrong.");
+      validatePassword();
     } else {
       throw new IllegalStateException("Zip file is not encrypted.");
     }
+
   }
 
   private boolean isPasswordValid(ZipFile zip) {
@@ -61,20 +60,39 @@ public final class EncryptedZip {
   }
 
   public List<String> getAllFileNames() throws ZipException {
-    List<String> fileNames = newArrayList();
-    for (FileHeader fh : fileHeaders) {
-      fileNames.add(fh.getFileName());
-    }
-    return fileNames;
+    return fileHeaders.stream()
+        .map(FileHeader::getFileName)
+        .collect(Collectors.toList());
   }
 
-  public InputStream getInputStreamByFileName(String fileName)
-      throws ZipException {
-    for (FileHeader fh : fileHeaders) {
-      if (fileName.equals(fh.getFileName()))
-        return zipFile.getInputStream(fh);
+  public InputStream getInputStreamByFileName(String fileName) throws ZipException, IOException {
+    FileHeader fileHeader = zipFile.getFileHeader(fileName);
+    if (fileHeader == null) {
+      throw new ZipException("File not found: " + fileName);
     }
-    return null;
+    return zipFile.getInputStream(fileHeader);
+  }
+
+  /**
+   * 驗證密碼是否正確。
+   *
+   * @throws ZipException 如果密碼錯誤。
+   * @throws IOException   如果讀取檔案時發生 I/O 錯誤。
+   */
+  private void validatePassword() throws ZipException, IOException {
+    if (!fileHeaders.isEmpty()) {
+      FileHeader firstFileHeader = fileHeaders.get(0);
+      try (InputStream is = zipFile.getInputStream(firstFileHeader)) {
+        byte[] buffer = new byte[1];
+        if (is.read(buffer) == -1) {
+          throw new ZipException("Cannot validate password: first file is empty.");
+        }
+      } catch (ZipException e) {
+        throw new IllegalArgumentException("Zip password is wrong.", e);
+      }
+    } else {
+      throw new ZipException("Zip file is empty.");
+    }
   }
 
 }

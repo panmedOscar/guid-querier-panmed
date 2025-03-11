@@ -8,8 +8,10 @@ import static tw.edu.ym.guid.querier.ExcelManager.newExcelManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -33,7 +35,6 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import net.sf.rubycollect4j.RubyObject;
-import net.sf.rubycollect4j.block.Block;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,15 +95,22 @@ public class FXMLController implements Initializable {
 
   @ResetTerminator
   @FXML
-  private void modeAction(ActionEvent event) throws NoSuchMethodException,
-      SecurityException {
-    if (modeBtn.getText().equals(rb.getString("simple-mode"))) {
-      modeBtn.setText(rb.getString("complete-mode"));
-      ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", false);
-    } else {
-      modeBtn.setText(rb.getString("simple-mode"));
-      ra(dateCol, telCol, addrCol, drCol, hospitalCol).map("setVisible", true);
+  private void modeAction(ActionEvent event) {
+    try {
+      if (modeBtn.getText().equals(rb.getString("simple-mode"))) {
+        modeBtn.setText(rb.getString("complete-mode"));
+        setColumnsVisible(false, dateCol, telCol, addrCol, drCol, hospitalCol);
+      } else {
+        modeBtn.setText(rb.getString("simple-mode"));
+        setColumnsVisible(true, dateCol, telCol, addrCol, drCol, hospitalCol);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
+
+  private void setColumnsVisible(boolean visible, TableColumn<?, ?>... columns) {
+    Arrays.stream(columns).forEach(col -> col.setVisible(visible));
   }
 
   @ResetTerminator
@@ -220,10 +228,10 @@ public class FXMLController implements Initializable {
 
   private String getPassword(String message) {
     final SimpleStringProperty password = new SimpleStringProperty();
-    new PasswordDialog(message, new Block<String>() {
+    new PasswordDialog(message, new Consumer<String>() {
 
       @Override
-      public void yield(String item) {
+      public void accept(String item) {
         password.set(item);
       }
 

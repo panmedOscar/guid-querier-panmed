@@ -3,171 +3,28 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>tw.edu.ym.guid</groupId>
 	<artifactId>guid-querier</artifactId>
-	<version>2.0.2</version>
+	<version>3.0.0</version>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<useSystemClassLoader>false</useSystemClassLoader>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
-						<phase>package</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<excludeScope>system</excludeScope>
-							<excludeGroupIds>junit,org.mockito,org.hamcrest</excludeGroupIds>
-							<outputDirectory>${project.build.directory}/classes</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.0</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
 
-						<phase>package</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>${java.home}/../bin/javafxpackager</executable>
-							<arguments>
-								<argument>-createjar</argument>
-								<argument>-nocss2bin</argument>
-								<argument>-appclass</argument>
-								<argument>${mainClass}</argument>
-								<argument>-srcdir</argument>
-								<argument>${project.build.directory}/classes</argument>
-								<argument>-outdir</argument>
-								<argument>${project.build.directory}</argument>
-								<argument>-outfile</argument>
-								<argument>${project.build.finalName}.jar</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<compilerArguments>
-						<bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
-					</compilerArguments>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>package-with-proguard</id>
-						<phase>package</phase>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<configuration>
-							<injar>${project.build.finalName}.jar</injar>
-							<outjar>${project.build.finalName}-small.jar</outjar>
-							<libs>
-								<lib>${java.home}/lib/rt.jar</lib>
-								<lib>${java.home}/lib/jfxrt.jar</lib>
-							</libs>
-							<obfuscate>true</obfuscate>
-							<options>
-								<option>-keepattributes
-									Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
-								<option>-keepclassmembernames class * { @javafx.fxml.FXML *; }</option>
-								<option>-keep public class * { public *; }</option>
-								<option>-dontshrink</option>
-								<option>-dontoptimize</option>
-								<option>-dontwarn</option>
-							</options>
-							<proguardInclude>${project.basedir}/proguard.conf</proguardInclude>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>com.github.wvengen</groupId>
-					<artifactId>proguard-maven-plugin</artifactId>
-					<version>2.0.6</version>
-					<dependencies>
-						<dependency>
-							<groupId>net.sf.proguard</groupId>
-							<artifactId>proguard-base</artifactId>
-							<version>4.10</version>
-							<scope>runtime</scope>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.github.wvengen</groupId>
-										<artifactId>proguard-maven-plugin</artifactId>
-										<versionRange>
-											[2.0,)
-										</versionRange>
-										<goals>
-											<goal>proguard</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+	<name>guid-querier</name>
 
-	<repositories>
-		<repository>
-			<id>sonatype.oss.snapshots</id>
-			<name>Sonatype OSS Snapshot Repository</name>
-			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+	<organization>
+		<name>Panmed</name>
+	</organization>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>21</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<javafx.version>23.0.1</javafx.version>
+		<slf4j.version>2.0.16</slf4j.version>
 		<mainClass>tw.edu.ym.guid.querier.MainApp</mainClass>
 	</properties>
 
@@ -185,53 +42,127 @@
 		<dependency>
 			<groupId>net.sf.rubycollect4j</groupId>
 			<artifactId>rubycollect4j</artifactId>
-			<version>1.6.2</version>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>15.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.3.174</version>
-		</dependency>
-		<dependency>
-			<groupId>net.lingala.zip4j</groupId>
-			<artifactId>zip4j</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.5</version>
+			<version>5.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.7.5</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
+			<!--      <classifier>mac-aarch64</classifier>-->
+			<classifier>win</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>${javafx.version}</version>
+			<!--      <classifier>mac-aarch64</classifier>-->
+			<classifier>win</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>33.4.0-jre</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.wnameless</groupId>
+			<artifactId>workbook-accessor</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>2.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.220</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Maven Compiler Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<release>${java.version}</release>
+				</configuration>
+			</plugin>
+
+			<!-- Spring Boot Maven Plugin  -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${mainClass}</mainClass>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- jpackage Maven Plugin -->
+			<plugin>
+				<groupId>org.panteleyev</groupId>
+				<artifactId>jpackage-maven-plugin</artifactId>
+				<version>1.6.4</version>
+				<executions>
+					<execution>
+						<id>create-package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jpackage</goal>
+						</goals>
+						<configuration>
+							<!-- Main JAR -->
+							<input>${project.build.directory}</input>
+							<mainJar>${project.artifactId}-${project.version}.jar</mainJar>
+							<mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+
+							<!-- Application Details -->
+							<name>${project.name}</name>
+							<appVersion>${project.version}</appVersion>
+							<vendor>${project.organization.name}</vendor>
+
+							<!-- Packaging Type -->
+							<!-- <type>DMG</type> -->
+							<type>EXE</type>
+
+							<!-- Icon -->
+							<!--              <icon>${project.basedir}/src/main/resources/icons/app.icns</icon>-->
+							<icon>${project.basedir}/src/main/resources/icons/q.ico</icon>
+
+							<destination>${project.build.directory}/jpackage</destination>
+
+							<!-- Java Options and JVM Arguments -->
+							<javaOptions>
+								<javaOption>--enable-preview</javaOption> <!-- Example JVM option -->
+								<javaOption>-Xmx1024m</javaOption>
+							</javaOptions>
+
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

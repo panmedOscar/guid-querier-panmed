@@ -1,10 +1,11 @@
 package tw.edu.ym.guid.querier;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
 import static net.sf.rubycollect4j.RubyCollections.ra;
+
+import com.google.common.base.MoreObjects;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,12 +18,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Multimap;
 import net.lingala.zip4j.exception.ZipException;
 import net.sf.rubycollect4j.RubyArray;
 import net.sf.rubycollect4j.RubyDir;
 import net.sf.rubycollect4j.RubyFile;
-import net.sf.rubycollect4j.block.TransformBlock;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -40,8 +42,8 @@ import app.models.Pii;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Expression;
-import com.google.common.base.Objects;
-import com.google.common.collect.Multimap;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * 
@@ -256,15 +258,9 @@ public final class ExcelManager implements RecordManager<Pii> {
   }
 
   private List<File> retrieveAllZips(final String folderPath) {
-    return RubyDir.glob(RubyFile.join(folderPath, "**", "*.zip")).map(
-        new TransformBlock<String, File>() {
-
-          @Override
-          public File yield(String item) {
-            return new File(RubyFile.join(folderPath, item));
-          }
-
-        });
+    return RubyDir.glob(RubyFile.join(folderPath, "**", "*.zip"))
+        .map(item -> new File(RubyFile.join(folderPath, item)))
+        .toList();
   }
 
   private List<File> filterEncryptedFiles(List<File> files) {
@@ -325,28 +321,42 @@ public final class ExcelManager implements RecordManager<Pii> {
   }
 
   private Map<String, InputStream> filterUnprocessedExcels(
-      List<EncryptedZip> encryptedZips) throws ZipException {
-    List<String> allFiles = newArrayList();
-    for (EncryptedZip ez : encryptedZips) {
-      for (String fileName : ez.getAllFileNames()) {
-        if (fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
-          allFiles.add(fileName);
-      }
-    }
-
-    RubyArray<String> histories =
-        ra(Ebean.find(History.class).findList()).map("getFileName");
-    List<String> unprocessedFiles =
-        ra(allFiles).minus(histories.intersection(allFiles));
+      List<EncryptedZip> encryptedZips) {
     Map<String, InputStream> excels = newHashMap();
-    for (EncryptedZip ez : encryptedZips) {
-      for (String fileName : ez.getAllFileNames()) {
-        if (unprocessedFiles.contains(fileName))
-          excels.put(fileName, ez.getInputStreamByFileName(fileName));
+    try {
+      List<String> allFiles = encryptedZips.stream()
+          .flatMap(ez -> {
+            try {
+              return ez.getAllFileNames().stream();
+            } catch (ZipException e) {
+              throw new RuntimeException(e);
+            }
+          })
+          .filter(fileName -> fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
+          .collect(Collectors.toList());
+
+      // 使用 Java Streams 代替 RubyArray
+      List<String> histories = Ebean.find(History.class).findList().stream()
+          .map(History::getFileName)
+          .collect(Collectors.toList());
+
+      List<String> unprocessedFiles = allFiles.stream()
+          .filter(fileName -> !histories.contains(fileName))
+          .collect(Collectors.toList());
+
+      for (EncryptedZip ez : encryptedZips) {
+        for (String fileName : ez.getAllFileNames()) {
+          if (unprocessedFiles.contains(fileName)) {
+            excels.put(fileName, ez.getInputStreamByFileName(fileName));
+          }
+        }
       }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return excels;
   }
+
 
   private List<EncryptedZip> filterEncryptedZips(List<File> files) {
     List<EncryptedZip> encryptedZips = newArrayList();
@@ -373,13 +383,17 @@ public final class ExcelManager implements RecordManager<Pii> {
     auth2.setRole(ADMIN);
     auth1.setPassword(defaultPassword1);
     auth2.setPassword(defaultPassword2);
+    auth1.setId(1L);
+    auth2.setId(2L);
     Ebean.save(auth1);
     Ebean.save(auth2);
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass()).add("Sheet", sheet).toString();
+    return MoreObjects.toStringHelper(this)
+        .add("Sheet", sheet)
+        .toString();
   }
 
 }

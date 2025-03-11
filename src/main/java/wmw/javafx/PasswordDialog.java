@@ -20,8 +20,6 @@
  */
 package wmw.javafx;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -30,10 +28,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import net.sf.rubycollect4j.block.Block;
+
+import java.util.function.Consumer;
 
 /**
  * 
@@ -43,46 +43,37 @@ import net.sf.rubycollect4j.block.Block;
  */
 public final class PasswordDialog {
 
-  /**
-   * Creates a PasswordDialog.
-   * 
-   * @param message
-   *          to display
-   * @param block
-   *          to process password
-   */
-  public PasswordDialog(String message, final Block<String> block) {
-    final Stage dialog = new Stage();
+  public PasswordDialog(String message, final Consumer<String> callback) {
+    // 創建新的 Stage 作為對話框
+    Stage dialog = new Stage();
     dialog.initStyle(StageStyle.UTILITY);
+    dialog.initModality(Modality.APPLICATION_MODAL);
     dialog.setResizable(false);
-    dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
-      public void handle(final WindowEvent event) {
-        dialog.close();
-      }
+    // 設置關閉請求的處理，使用 Lambda 表達式
+    dialog.setOnCloseRequest((WindowEvent event) -> dialog.close());
 
-    });
+    // 創建密碼輸入欄
+    PasswordField password = new PasswordField();
 
-    final PasswordField password = new PasswordField();
+    // 創建顯示消息的文本
     Text msg = new Text(message);
     msg.setFont(Font.font("Verdana", 16));
+
+    // 創建確認按鈕，並設置事件處理器
     Button btn = new Button("Confirm");
-    btn.setOnAction(new EventHandler<ActionEvent>() {
-
-      @Override
-      public void handle(ActionEvent arg0) {
-        block.yield(password.getText());
-        dialog.close();
-      }
-
+    btn.setOnAction(event -> {
+      callback.accept(password.getText());
+      dialog.close();
     });
 
-    HBox hbox = new HBox();
+    // 布局設置
+    HBox hbox = new HBox(10); // 設置間距為 10
     hbox.getChildren().addAll(msg, password, btn);
     hbox.setAlignment(Pos.CENTER);
     hbox.setPadding(new Insets(10));
-    hbox.setSpacing(5.0);
 
+    // 創建場景並顯示對話框
     Scene dialogScene = new Scene(hbox);
     dialog.setScene(dialogScene);
     dialog.showAndWait();
