@@ -13,14 +13,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import app.models.Authentication;
+import com.avaje.ebean.Ebean;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -33,7 +34,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import net.sf.rubycollect4j.RubyObject;
 
 import org.slf4j.Logger;
@@ -41,19 +41,16 @@ import org.slf4j.LoggerFactory;
 
 import wmw.aop.terminator.ResetTerminator;
 import wmw.javafx.JavaFXHelper;
-import wmw.javafx.MessageDialog;
 import wmw.javafx.PasswordDialog;
 import app.models.Pii;
 
 /**
- * 
  * FXMLController is the controller of GuidClient GUI.
- * 
  */
 public class FXMLController implements Initializable {
 
-  private static final Logger log = LoggerFactory
-      .getLogger(FXMLController.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(FXMLController.class);
 
   public static final boolean DEV = false;
   public static final String PROPS_PATH = "excel_manager.properties";
@@ -109,7 +106,8 @@ public class FXMLController implements Initializable {
     }
   }
 
-  private void setColumnsVisible(boolean visible, TableColumn<?, ?>... columns) {
+  private void setColumnsVisible(boolean visible,
+      TableColumn<?, ?>... columns) {
     Arrays.stream(columns).forEach(col -> col.setVisible(visible));
   }
 
@@ -126,20 +124,99 @@ public class FXMLController implements Initializable {
   private void setPassword(ActionEvent event) {
     String oldPassword = null;
     String newPassword = null;
+    String confirmPassword = null;
+    Authentication user = null;
     do {
       oldPassword = getPassword(rb.getString("oldpwd-prompt"));
+      user = getUser(oldPassword);
     } while (oldPassword != null && !manager.authenticate(ADMIN, oldPassword));
 
     if (oldPassword == null) {
-      new MessageDialog().showMessages(rb.getString("auth-fail"));
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("認證失敗");
+      alert.setHeaderText(null);
+      alert.setContentText(rb.getString("auth-fail"));
+      alert.showAndWait();
       return;
     }
 
+    int typeCount = 0;
     do {
       newPassword = getPassword(rb.getString("newpwd-prompt"));
-    } while (newPassword != null && newPassword.length() < 4);
+      if (newPassword == null) {
+        break; // 使用者取消輸入密碼
+      }
 
+      // 輸入重複密碼並驗證是否一致
+      confirmPassword = getPassword(rb.getString("confirm-pwd-prompt"));
+      if (confirmPassword == null) {
+        break; // 使用者取消輸入密碼
+      }
+
+      // 確認新密碼與重複密碼一致
+      if (!newPassword.equals(confirmPassword)) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("密碼不一致");
+        alert.setHeaderText(null);
+        alert.setContentText("新密碼和確認密碼不一致，請重新輸入！");
+        alert.showAndWait();
+        continue;
+      }
+
+      // 檢查新密碼的長度
+      if (newPassword.length() < 8) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("密碼錯誤");
+        alert.setHeaderText(null);
+        alert.setContentText("新密碼必須大於8個字元");
+        alert.showAndWait();
+        continue;
+      }
+
+      // 計算密碼中包含的字符類型
+      boolean hasUpperCase = newPassword.matches(".*[A-Z].*");
+      boolean hasLowerCase = newPassword.matches(".*[a-z].*");
+      boolean hasDigit = newPassword.matches(".*[0-9].*");
+      boolean hasSpecialChar =
+          newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*");
+
+      if (hasUpperCase)
+        typeCount++;
+      if (hasLowerCase)
+        typeCount++;
+      if (hasDigit)
+        typeCount++;
+      if (hasSpecialChar)
+        typeCount++;
+
+      // 檢查是否至少有 3 種不同類型
+      if (typeCount < 3) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("密碼錯誤");
+        alert.setHeaderText(null);
+        alert.setContentText(
+            "新密碼必須包含至少 3 種不同類型的字符（大寫字母、小寫字母、數字、特殊符號）");
+        alert.showAndWait();
+      }
+    } while (newPassword.length() < 8 || typeCount < 3);
+
+    if (newPassword == null || confirmPassword == null) {
+      return;
+    }
+
+    // 成功設定新密碼
     manager.setPassword(ADMIN, oldPassword, newPassword);
+
+    log.info(
+        "User Id: " + user.getId() + " password changed at: " + java.time.LocalDateTime.now());
+
+    // 顯示修改完成的訊息
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("修改完成");
+    alert.setHeaderText(null);
+    alert.setContentText("密碼已成功修改！");
+    alert.showAndWait();
+
   }
 
   @ResetTerminator
@@ -192,8 +269,8 @@ public class FXMLController implements Initializable {
   private void setEditableColumn(TableColumn<Pii, ?> tc, final String name) {
     Callback<TableColumn<Pii, String>, TableCell<Pii, String>> callback =
         TextFieldTableCell.forTableColumn();
-    @SuppressWarnings("unchecked")
-    TableColumn<Pii, String> convertedTc = (TableColumn<Pii, String>) tc;
+    @SuppressWarnings("unchecked") TableColumn<Pii, String> convertedTc =
+        (TableColumn<Pii, String>) tc;
     convertedTc.setCellFactory(callback);
     convertedTc.setOnEditCommit(new EventHandler<CellEditEvent<Pii, String>>() {
 
@@ -221,8 +298,8 @@ public class FXMLController implements Initializable {
       retry++;
       if (DEV)
         break;
-    } while (!manager.authenticate(ADMIN, password1)
-        || !manager.authenticate(ADMIN, password2));
+    } while (!manager.authenticate(ADMIN, password1) || !manager.authenticate(
+        ADMIN, password2));
     mainPane.setDisable(false);
   }
 
@@ -239,20 +316,19 @@ public class FXMLController implements Initializable {
     return password.getValue();
   }
 
-  private void autoBackup() {
-    Timeline backuper =
-        new Timeline(new KeyFrame(Duration.seconds(300),
-            new EventHandler<ActionEvent>() {
-
-              @Override
-              public void handle(ActionEvent event) {
-                manager.backup();
-              }
-
-            }));
-    backuper.setCycleCount(Timeline.INDEFINITE);
-    backuper.play();
-  }
+  //  private void autoBackup() {
+  //    Timeline backuper = new Timeline(
+  //        new KeyFrame(Duration.seconds(300), new EventHandler<ActionEvent>() {
+  //
+  //          @Override
+  //          public void handle(ActionEvent event) {
+  //            manager.backup();
+  //          }
+  //
+  //        }));
+  //    backuper.setCycleCount(Timeline.INDEFINITE);
+  //    backuper.play();
+  //  }
 
   @Override
   public void initialize(URL url, ResourceBundle rb) {
@@ -266,7 +342,17 @@ public class FXMLController implements Initializable {
     authenticate();
     initTable();
     resetTable();
-    autoBackup();
+    //    autoBackup();
+  }
+
+  private Authentication getUser(String password) {
+
+    Authentication auth =
+        Ebean.find(Authentication.class).where().eq("role", ADMIN)
+            .eq("password", password).findUnique();
+
+    return auth;
+
   }
 
 }

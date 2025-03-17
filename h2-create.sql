@@ -1,27 +1,28 @@
 create table authentication (
-  id                        bigint not null,
+  id                        bigint not null auto_increment,
   role                      varchar(255),
   password                  varchar(255),
+  last_change               timestamp,
   constraint uq_authentication_password unique (password),
   constraint pk_authentication primary key (id))
 ;
 
 create table folder (
-  id                        bigint not null,
+  id                        bigint not null auto_increment,
   usage                     varchar(255),
   path                      varchar(255),
   constraint pk_folder primary key (id))
 ;
 
 create table history (
-  id                        bigint not null,
+  id                        bigint not null auto_increment,
   file_name                 varchar(255),
   constraint uq_history_file_name unique (file_name),
   constraint pk_history primary key (id))
 ;
 
 create table pii (
-  id                        bigint not null,
+  id                        bigint not null auto_increment,
   編碼日期                      varchar(255),
   guid                      varchar(255),
   mrn                       varchar(255),
@@ -38,14 +39,6 @@ create table pii (
   收案醫院名稱                    varchar(255),
   constraint pk_pii primary key (id))
 ;
-
-create sequence authentication_seq;
-
-create sequence folder_seq;
-
-create sequence history_seq;
-
-create sequence pii_seq;
 
 
 

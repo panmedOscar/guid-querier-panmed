@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Multimap;
+import javafx.scene.control.Alert;
 import net.lingala.zip4j.exception.ZipException;
 import net.sf.rubycollect4j.RubyArray;
 import net.sf.rubycollect4j.RubyDir;
@@ -104,16 +106,22 @@ public final class ExcelManager implements RecordManager<Pii> {
   }
 
   private void updateExcels() {
+
     List<Folder> folders =
         Ebean.find(Folder.class).where().eq("usage", IMPORT).findList();
     Folder folder = folders.isEmpty() ? null : folders.get(0);
 
     if (folder != null) {
+//      Ebean.beginTransaction();
       if (new File(folder.getPath()).exists())
         importExcels(folder.getPath());
       else
         Ebean.delete(folders);
+
+//      Ebean.commitTransaction();
+//      Ebean.endTransaction();
     }
+
   }
 
   @Override
@@ -148,6 +156,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public void importExcels(final String folderPath) {
+
     List<File> files = retrieveAllZips(folderPath);
     List<EncryptedZip> encryptedZips = filterEncryptedZips(files);
     Map<String, InputStream> excels = emptyMap();
@@ -166,9 +175,14 @@ public final class ExcelManager implements RecordManager<Pii> {
     Folder folder =
         Ebean.find(Folder.class).where().eq("usage", IMPORT).findUnique();
     if (files.isEmpty()) {
+//      Ebean.beginTransaction();
       if (folder != null)
         Ebean.delete(folder);
+
+//      Ebean.commitTransaction();
+//      Ebean.endTransaction();
     } else {
+//      Ebean.beginTransaction();
       if (folder == null) {
         folder = new Folder();
         folder.setUsage(IMPORT);
@@ -178,7 +192,11 @@ public final class ExcelManager implements RecordManager<Pii> {
         folder.setPath(folderPath);
         Ebean.save(folder);
       }
+//      Ebean.commitTransaction();
+//      Ebean.endTransaction();
     }
+
+
   }
 
   @Override
@@ -194,11 +212,22 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   @Override
   public void setPassword(String role, String oldPassword, String newPassword) {
-    Authentication auth =
-        Ebean.find(Authentication.class).where().eq("role", role)
-            .eq("password", oldPassword).findUnique();
-    auth.setPassword(newPassword);
-    Ebean.save(auth);
+    Ebean.beginTransaction();
+    try {
+      Authentication auth = Ebean.find(Authentication.class)
+          .where().eq("role", role)
+          .eq("password", oldPassword).findUnique();
+      auth.setPassword(newPassword);
+      auth.setLastChange(new Date());
+      Ebean.save(auth);
+
+      Ebean.commitTransaction();
+    } catch (Exception e) {
+      Ebean.rollbackTransaction();
+      e.printStackTrace();
+    } finally {
+      Ebean.endTransaction();
+    }
   }
 
   @Override
@@ -250,6 +279,12 @@ public final class ExcelManager implements RecordManager<Pii> {
         List<File> encryptedFiles = filterEncryptedFiles(files);
         try {
           BackupUtil.backup(encryptedFiles, destFolder);
+
+          Alert alert = new Alert(Alert.AlertType.INFORMATION);
+          alert.setTitle("備份完畢");
+          alert.setHeaderText(null);
+          alert.setContentText("備份已成功完成！");
+          alert.showAndWait();
         } catch (IOException e) {
           log.warn(e.getMessage(), e);
         }
@@ -383,8 +418,6 @@ public final class ExcelManager implements RecordManager<Pii> {
     auth2.setRole(ADMIN);
     auth1.setPassword(defaultPassword1);
     auth2.setPassword(defaultPassword2);
-    auth1.setId(1L);
-    auth2.setId(2L);
     Ebean.save(auth1);
     Ebean.save(auth2);
   }
