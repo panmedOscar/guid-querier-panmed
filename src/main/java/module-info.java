@@ -19,6 +19,7 @@ module guid.querier {
   requires aopalliance;
   requires javax.inject;
   requires com.google.guice;
+  requires com.h2database;
 
   exports app.models;
   opens app.models;

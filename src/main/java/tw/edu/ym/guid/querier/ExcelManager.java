@@ -3,7 +3,6 @@ package tw.edu.ym.guid.querier;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptyMap;
-import static net.sf.rubycollect4j.RubyCollections.ra;
 
 import com.google.common.base.MoreObjects;
 
@@ -23,8 +22,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Multimap;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import net.lingala.zip4j.exception.ZipException;
-import net.sf.rubycollect4j.RubyArray;
 import net.sf.rubycollect4j.RubyDir;
 import net.sf.rubycollect4j.RubyFile;
 
@@ -58,6 +57,7 @@ public final class ExcelManager implements RecordManager<Pii> {
 
   private static final Logger log = LoggerFactory.getLogger(ExcelManager.class);
 
+  public static final String SUPER = "SUPER";
   public static final String ADMIN = "ADMIN";
   public static final String IMPORT = "IMPORT";
   public static final String BACKUP = "BACKUP";
@@ -66,7 +66,7 @@ public final class ExcelManager implements RecordManager<Pii> {
   private final String zipPassword;
   private final String defaultPassword1;
   private final String defaultPassword2;
-
+  private final String defaultPassword3;
   /**
    * 
    * Creates a ExcelManager by given properties path.
@@ -96,6 +96,7 @@ public final class ExcelManager implements RecordManager<Pii> {
     zipPassword = props.getProperty("zip_password");
     defaultPassword1 = props.getProperty("default_password_1");
     defaultPassword2 = props.getProperty("default_password_2");
+    defaultPassword3 = props.getProperty("default_password_3");
     setDefaultPasswords();
     updateExcels();
   }
@@ -112,14 +113,10 @@ public final class ExcelManager implements RecordManager<Pii> {
     Folder folder = folders.isEmpty() ? null : folders.get(0);
 
     if (folder != null) {
-//      Ebean.beginTransaction();
       if (new File(folder.getPath()).exists())
         importExcels(folder.getPath());
       else
         Ebean.delete(folders);
-
-//      Ebean.commitTransaction();
-//      Ebean.endTransaction();
     }
 
   }
@@ -142,6 +139,42 @@ public final class ExcelManager implements RecordManager<Pii> {
       return false;
     }
     return ef.isEditable();
+  }
+
+  @Override
+  public void resetPassword(long id, String newPassword) {
+    {
+
+      try {
+        Authentication auth = Ebean.find(Authentication.class)
+            .where().eq("role", ADMIN)
+            .eq("id", id).findUnique();
+        auth.setPassword(newPassword);
+        auth.setLastChange(new Date());
+        Ebean.save(auth);
+
+        // 顯示修改完成的訊息
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("修改完成");
+        alert.setHeaderText(null);
+        alert.setContentText("密碼已成功修改！");
+        alert.showAndWait();
+
+        log.info(
+            "User Id: " + auth.getId() + " password changed at: " + java.time.LocalDateTime.now());
+
+      } catch (Exception e) {
+        e.printStackTrace();
+
+        Alert alert =
+            new Alert(Alert.AlertType.WARNING, "此密碼不符合強度要求，請重新設定",
+                ButtonType.OK);
+        alert.setTitle("密碼錯誤");
+        alert.setHeaderText("錯誤: 不符合強度要求");
+        alert.showAndWait();
+
+      }
+    }
   }
 
   @Override
@@ -222,9 +255,28 @@ public final class ExcelManager implements RecordManager<Pii> {
       Ebean.save(auth);
 
       Ebean.commitTransaction();
+
+      // 顯示修改完成的訊息
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("修改完成");
+      alert.setHeaderText(null);
+      alert.setContentText("密碼已成功修改！");
+      alert.showAndWait();
+
+      log.info(
+          "User Id: " + auth.getId() + " password changed at: " + java.time.LocalDateTime.now());
+
     } catch (Exception e) {
       Ebean.rollbackTransaction();
       e.printStackTrace();
+
+      Alert alert =
+          new Alert(Alert.AlertType.WARNING, "此密碼不符合強度要求，請重新設定",
+              ButtonType.OK);
+      alert.setTitle("密碼錯誤");
+      alert.setHeaderText("錯誤: 不符合強度要求");
+      alert.showAndWait();
+
     } finally {
       Ebean.endTransaction();
     }
@@ -414,12 +466,16 @@ public final class ExcelManager implements RecordManager<Pii> {
 
     Authentication auth1 = new Authentication();
     Authentication auth2 = new Authentication();
+    Authentication auth3 = new Authentication();
     auth1.setRole(ADMIN);
     auth2.setRole(ADMIN);
+    auth3.setRole(SUPER);
     auth1.setPassword(defaultPassword1);
     auth2.setPassword(defaultPassword2);
+    auth3.setPassword(defaultPassword3);
     Ebean.save(auth1);
     Ebean.save(auth2);
+    Ebean.save(auth3);
   }
 
   @Override

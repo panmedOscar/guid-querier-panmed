@@ -42,12 +42,11 @@
 			<Menu mnemonicParsing="false" text="%security">
 				<MenuItem fx:id="securityMI" mnemonicParsing="false"
 						  text="%change-pwd" onAction="#setPassword"/>
+				<MenuItem fx:id="resetPasswordMI1" mnemonicParsing="false"
+						  text="%reset-pwd1" onAction="#resetPassword1"/>
+				<MenuItem fx:id="resetPasswordMI2" mnemonicParsing="false"
+						  text="%reset-pwd2" onAction="#resetPassword2"/>
 			</Menu>
-			<Menu mnemonicParsing="false" text="%backup">
-				<MenuItem fx:id="backupMI" mnemonicParsing="false"
-						  text="%select-path" onAction="#backup"/>
-			</Menu>
-			<Menu/>
 		</MenuBar>
 		<MenuBar>
 			<Menu fx:id="totalLbl" mnemonicParsing="false" text="%backup"/>
@@ -58,16 +57,26 @@
 		<columnConstraints>
 			<ColumnConstraints hgrow="SOMETIMES"/>
 			<ColumnConstraints hgrow="NEVER"/>
+			<ColumnConstraints hgrow="NEVER"/>
 		</columnConstraints>
 		<rowConstraints>
 			<RowConstraints vgrow="NEVER"/>
 		</rowConstraints>
+
+		<!-- Search TextField -->
 		<TextField fx:id="searchTF" onAction="#queryAction"
 				   maxWidth="1.7976931348623157E308" GridPane.columnIndex="0"
 				   GridPane.rowIndex="0"/>
+
+		<!-- Search Button -->
 		<Button fx:id="searchBtn" text="%search" onAction="#queryAction"
-			maxWidth="100.0" mnemonicParsing="false" prefWidth="100.0"
-			GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+				maxWidth="100.0" mnemonicParsing="false" prefWidth="100.0"
+				GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+		<!-- Export Button (hidden by default) -->
+		<Button fx:id="exportBtn" text="%export-button" onAction="#exportAction"
+				maxWidth="100.0" mnemonicParsing="false" prefWidth="100.0"
+				GridPane.columnIndex="2" GridPane.rowIndex="0" visible="false" managed="false"/>
 	</GridPane>
 	<TableView fx:id="piiTable" maxHeight="1.7976931348623157E308"
 			   maxWidth="1.7976931348623157E308" GridPane.columnIndex="0"

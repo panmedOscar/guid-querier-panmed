@@ -113,4 +113,5 @@ public interface RecordManager<E> {
    */
   boolean isColumnEditable(String column);
 
+  void resetPassword(long id, String newPassword);
 }
